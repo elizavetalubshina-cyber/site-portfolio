@@ -1,0 +1,9 @@
+node_modules
+dist
+.claude
+.DS_Store
+src/assets/cat-video.mov
+src/assets/vs-subtitles-keys.png
+src/assets/vs-satelite-keys.png
+src/assets/about-me-1.HEIC
+src/assets/about-me-3.HEIC

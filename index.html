@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Елизавета Любшина — Product Designer</title>
+  <meta name="description" content="Product Designer · B2B · Web Interfaces. Сложные инженерные сценарии → понятные интерфейсы." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Open+Sans:wght@600&display=swap" rel="stylesheet">
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav__inner container">
+      <a class="logo" href="#top" aria-label="На главную">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="33" height="33" rx="12" fill="white" stroke="#2F6BFF" stroke-width="2"/>
+          <path d="M12 13h12l-12 10h12" stroke="#2F6BFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </a>
+      <nav class="nav__links">
+        <a href="#cases">Кейсы</a>
+        <a href="#about">Обо мне</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <span class="badge badge--live"><span class="dot dot--red"></span>В эфире</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container" id="top">
+      <div class="hero__decor hero__decor--left" aria-hidden="true">
+        <span class="badge badge--connected"><span class="dot dot--green"></span>Подключен</span>
+        <div class="floating-card">
+          <span class="floating-card__icon">⚠</span>
+          <div class="floating-card__lines">
+            <span class="line line--title"></span>
+            <span class="line"></span>
+            <span class="line line--short"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__decor hero__decor--right" aria-hidden="true">
+        <svg class="globe" width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="70" r="62" fill="url(#globeGrad)"/>
+          <ellipse cx="70" cy="70" rx="62" ry="24" stroke="#B9C6E0" stroke-width="1"/>
+          <ellipse cx="70" cy="70" rx="62" ry="45" stroke="#B9C6E0" stroke-width="1"/>
+          <ellipse cx="70" cy="70" rx="24" ry="62" stroke="#B9C6E0" stroke-width="1"/>
+          <line x1="8" y1="70" x2="132" y2="70" stroke="#B9C6E0" stroke-width="1"/>
+          <circle cx="96" cy="52" r="4" fill="#22C55E"/>
+          <circle cx="96" cy="52" r="8" fill="#22C55E" opacity="0.25"/>
+          <defs>
+            <radialGradient id="globeGrad" cx="0.35" cy="0.3" r="0.9">
+              <stop offset="0%" stop-color="#EAF0FB"/>
+              <stop offset="100%" stop-color="#C7D3EA"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <h1 class="hero__title">Елизавета Любшина</h1>
+      <p class="hero__role">Product Designer&nbsp;·&nbsp;B2B&nbsp;·&nbsp;Web Interfaces</p>
+      <p class="hero__exp">4+ года опыта в B2B-дизайне сложных систем</p>
+      <p class="hero__pitch">Сложные инженерные сценарии → понятные интерфейсы,<br>меньше ошибок и быстрее выполнение задач</p>
+
+      <div class="showcase">
+        <div class="stat stat--left">
+          <span class="stat__num">−25%</span>
+          <span class="stat__label">времени на сравнение<br>версий субтитров</span>
+        </div>
+
+        <div class="laptop">
+          <div class="laptop__tooltip">
+            <strong>VS Subtitles</strong>
+            <span>Vidau Systems · редактор субтитров и телетекста для прямого эфира</span>
+          </div>
+          <div class="laptop__body">
+            <div class="laptop__screen">
+              <img class="tv__bg" src="/src/assets/vs-subtitles-onair.png" alt="Интерфейс VS Subtitles" />
+
+              <div class="tv__video-frame">
+                <video class="tv__video" id="catVideo" autoplay muted loop playsinline>
+                  <source src="/src/assets/cat-video.mp4" type="video/mp4" />
+                </video>
+                <p class="tv__caption" id="catCaption"></p>
+              </div>
+
+              <div class="tv__stopbar">
+                <span class="tv__live-timecode" id="catTimecode">00:00:00:00</span>
+              </div>
+
+              <span class="tv__subs-toggle" aria-hidden="true"><span class="tv__subs-toggle-knob"></span></span>
+
+              <div class="tv__cues-mask">
+                <ul class="tv__cues" id="catCues"></ul>
+                <p class="tv__cue-counter" id="catCueCounter"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat stat--right">
+          <span class="stat__num">−35%</span>
+          <span class="stat__label">времени на подготовку<br>типового сценария к эфиру</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="cases container" id="cases">
+      <h2>Кейсы</h2>
+      <div class="cases__grid">
+
+        <article class="case case--wide case--media-subtitles">
+          <div class="case__media"><img src="/src/assets/vs-subtitles-keys.jpg" alt="Интерфейс VS Subtitles" /></div>
+          <div class="case__body">
+            <h3>VS Subtitles</h3>
+            <p class="case__company">Vidau Systems</p>
+            <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
+            <p class="case__stats">−35% времени подготовки · −25% на сравнение версий</p>
+            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
+          </div>
+        </article>
+
+        <article class="case case--media-ecosystem">
+          <div class="case__media"><img src="/src/assets/vs-ecosystem-keys.png" alt="Интерфейс VS Ecosystem" /></div>
+          <div class="case__body">
+            <h3>VS Ecosystem</h3>
+            <p class="case__company">Vidau Systems</p>
+            <p class="case__desc">Платформа лицензий и мониторинга</p>
+            <p class="case__stats">меньше ошибок · быстрее обработка изменений</p>
+            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
+          </div>
+        </article>
+
+        <article class="case case--media-satellite">
+          <div class="case__media"><img src="/src/assets/vs-satelite-keys.jpg" alt="Интерфейс Satellite" /></div>
+          <div class="case__body">
+            <h3>Satellite</h3>
+            <p class="case__company">Vidau Systems, Софиком</p>
+            <p class="case__desc">Демо мониторинга группировок КА</p>
+            <p class="case__stats">понятнее ценность системы · быстрее поиск объектов</p>
+            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
+          </div>
+        </article>
+
+        <article class="case case--wide case--media-tracktice">
+          <div class="case__media"><img src="/src/assets/Tracktice-keys.png" alt="Интерфейс Tracktice Flow" /></div>
+          <div class="case__body case__body--bottom">
+            <h3>Tracktice Flow</h3>
+            <p class="case__company">Vidau Systems, Tracktice</p>
+            <p class="case__desc">Админка настройки пассажиропотока</p>
+            <p class="case__stats">быстрее настройка · проще системные параметры</p>
+            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
+          </div>
+        </article>
+
+        <article class="case case--full case--empty">
+          <div class="case__body case__body--bottom">
+            <h3>Дизайн-система</h3>
+            <p class="case__company">Vidau Systems</p>
+            <p class="case__desc">UI-kit, компоненты и правила консистентности</p>
+            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="about container" id="about">
+      <h2>Обо мне</h2>
+      <div class="about__grid">
+        <div class="about__text">
+          <p class="about__intro">Проектирую интерфейсы и масштабирую дизайн-системы для B2B-продуктов с высокой технической сложностью.</p>
+          <p class="about__intro">Умело работаю в Figma и стремлюсь решать реальные, а не выдуманные проблемы.</p>
+          <p class="about__intro">Использую фреймворки тогда, когда это действительно нужно, а не потому что «так принято».</p>
+          <p class="about__intro">Для меня важно, чтобы сложная логика читалась в UI без потери продуктового смысла.</p>
+          <p class="about__intro">С интересом внедряю AI в дизайн-процесс, и это уже часть моей повседневной работы.</p>
+
+          <div class="contacts" id="contacts">
+            <a class="btn" href="https://t.me/dizzzlik" target="_blank" rel="noopener">Telegram: @dizzzlik</a>
+            <a class="btn" href="mailto:le-designer@yandex.ru">le-designer@yandex.ru</a>
+            <a class="btn" href="#">Резюме</a>
+          </div>
+        </div>
+        <div class="about__photo" id="aboutPhotoGallery">
+          <img src="/src/assets/about-me-1.jpg" alt="Елизавета Любшина" class="is-active" />
+          <img src="/src/assets/about-me-2.JPG" alt="Елизавета Любшина" />
+          <img src="/src/assets/about-me-3.jpg" alt="Елизавета Любшина" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© Елизавета Любшина · Product Designer · 2026</div>
+  </footer>
+</body>
+</html>

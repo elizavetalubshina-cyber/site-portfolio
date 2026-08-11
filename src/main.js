@@ -112,10 +112,12 @@ document.querySelectorAll('.nav__links a, .logo').forEach((link) => {
 
 const galleryPhotos = document.querySelectorAll('#aboutPhotoGallery img');
 if (galleryPhotos.length > 1) {
-  let galleryIndex = 0;
-  setInterval(() => {
-    galleryPhotos[galleryIndex].classList.remove('is-active');
+  // Guard against duplicate timers if this script re-runs (e.g. Vite HMR).
+  if (window.__aboutGalleryTimer) clearInterval(window.__aboutGalleryTimer);
+  let galleryIndex = [...galleryPhotos].findIndex((img) => img.classList.contains('is-active'));
+  if (galleryIndex < 0) galleryIndex = 0;
+  window.__aboutGalleryTimer = setInterval(() => {
     galleryIndex = (galleryIndex + 1) % galleryPhotos.length;
-    galleryPhotos[galleryIndex].classList.add('is-active');
+    galleryPhotos.forEach((img, i) => img.classList.toggle('is-active', i === galleryIndex));
   }, 5000);
 }

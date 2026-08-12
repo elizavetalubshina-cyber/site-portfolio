@@ -102,13 +102,22 @@ if (catVideo && catCaption && catCues) {
 document.querySelectorAll('.nav__links a, .logo').forEach((link) => {
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href');
-    if (!id || !id.startsWith('#')) return;
+    if (!id || id === '#' || !id.startsWith('#')) return;
     const target = document.querySelector(id);
     if (!target) return;
     e.preventDefault();
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
+
+const siteNav = document.querySelector('.nav');
+if (siteNav) {
+  const toggleNavScrolled = () => {
+    siteNav.classList.toggle('is-scrolled', window.scrollY > 24);
+  };
+  toggleNavScrolled();
+  window.addEventListener('scroll', toggleNavScrolled, { passive: true });
+}
 
 const galleryPhotos = document.querySelectorAll('#aboutPhotoGallery img');
 const galleryDots = document.querySelectorAll('#aboutPhotoGallery .photo-dot');

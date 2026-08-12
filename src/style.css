@@ -95,16 +95,10 @@ h1, h2, h3 {
 }
 
 .hero__role {
-  margin: 22px 0 6px;
+  margin: 22px 0 18px;
   font-size: 18px;
   font-weight: 600;
   color: var(--text);
-}
-
-.hero__exp {
-  margin: 0 0 18px;
-  font-size: 14px;
-  color: var(--text-muted);
 }
 
 .hero__pitch {

@@ -24,36 +24,6 @@
 
   <main>
     <section class="hero container" id="top">
-      <div class="hero__decor hero__decor--left" aria-hidden="true">
-        <span class="badge badge--connected"><span class="dot dot--green"></span>Подключен</span>
-        <div class="floating-card">
-          <span class="floating-card__icon">⚠</span>
-          <div class="floating-card__lines">
-            <span class="line line--title"></span>
-            <span class="line"></span>
-            <span class="line line--short"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero__decor hero__decor--right" aria-hidden="true">
-        <svg class="globe" width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="70" cy="70" r="62" fill="url(#globeGrad)"/>
-          <ellipse cx="70" cy="70" rx="62" ry="24" stroke="#B9C6E0" stroke-width="1"/>
-          <ellipse cx="70" cy="70" rx="62" ry="45" stroke="#B9C6E0" stroke-width="1"/>
-          <ellipse cx="70" cy="70" rx="24" ry="62" stroke="#B9C6E0" stroke-width="1"/>
-          <line x1="8" y1="70" x2="132" y2="70" stroke="#B9C6E0" stroke-width="1"/>
-          <circle cx="96" cy="52" r="4" fill="#22C55E"/>
-          <circle cx="96" cy="52" r="8" fill="#22C55E" opacity="0.25"/>
-          <defs>
-            <radialGradient id="globeGrad" cx="0.35" cy="0.3" r="0.9">
-              <stop offset="0%" stop-color="#EAF0FB"/>
-              <stop offset="100%" stop-color="#C7D3EA"/>
-            </radialGradient>
-          </defs>
-        </svg>
-      </div>
-
       <div class="hero__intro">
         <h1 class="hero__title">Елизавета Любшина</h1>
         <p class="hero__role">Product Designer&nbsp;·&nbsp;B2B&nbsp;·&nbsp;Web Interfaces</p>
@@ -184,6 +154,11 @@
           <img src="/src/assets/about-me-1.jpg" alt="Елизавета Любшина" class="is-active" />
           <img src="/src/assets/about-me-2.JPG" alt="Елизавета Любшина" />
           <img src="/src/assets/about-me-3.jpg" alt="Елизавета Любшина" />
+          <div class="photo-dots" role="group" aria-label="Переключение фото">
+            <button type="button" class="photo-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button>
+            <button type="button" class="photo-dot" data-index="1" aria-label="Фото 2"></button>
+            <button type="button" class="photo-dot" data-index="2" aria-label="Фото 3"></button>
+          </div>
         </div>
       </div>
     </section>

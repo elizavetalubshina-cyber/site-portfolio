@@ -111,13 +111,45 @@ document.querySelectorAll('.nav__links a, .logo').forEach((link) => {
 });
 
 const galleryPhotos = document.querySelectorAll('#aboutPhotoGallery img');
+const galleryDots = document.querySelectorAll('#aboutPhotoGallery .photo-dot');
+
 if (galleryPhotos.length > 1) {
   // Guard against duplicate timers if this script re-runs (e.g. Vite HMR).
   if (window.__aboutGalleryTimer) clearInterval(window.__aboutGalleryTimer);
+
   let galleryIndex = [...galleryPhotos].findIndex((img) => img.classList.contains('is-active'));
   if (galleryIndex < 0) galleryIndex = 0;
+
+  function showGalleryPhoto(index) {
+    galleryIndex = index;
+    galleryPhotos.forEach((img, i) => img.classList.toggle('is-active', i === index));
+    galleryDots.forEach((dot, i) => {
+      dot.classList.toggle('is-active', i === index);
+      if (i === index) {
+        dot.setAttribute('aria-current', 'true');
+      } else {
+        dot.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  function stopGalleryAutoplay() {
+    if (window.__aboutGalleryTimer) {
+      clearInterval(window.__aboutGalleryTimer);
+      window.__aboutGalleryTimer = null;
+    }
+  }
+
   window.__aboutGalleryTimer = setInterval(() => {
-    galleryIndex = (galleryIndex + 1) % galleryPhotos.length;
-    galleryPhotos.forEach((img, i) => img.classList.toggle('is-active', i === galleryIndex));
+    showGalleryPhoto((galleryIndex + 1) % galleryPhotos.length);
   }, 5000);
+
+  // Clicking a dot jumps to that photo and stops the automatic slideshow,
+  // handing control to the visitor.
+  galleryDots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      stopGalleryAutoplay();
+      showGalleryPhoto(i);
+    });
+  });
 }

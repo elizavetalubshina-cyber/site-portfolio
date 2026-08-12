@@ -100,11 +100,26 @@ h1, h2, h3 {
 }
 .hero-decor-img--modal {
   width: 220px;
-  transform: rotate(-7deg);
 }
 .hero-decor-img--badge {
   width: 190px;
   transform: rotate(6deg);
+}
+
+.hero-decor-card {
+  position: relative;
+  display: inline-block;
+  transform: rotate(-7deg);
+  box-shadow: 0 20px 36px rgba(10, 12, 18, 0.28);
+  border-radius: 22px;
+}
+.hero-decor-card::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  background: linear-gradient(160deg, #2a3038, #0c0e13);
+  border-radius: 20px;
+  z-index: -1;
 }
 
 .hero__title {

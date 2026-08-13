@@ -141,7 +141,7 @@ h1, h2, h3 {
 .hero__float--air {
   width: 130px;
   top: 330px;
-  left: calc(50% + 310px);
+  left: calc(50% + 350px);
   animation: hero-float-air 6.5s ease-in-out infinite;
   animation-delay: -1.2s;
 }
@@ -157,15 +157,15 @@ h1, h2, h3 {
 .hero__float--dashboard {
   width: 150px;
   top: 50px;
-  left: calc(50% + 300px);
+  left: calc(50% + 340px);
   animation: hero-float-dashboard 6s ease-in-out infinite;
   animation-delay: -2s;
 }
 
 .hero__float--earth {
   width: 130px;
-  top: 80px;
-  left: calc(50% - 100px);
+  top: 50px;
+  left: calc(50% - 140px);
   animation: hero-float-earth 7.5s ease-in-out infinite;
   animation-delay: -4s;
 }
@@ -248,25 +248,11 @@ h1, h2, h3 {
 
 .laptop__tooltip {
   position: absolute;
-  top: -20px;
-  left: -10px;
+  top: -48px;
+  left: -32px;
   z-index: 3;
-  background: #fff;
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  width: 220px;
-  text-align: left;
-  box-shadow: 0 16px 40px rgba(20, 25, 40, 0.15);
-}
-.laptop__tooltip strong {
+  width: 240px;
   display: block;
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-.laptop__tooltip span {
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.4;
 }
 
 .laptop__screen {
@@ -682,7 +668,7 @@ h1, h2, h3 {
   .hero__title { font-size: 40px; white-space: normal; }
   .showcase { flex-direction: column; gap: 24px; }
   .laptop { width: 100%; order: -1; }
-  .laptop__tooltip { position: static; width: auto; margin-bottom: 14px; }
+  .laptop__tooltip { position: static; width: 220px; margin-bottom: 14px; }
 
   .cases__grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .case--full, .case--hero, .case--wide { grid-column: auto; grid-row: auto; }

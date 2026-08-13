@@ -121,40 +121,90 @@ h1, h2, h3 {
   justify-content: center;
 }
 
-.hero__decor {
+/* Floating hero icons — hover near the centered text with clear air
+   around them, each gently levitating on its own out-of-sync rhythm. */
+.hero__float {
   position: absolute;
-  top: 40px;
-  z-index: 2;
-}
-.hero__decor--left { left: -70px; }
-.hero__decor--right { right: -60px; top: 70px; }
-
-.hero-decor-img {
+  z-index: 3;
   display: block;
-  filter: drop-shadow(0 16px 30px rgba(20, 22, 30, 0.18));
-}
-.hero-decor-img--modal {
-  width: 220px;
-}
-.hero-decor-img--badge {
-  width: 190px;
-  transform: rotate(6deg);
+  pointer-events: none;
+  filter: drop-shadow(0 16px 26px rgba(20, 22, 30, 0.22));
 }
 
-.hero-decor-card {
-  position: relative;
-  display: inline-block;
-  transform: rotate(-7deg);
-  box-shadow: 0 20px 36px rgba(10, 12, 18, 0.28);
-  border-radius: 22px;
+.hero__float--figma {
+  width: 60px;
+  top: 70px;
+  left: calc(50% - 460px);
+  animation: hero-float-figma 5.5s ease-in-out infinite;
 }
-.hero-decor-card::before {
-  content: '';
-  position: absolute;
-  inset: 7px;
-  background: linear-gradient(160deg, #2a3038, #0c0e13);
-  border-radius: 20px;
-  z-index: -1;
+
+.hero__float--air {
+  width: 130px;
+  top: 330px;
+  left: calc(50% + 310px);
+  animation: hero-float-air 6.5s ease-in-out infinite;
+  animation-delay: -1.2s;
+}
+
+.hero__float--poppup {
+  width: 190px;
+  top: 345px;
+  left: calc(50% - 515px);
+  animation: hero-float-poppup 7s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+.hero__float--dashboard {
+  width: 150px;
+  top: 50px;
+  left: calc(50% + 300px);
+  animation: hero-float-dashboard 6s ease-in-out infinite;
+  animation-delay: -2s;
+}
+
+.hero__float--earth {
+  width: 130px;
+  top: 80px;
+  left: calc(50% - 100px);
+  animation: hero-float-earth 7.5s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.hero__float--status {
+  width: 150px;
+  top: 120px;
+  left: calc(50% - 630px);
+  animation: hero-float-status 6.2s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+@keyframes hero-float-figma {
+  0%, 100% { transform: rotate(-12deg) translateY(0); }
+  50% { transform: rotate(-12deg) translateY(-16px); }
+}
+@keyframes hero-float-air {
+  0%, 100% { transform: rotate(6deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-14px); }
+}
+@keyframes hero-float-poppup {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(-5deg) translateY(-18px); }
+}
+@keyframes hero-float-dashboard {
+  0%, 100% { transform: rotate(8deg) translateY(0); }
+  50% { transform: rotate(8deg) translateY(-15px); }
+}
+@keyframes hero-float-earth {
+  0%, 100% { transform: rotate(-14deg) translateY(0); }
+  50% { transform: rotate(-14deg) translateY(-12px); }
+}
+@keyframes hero-float-status {
+  0%, 100% { transform: rotate(5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-13px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__float { animation: none; }
 }
 
 .hero__title {
@@ -188,29 +238,6 @@ h1, h2, h3 {
   align-items: center;
   justify-content: center;
   gap: 28px;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 190px;
-  flex-shrink: 0;
-}
-.stat--right { align-items: flex-start; }
-
-.stat__num {
-  font-family: var(--font-display);
-  font-size: 30px;
-  font-weight: 700;
-  color: var(--text);
-}
-.stat__label {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.4;
-  text-align: left;
 }
 
 .laptop {
@@ -524,11 +551,12 @@ h1, h2, h3 {
 }
 
 .tags {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 2;
   display: flex;
   gap: 6px;
-  margin-top: 10px;
-  align-self: flex-end;
-  flex-shrink: 0;
 }
 .tag {
   background: rgba(255,255,255,0.08);
@@ -649,23 +677,10 @@ h1, h2, h3 {
 
 /* ---------- Responsive ---------- */
 
-@media (max-width: 1300px) {
-  .hero__decor { top: 16px; }
-  .hero__decor--left { left: 0; }
-  .hero__decor--right { right: 0; top: 36px; }
-  .hero-decor-img--modal { width: 150px; }
-  .hero-decor-img--badge { width: 130px; }
-}
-
-@media (max-width: 1023px) {
-  .hero__decor { display: none; }
-}
-
 @media (max-width: 1100px) {
+  .hero__float { display: none; }
   .hero__title { font-size: 40px; white-space: normal; }
   .showcase { flex-direction: column; gap: 24px; }
-  .stat { flex-direction: row; align-items: baseline; gap: 8px; width: auto; }
-  .stat__label { text-align: left; }
   .laptop { width: 100%; order: -1; }
   .laptop__tooltip { position: static; width: auto; margin-bottom: 14px; }
 

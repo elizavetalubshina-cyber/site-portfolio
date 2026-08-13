@@ -1,5 +1,3 @@
-import './style.css';
-
 // `lines` are fixed line breaks (not left to CSS wrap) so the caption
 // on the video and the row in the subtitles panel always match —
 // same two-line shape in both places, regardless of container width.

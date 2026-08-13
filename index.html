@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Open+Sans:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
   <script type="module" src="/src/main.js"></script>
 </head>
 <body>
@@ -28,15 +29,12 @@
 
   <main>
     <section class="hero container" id="top">
-      <div class="hero__decor hero__decor--left" aria-hidden="true">
-        <span class="hero-decor-card">
-          <img class="hero-decor-img hero-decor-img--modal" src="/src/assets/hero-warning-modal.png" alt="" />
-        </span>
-      </div>
-
-      <div class="hero__decor hero__decor--right" aria-hidden="true">
-        <img class="hero-decor-img hero-decor-img--badge" src="/src/assets/status-connected.png" alt="" />
-      </div>
+      <img class="hero__float hero__float--figma" src="/src/assets/hero-icon-figma.png" alt="" aria-hidden="true" />
+      <img class="hero__float hero__float--air" src="/src/assets/hero-icon-air.png" alt="" aria-hidden="true" />
+      <img class="hero__float hero__float--poppup" src="/src/assets/hero-icon-poppup.png" alt="" aria-hidden="true" />
+      <img class="hero__float hero__float--dashboard" src="/src/assets/hero-icon-dashboard.png" alt="" aria-hidden="true" />
+      <img class="hero__float hero__float--earth" src="/src/assets/hero-icon-earth.png" alt="" aria-hidden="true" />
+      <img class="hero__float hero__float--status" src="/src/assets/hero-icon-status.png" alt="" aria-hidden="true" />
 
       <div class="hero__intro">
         <h1 class="hero__title">Елизавета Любшина</h1>
@@ -45,11 +43,6 @@
       </div>
 
       <div class="showcase">
-        <div class="stat stat--left">
-          <span class="stat__num">−25%</span>
-          <span class="stat__label">времени на сравнение<br>версий субтитров</span>
-        </div>
-
         <div class="laptop">
           <div class="laptop__tooltip">
             <strong>VS Subtitles</strong>
@@ -79,11 +72,6 @@
             </div>
           </div>
         </div>
-
-        <div class="stat stat--right">
-          <span class="stat__num">−35%</span>
-          <span class="stat__label">времени на подготовку<br>типового сценария к эфиру</span>
-        </div>
       </div>
     </section>
 
@@ -98,8 +86,8 @@
             <p class="case__company">Vidau Systems</p>
             <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
             <p class="case__stats">−35% времени подготовки · −25% на сравнение версий</p>
-            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
           </div>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </article>
 
         <article class="case case--media-ecosystem">
@@ -109,8 +97,8 @@
             <p class="case__company">Vidau Systems</p>
             <p class="case__desc">Платформа лицензий и мониторинга</p>
             <p class="case__stats">меньше ошибок · быстрее обработка изменений</p>
-            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
           </div>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </article>
 
         <article class="case case--media-satellite">
@@ -120,8 +108,8 @@
             <p class="case__company">Софиком</p>
             <p class="case__desc">Демо мониторинга группировок КА</p>
             <p class="case__stats">понятнее ценность системы · быстрее поиск объектов</p>
-            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
           </div>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </article>
 
         <article class="case case--wide case--media-tracktice">
@@ -131,8 +119,8 @@
             <p class="case__company">Tracktice</p>
             <p class="case__desc">Админка настройки пассажиропотока</p>
             <p class="case__stats">быстрее настройка · проще системные параметры</p>
-            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
           </div>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </article>
 
         <article class="case case--full case--empty">
@@ -140,8 +128,8 @@
             <h3>Дизайн-система</h3>
             <p class="case__company">Vidau Systems</p>
             <p class="case__desc">UI-kit, компоненты и правила консистентности</p>
-            <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
           </div>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </article>
 
       </div>

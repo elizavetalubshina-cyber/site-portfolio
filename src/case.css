@@ -1,0 +1,345 @@
+/* ---------- Case page shell ---------- */
+
+.case-page main { padding-bottom: 40px; }
+
+.case-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 28px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.case-back:hover { color: var(--blue); }
+
+/* ---------- Hero ---------- */
+
+.case-hero {
+  margin-top: 20px;
+  padding: 48px 0 40px;
+}
+
+.case-hero__tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.case-hero__title {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.case-hero__subtitle {
+  margin: 18px 0 0;
+  white-space: nowrap;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.case-cover {
+  margin: 36px 0 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.case-cover figcaption {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Коротко ---------- */
+
+.short {
+  margin-top: 80px;
+}
+.short h2 {
+  font-size: 32px;
+  margin-bottom: 28px;
+}
+
+.short__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.short__text h3 {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 26px 0 8px;
+}
+.short__text h3:first-child { margin-top: 0; }
+
+.short__text p {
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.short__text ul {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.short__text li { margin-bottom: 6px; }
+
+.short__refs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 100px;
+}
+.short-ref {
+  aspect-ratio: 16 / 10.5;
+  border-radius: var(--radius-md);
+  background: #f1f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+}
+.short-ref span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.short__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+/* Same volumetric-badge feel as plashka.png in the hero: soft white
+   gradient card with a gentle shadow, instead of a flat tint. */
+.short-stat {
+  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.18);
+  border-radius: var(--radius-md);
+  padding: 24px 22px;
+}
+.short-stat__value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+.short-stat__label {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+/* ---------- Detail sections ---------- */
+
+.case-detail {
+  margin-top: 90px;
+}
+
+.case-block {
+  margin: 0 0 88px;
+}
+
+.case-block h2 {
+  font-size: 28px;
+  margin-bottom: 22px;
+}
+
+.case-block h3 {
+  font-size: 19px;
+  margin: 32px 0 12px;
+}
+
+.case-block h4 {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 22px 0 8px;
+}
+
+.case-block p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+.case-block p:last-child { margin-bottom: 0; }
+
+.case-block ul, .case-block ol {
+  margin: 0 0 16px;
+  padding-left: 22px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+.case-block li { margin-bottom: 6px; }
+
+.case-block strong { color: var(--text); }
+
+/* Numbered "what I learned" findings */
+.case-finding {
+  margin: 20px 0;
+  padding-left: 44px;
+  position: relative;
+}
+.case-finding__num {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.case-finding p { margin-bottom: 0; }
+
+/* Callout (💡 blocks from Notion) */
+.case-callout {
+  display: flex;
+  gap: 12px;
+  background: #f6f7f9;
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  margin: 20px 0;
+}
+.case-callout__icon { flex-shrink: 0; font-size: 18px; line-height: 1.5; }
+.case-callout p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+/* Figure / image placeholder */
+.case-figure {
+  margin: 24px 0;
+}
+.case-figure--wide {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.case-figure__frame {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  background: repeating-linear-gradient(135deg, #f1f2f5, #f1f2f5 10px, #e9eaee 10px, #e9eaee 20px);
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+.case-figure__label {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 320px;
+}
+.case-figure figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.case-figure-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Stat callouts in Результат */
+.case-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 24px 0;
+}
+.case-stat {
+  background: #f6f7f9;
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  text-align: center;
+}
+.case-stat__value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+.case-stat__label {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Keyboard shortcuts table */
+.case-kbd-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+}
+.case-kbd-table th, .case-kbd-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.case-kbd-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.case-kbd-table td:last-child, .case-kbd-table th:last-child { text-align: right; }
+kbd {
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  background: #f1f2f5;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .case-hero__title { font-size: 36px; }
+  .short__grid { grid-template-columns: 1fr; }
+  .short__refs { position: static; flex-direction: row; flex-wrap: wrap; }
+  .short-ref { flex: 1 1 240px; }
+  .case-stats-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .case-figure-row { grid-template-columns: 1fr; }
+  .short__refs { flex-direction: column; }
+  .short__stats { grid-template-columns: 1fr; }
+  .case-hero__subtitle { white-space: normal; }
+}

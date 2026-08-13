@@ -109,12 +109,28 @@ document.querySelectorAll('.nav__links a, .logo').forEach((link) => {
 });
 
 const siteNav = document.querySelector('.nav');
-if (siteNav) {
-  const toggleNavScrolled = () => {
-    siteNav.classList.toggle('is-scrolled', window.scrollY > 24);
+const heroTitle = document.querySelector('.hero__title, .case-hero__title');
+if (siteNav && heroTitle) {
+  // The name pill only appears once the header's bottom edge actually
+  // reaches the top of the big hero title — not at a fixed scroll amount —
+  // so it stays correct across viewport sizes and if the hero layout changes.
+  const updateNavScrolled = () => {
+    const headerBottom = siteNav.getBoundingClientRect().bottom;
+    const titleTop = heroTitle.getBoundingClientRect().top;
+    siteNav.classList.toggle('is-scrolled', titleTop <= headerBottom);
   };
-  toggleNavScrolled();
-  window.addEventListener('scroll', toggleNavScrolled, { passive: true });
+  updateNavScrolled();
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      updateNavScrolled();
+      ticking = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
 }
 
 const galleryPhotos = document.querySelectorAll('#aboutPhotoGallery img');

@@ -18,7 +18,7 @@
 
 .case-hero {
   margin-top: 20px;
-  padding: 48px 0 40px;
+  padding: 48px 24px 40px;
 }
 
 .case-hero__tags {
@@ -36,7 +36,6 @@
 
 .case-hero__subtitle {
   margin: 18px 0 0;
-  white-space: nowrap;
   font-size: 19px;
   line-height: 1.5;
   color: var(--text-secondary);
@@ -436,5 +435,4 @@ kbd {
   .short__refs { flex-direction: column; }
   .related__grid { grid-template-columns: 1fr; }
   .short__stats { grid-template-columns: 1fr; }
-  .case-hero__subtitle { white-space: normal; }
 }

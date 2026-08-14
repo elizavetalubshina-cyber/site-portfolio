@@ -41,9 +41,9 @@
 
       <figure class="case-cover">
         <div class="case-figure__frame" style="aspect-ratio: 2.2/1;">
-          <p class="case-figure__label">cover.jpg — глобус с аппаратом, траекторией и зоной покрытия</p>
+          <p class="case-figure__label">cover.png</p>
         </div>
-        <figcaption>Самый выразительный экран проекта. Если сохранилось презентационное видео — гифка на 5–7 секунд с движением аппарата вместо статики.</figcaption>
+        <figcaption>Глобус с аппаратом, траекторией и зоной покрытия — самый выразительный экран проекта. Если сохранилось презентационное видео, вместо статики можно взять гифку на 5–7 секунд с движением аппарата.</figcaption>
       </figure>
     </section>
 
@@ -143,13 +143,13 @@
 
         <div class="case-figure-row">
           <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">инженер: точность, плотность, полнота</p></div>
+            <div class="case-figure__frame"><p class="case-figure__label">audience-engineer.png</p></div>
           </figure>
           <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">посетитель стенда: понятность за 2 минуты, эффект, доверие</p></div>
+            <div class="case-figure__frame"><p class="case-figure__label">audience-visitor.png</p></div>
           </figure>
         </div>
-        <p class="case-figure figcaption" style="font-size:13px; color:var(--text-muted); margin-top:-8px;">Простая схема на два столбца — показывает, что выбор аудитории был осознанным.</p>
+        <p class="case-figure figcaption" style="font-size:13px; color:var(--text-muted); margin-top:-8px;">Простая схема на два столбца — «инженер: точность, плотность, полнота» / «посетитель стенда: понятность за 2 минуты, эффект, доверие». Показывает, что выбор аудитории был осознанным.</p>
 
         <div class="case-callout">
           <span class="case-callout__icon">ℹ️</span>
@@ -175,10 +175,10 @@
 
         <div class="case-figure-row">
           <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">аналог: перегруженный экран трекера</p></div>
+            <div class="case-figure__frame"><p class="case-figure__label">analog-dense-tracker.png</p></div>
           </figure>
           <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">финальный экран Satellite</p></div>
+            <div class="case-figure__frame"><p class="case-figure__label">final-screen.png</p></div>
           </figure>
         </div>
         <p class="case-figure figcaption" style="font-size:13px; color:var(--text-muted); margin-top:-8px;">2–3 скриншота аналогов с пометками, что именно в них перегружено, рядом — свой экран. Самый сильный before/after из доступных в проекте.</p>
@@ -211,7 +211,8 @@
         <p>Тёмная тема формально следовала из стилистики Sofikom, но выбрала я её не только поэтому. На тёмном фоне светящаяся Земля, орбита и зона покрытия работают как источники света — глаз идёт к ним сам, без выделения рамками и подписями. Это ровно то, что нужно на стенде, где нет второго шанса объяснить, куда смотреть.</p>
 
         <figure class="case-figure">
-          <div class="case-figure__frame"><p class="case-figure__label">экран глобуса крупно + карточка объекта</p></div>
+          <div class="case-figure__frame"><p class="case-figure__label">globe-screen.png</p></div>
+          <figcaption>Экран глобуса крупно + карточка объекта.</figcaption>
         </figure>
 
         <div class="case-callout">
@@ -223,9 +224,9 @@
         <p>Из всех возможностей системы самой убедительной я считала не функциональность, а движение: аппарат, идущий по орбите над реальной поверхностью Земли, за несколько секунд объясняет продукт лучше любого описания.</p>
         <p>Поэтому визуальное представление траекторий я прорабатывала отдельно — как рисуется орбита, как читается положение аппарата относительно поверхности, что видно в момент, когда он уходит за горизонт. Именно на этот блок я закладывала больше всего графики — и именно здесь пришлось урезать сильнее всего.</p>
 
-        <figure class="case-figure">
-          <div class="case-figure__frame"><p class="case-figure__label">гифка/видео с движением аппарата по орбите</p></div>
-          <figcaption>Для этого блока статика теряет смысл — если сохранилось презентационное видео, стоит вырезать оттуда 5 секунд.</figcaption>
+        <figure class="case-figure case-figure--wide">
+          <video src="/src/assets/cases/satellite/orbit-motion.mp4" autoplay muted loop playsinline style="width:100%; border-radius: var(--radius-md); display:block;"></video>
+          <figcaption>Демо-запись: движение аппарата и работа с глобусом.</figcaption>
         </figure>
 
         <h3>3. Что происходит, когда объекты накладываются друг на друга</h3>
@@ -234,8 +235,8 @@
         <p>Плюс к этому — состояния и ошибки по всем экранам. На демо-продукте это не формальность: любое пустое или сломанное состояние на стенде видит человек, которого мы пытаемся убедить.</p>
 
         <figure class="case-figure">
-          <div class="case-figure__frame"><p class="case-figure__label">наложение меток / пересечение зон покрытия</p></div>
-          <figcaption>Самый недооценённый экран проекта — он один доказывает, что решение проработано под реальное поведение карты, а не под идеальную картинку.</figcaption>
+          <div class="case-figure__frame"><p class="case-figure__label">marker-overlap.png</p></div>
+          <figcaption>Наложение меток / пересечение зон покрытия. Самый недооценённый экран проекта — он один доказывает, что решение проработано под реальное поведение карты, а не под идеальную картинку.</figcaption>
         </figure>
 
         <div class="case-callout case-callout--todo">
@@ -273,10 +274,10 @@
 
         <div class="case-figure-row">
           <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">поиск объектов</p></div>
+            <div class="case-figure__frame"><p class="case-figure__label">search-objects.png</p></div>
           </figure>
           <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">работа со временем / таймлайн</p></div>
+            <div class="case-figure__frame"><p class="case-figure__label">timeline.png</p></div>
           </figure>
         </div>
         <p class="case-figure figcaption" style="font-size:13px; color:var(--text-muted); margin-top:-8px;">Сетка из экранов по одному на сценарий, включая поиск и таймлайн — оба есть в макетах, но пока нигде не показаны. Подписи короткие: экран должен говорить сам.</p>

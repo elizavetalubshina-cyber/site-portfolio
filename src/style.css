@@ -509,6 +509,10 @@ h1, h2, h3 {
   height: 100%;
   object-fit: cover;
   object-position: top;
+  transition: transform 0.5s ease;
+}
+.case:hover .case__media img {
+  transform: scale(1.06);
 }
 .case--media-ecosystem .case__media {
   background: linear-gradient(160deg, #1a2230, #0e1116 65%);

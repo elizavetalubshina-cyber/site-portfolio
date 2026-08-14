@@ -499,6 +499,13 @@ h1, h2, h3 {
   min-height: 300px;
   text-decoration: none;
   color: inherit;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.case:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 28px 48px -16px rgba(10, 12, 18, 0.45);
+  z-index: 2;
 }
 
 /* Bento hierarchy: Subtitles is the primary accent (2x2 module),

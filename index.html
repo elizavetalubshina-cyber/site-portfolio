@@ -14,28 +14,30 @@
 </head>
 <body class="home-page">
   <header class="nav">
-    <div class="nav__inner">
-      <button class="nav__toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navMenu">
-        <span></span>
-      </button>
-      <nav class="nav__links nav__links--left">
-        <a href="#cases">Кейсы</a>
-        <a href="#about">Обо мне</a>
-      </nav>
-      <a class="logo" href="#top">Любшина Е.А.</a>
-      <nav class="nav__links nav__links--right">
-        <a href="#contacts">Контакты</a>
-        <a href="#">Резюме</a>
+    <div class="nav__shell">
+      <div class="nav__inner">
+        <button class="nav__toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navMenu">
+          <span></span>
+        </button>
+        <nav class="nav__links nav__links--left">
+          <a href="#cases">Кейсы</a>
+          <a href="#about">Обо мне</a>
+        </nav>
+        <a class="logo" href="#top">Любшина Е.А.</a>
+        <nav class="nav__links nav__links--right">
+          <a href="#contacts">Контакты</a>
+          <a href="#">Резюме</a>
+        </nav>
+      </div>
+      <nav class="nav__menu" id="navMenu">
+        <div class="nav__menu-panel">
+          <a href="#cases">Кейсы</a>
+          <a href="#about">Обо мне</a>
+          <a href="#contacts">Контакты</a>
+          <a href="#">Резюме</a>
+        </div>
       </nav>
     </div>
-    <nav class="nav__menu" id="navMenu">
-      <div class="nav__menu-panel">
-        <a href="#cases">Кейсы</a>
-        <a href="#about">Обо мне</a>
-        <a href="#contacts">Контакты</a>
-        <a href="#">Резюме</a>
-      </div>
-    </nav>
   </header>
 
   <main>

@@ -3,10 +3,10 @@
 .case-page main { padding-bottom: 40px; }
 
 .case-back {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
-  margin: 28px 0 0;
+  margin-top: 28px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);

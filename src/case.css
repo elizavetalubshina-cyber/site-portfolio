@@ -5,14 +5,23 @@
 .case-back {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 28px;
+  gap: 7px;
+  margin: 28px 0 24px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
+  transition: color 0.15s ease;
+}
+.case-back svg {
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
 }
 .case-back:hover { color: var(--blue); }
+.case-back:hover svg { transform: translateX(-3px); }
+@media (prefers-reduced-motion: reduce) {
+  .case-back svg { transition: none; }
+}
 
 /* ---------- Hero ---------- */
 

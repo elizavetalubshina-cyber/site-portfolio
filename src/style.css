@@ -156,6 +156,22 @@ h1, h2, h3 {
   background: rgba(18, 20, 26, 0.06);
 }
 
+/* The single action the site exists for, so it reads as a button rather than
+   another nav item. "Контакты" next to it goes to the block listing every
+   way to get in touch; this one just does it. The margin reset undoes the
+   negative margin the other links use to enlarge their hit area, which on a
+   filled pill would make it overlap its neighbour. */
+.nav__cta {
+  margin: 0;
+  background: var(--text);
+  color: #fff;
+  font-weight: 600;
+}
+.nav__cta:hover {
+  background: #000;
+  color: #fff;
+}
+
 .nav__toggle {
   display: none;
   position: relative;

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- dizlik.ru — «Л», Unbounded 800, converted to outlines so the mark never
+       depends on the font being available on the reader's machine.
+
+       Light browser chrome: dark letter on a white plate.
+       Dark browser chrome: the two swap. Without the swap the white plate
+       would vanish into light chrome and the dark letter would vanish into
+       dark chrome, so the shape only really exists in one of the two.
+
+       Corner radius is 8/32 = 25%. Anything smaller stops reading as a
+       radius once the icon is scaled down to its real size of 16px.
+
+       The letter is nudged 0.86 units left of true centre: its ink bounds
+       are symmetrical, but the heavy right stem puts the centre of mass
+       5.4% right of the middle, so centring on the bounds alone looks
+       shifted. This corrects half of that, the usual optical compromise. -->
+  <style>
+    .plate { fill: #ffffff }
+    .mark  { fill: #12141a }
+    @media (prefers-color-scheme: dark) {
+      .plate { fill: #12141a }
+      .mark  { fill: #ffffff }
+    }
+  </style>
+  <rect class="plate" width="32" height="32" rx="8" />
+  <path class="mark" d="M9.11 6.4H26.17V25.27H22.85V7.83L24.36 9.34H10.98L12.38 8.21Q12.59 10.28 12.69 12.11Q12.79 13.95 12.79 15.56Q12.79 19.08 12.18 21.3Q11.58 23.51 10.31 24.56Q9.04 25.6 7 25.6Q6.22 25.6 5.46 25.44Q4.71 25.27 4.11 24.95V22.13Q5.16 22.56 6.09 22.56Q7.96 22.56 8.8 20.79Q9.64 19.03 9.64 15.08Q9.64 13.37 9.52 11.17Q9.39 8.97 9.11 6.4Z" />
+</svg>

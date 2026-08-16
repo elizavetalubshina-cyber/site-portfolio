@@ -169,15 +169,12 @@ if (navHeader && heroTitle) {
 const galleryPhotos = document.querySelectorAll('#aboutPhotoGallery img');
 const galleryDots = document.querySelectorAll('#aboutPhotoGallery .photo-dot');
 
+// The gallery only ever moves when the visitor asks it to. It used to advance
+// itself every 5 seconds, which meant something kept moving in the corner of
+// the eye while the text beside it was being read, and there was no way to stop
+// it short of clicking a dot.
 if (galleryPhotos.length > 1) {
-  // Guard against duplicate timers if this script re-runs (e.g. Vite HMR).
-  if (window.__aboutGalleryTimer) clearInterval(window.__aboutGalleryTimer);
-
-  let galleryIndex = [...galleryPhotos].findIndex((img) => img.classList.contains('is-active'));
-  if (galleryIndex < 0) galleryIndex = 0;
-
-  function showGalleryPhoto(index) {
-    galleryIndex = index;
+  const showGalleryPhoto = (index) => {
     galleryPhotos.forEach((img, i) => img.classList.toggle('is-active', i === index));
     galleryDots.forEach((dot, i) => {
       dot.classList.toggle('is-active', i === index);
@@ -187,25 +184,9 @@ if (galleryPhotos.length > 1) {
         dot.removeAttribute('aria-current');
       }
     });
-  }
+  };
 
-  function stopGalleryAutoplay() {
-    if (window.__aboutGalleryTimer) {
-      clearInterval(window.__aboutGalleryTimer);
-      window.__aboutGalleryTimer = null;
-    }
-  }
-
-  window.__aboutGalleryTimer = setInterval(() => {
-    showGalleryPhoto((galleryIndex + 1) % galleryPhotos.length);
-  }, 5000);
-
-  // Clicking a dot jumps to that photo and stops the automatic slideshow,
-  // handing control to the visitor.
   galleryDots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      stopGalleryAutoplay();
-      showGalleryPhoto(i);
-    });
+    dot.addEventListener('click', () => showGalleryPhoto(i));
   });
 }

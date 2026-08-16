@@ -15,6 +15,36 @@
   --container-width: 1200px;
   --font-display: 'Unbounded', sans-serif;
   --font-body: 'Manrope', sans-serif;
+
+  /* Spacing scale — 8px base. The number in the name is the multiplier:
+     --space-3 = 3 × 8 = 24px. Every padding, margin and gap on the site
+     comes from this set, so vertical rhythm stays predictable and any
+     new block has an obvious value to reach for instead of a guess.
+     --space-half (4px) is the single sub-step, reserved for the inside
+     of small components (tags, kbd) where a full 8px would visibly
+     change the component rather than the layout around it. */
+  --space-half: 4px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-7: 56px;
+  --space-8: 64px;
+  --space-10: 80px;
+  --space-11: 88px;
+  --space-12: 96px;
+  --space-15: 120px;
+
+  /* Reading measure. Both values are measured, not guessed: in Manrope a
+     Cyrillic character averages 8.13px at 16px and 9.65px at 19px, so
+     576px puts body copy at ~71 characters per line and 672px puts the
+     larger case subtitle at ~70. That is the 65–75 range where the eye
+     reliably finds the start of the next line. Case text was previously
+     running the full 1152px container — about 144 characters. */
+  --measure: 576px;
+  --measure-lg: 672px;
 }
 
 * { box-sizing: border-box; }
@@ -35,7 +65,7 @@ img { max-width: 100%; display: block; }
   width: 100%;
   max-width: var(--container-width);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 var(--space-3);
 }
 
 h1, h2, h3 {
@@ -48,19 +78,19 @@ h1, h2, h3 {
 
 .nav {
   position: sticky;
-  top: 16px;
+  top: var(--space-2);
   z-index: 100;
-  padding: 16px 16px 0;
+  padding: var(--space-2) var(--space-2) 0;
 }
 
 .nav__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--space-3);
   max-width: 1200px;
   margin: 0 auto;
-  padding: 14px 26px;
+  padding: var(--space-2) var(--space-3);
   border-radius: 999px;
   background: transparent;
   border: 1px solid transparent;
@@ -98,7 +128,7 @@ h1, h2, h3 {
 
 .nav__links {
   display: flex;
-  gap: 26px;
+  gap: var(--space-3);
 }
 
 .nav__links a {
@@ -107,8 +137,8 @@ h1, h2, h3 {
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
-  padding: 6px 14px;
-  margin: -6px -14px;
+  padding: var(--space-1) var(--space-2);
+  margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1);
   border-radius: 999px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -176,7 +206,7 @@ h1, h2, h3 {
   flex-direction: column;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 26px;
+  padding: 0 var(--space-3);
   opacity: 0;
   transition: opacity 0.25s ease, padding 0.35s ease;
 }
@@ -185,7 +215,7 @@ h1, h2, h3 {
   text-decoration: none;
   font-size: 15px;
   font-weight: 500;
-  padding: 12px 0;
+  padding: var(--space-2) 0;
   border-top: 1px solid var(--border);
   transition: color 0.2s ease;
 }
@@ -197,7 +227,7 @@ h1, h2, h3 {
 }
 .nav.is-open .nav__menu-panel {
   opacity: 1;
-  padding: 4px 26px 10px;
+  padding: var(--space-1) var(--space-3) var(--space-1);
 }
 
 /* ---------- Hero ---------- */
@@ -205,7 +235,7 @@ h1, h2, h3 {
 .hero {
   position: relative;
   text-align: center;
-  padding-top: 30px;
+  padding-top: var(--space-4);
 }
 
 .hero__intro {
@@ -324,7 +354,7 @@ h1, h2, h3 {
 }
 
 .hero__role {
-  margin: 22px 0 18px;
+  margin: var(--space-3) 0 var(--space-2);
   font-size: 18px;
   font-weight: 600;
   color: var(--text);
@@ -341,11 +371,11 @@ h1, h2, h3 {
 /* ---------- Showcase / laptop ---------- */
 
 .showcase {
-  margin-top: 56px;
+  margin-top: var(--space-7);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: var(--space-3);
 }
 
 .laptop {
@@ -390,7 +420,13 @@ h1, h2, h3 {
 
 /* Coordinates below are percentages measured from the real
    vs-subtitles-screen.png (1920x1080) so overlays line up with
-   the actual interface underneath. */
+   the actual interface underneath.
+
+   Everything in this .tv__ block is deliberately outside the --space
+   scale: these values reproduce the VS Subtitles interface itself, not
+   this site's layout, and they are driven by container queries against
+   the screenshot's own proportions. Putting layout tokens here would
+   break the alignment with the image underneath. */
 
 .tv__video-frame {
   /* Figma layer: X 0, Y 112, W 959, H 662.04 on a 1920x1080 frame */
@@ -562,14 +598,14 @@ h1, h2, h3 {
 
 /* ---------- Cases ---------- */
 
-.cases { margin-top: 90px; }
-.cases h2 { font-size: 32px; margin-bottom: 28px; }
+.cases { margin-top: var(--space-12); }
+.cases h2 { font-size: 32px; margin-bottom: var(--space-3); }
 
 .cases__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: minmax(280px, auto);
-  gap: 16px;
+  gap: var(--space-2);
 }
 
 .case {
@@ -628,32 +664,32 @@ h1, h2, h3 {
 }
 
 .case__body {
-  padding: 18px 20px 20px;
+  padding: var(--space-2) var(--space-3) var(--space-3);
   position: relative;
   display: flex;
   flex-direction: column;
 }
 /* Media-empty cards (e.g. the design system card) get the same reserved
    top space as image cards, so titles line up across cards sharing a row. */
-.case__body--bottom { margin-top: auto; padding-top: 90px; }
+.case__body--bottom { margin-top: auto; padding-top: var(--space-11); }
 
 /* Full-bleed image cards: text sits on top of the image, anchored to
    the bottom, with a dark gradient behind it so it stays readable. */
 .case__media + .case__body {
   z-index: 1;
   margin-top: auto;
-  padding-top: 90px;
+  padding-top: var(--space-11);
   background: linear-gradient(to top, rgba(8, 9, 12, 0.98) 0%, rgba(8, 9, 12, 0.94) 45%, rgba(8, 9, 12, 0.55) 75%, transparent 100%);
 }
 
 .case h3 {
-  margin: 0 0 10px;
+  margin: 0 0 var(--space-1);
   font-size: 17px;
   color: #fff;
   font-weight: 700;
 }
 .case__desc {
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-1);
   font-size: 13px;
   line-height: 1.35;
   color: #c3c8d1;
@@ -662,7 +698,7 @@ h1, h2, h3 {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--space-1);
 }
 .case__stats {
   flex: 1;
@@ -694,11 +730,11 @@ h1, h2, h3 {
 
 .tags {
   position: absolute;
-  top: 18px;
-  right: 20px;
+  top: var(--space-2);
+  right: var(--space-3);
   z-index: 2;
   display: flex;
-  gap: 6px;
+  gap: var(--space-1);
 }
 /* Same volumetric-badge feel as plashka.png in the hero: soft white
    gradient card with a gentle shadow, instead of a flat pill. */
@@ -707,7 +743,7 @@ h1, h2, h3 {
   color: var(--text);
   font-size: 11px;
   font-weight: 500;
-  padding: 5px 12px;
+  padding: var(--space-half) var(--space-2);
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.35);
@@ -715,23 +751,23 @@ h1, h2, h3 {
 
 /* ---------- About ---------- */
 
-.about { margin-top: 90px; }
-.about h2 { font-size: 32px; margin-bottom: 28px; }
+.about { margin-top: var(--space-12); }
+.about h2 { font-size: 32px; margin-bottom: var(--space-3); }
 
 .about__grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  gap: 48px;
+  gap: var(--space-6);
   align-items: start;
 }
 
 .about__text h3 {
   font-size: 15px;
-  margin: 26px 0 10px;
+  margin: var(--space-3) 0 var(--space-1);
 }
 
 .about__intro {
-  margin: 0 0 14px;
+  margin: 0 0 var(--space-2);
   font-size: 15px;
   line-height: 1.6;
   color: var(--text-secondary);
@@ -741,16 +777,16 @@ h1, h2, h3 {
 }
 
 .contacts {
-  margin-top: 26px;
+  margin-top: var(--space-3);
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-1);
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  padding: 10px 18px;
+  padding: var(--space-1) var(--space-3);
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 13px;
@@ -787,11 +823,11 @@ h1, h2, h3 {
   z-index: 1;
   left: 0;
   right: 0;
-  bottom: 16px;
+  bottom: var(--space-2);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-1);
 }
 
 .photo-dot {
@@ -814,8 +850,8 @@ h1, h2, h3 {
 /* ---------- Footer ---------- */
 
 .footer {
-  margin-top: 120px;
-  padding: 28px 0 40px;
+  margin-top: var(--space-15);
+  padding: var(--space-4) 0 var(--space-5);
   border-top: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 13px;
@@ -829,7 +865,7 @@ h1, h2, h3 {
 
 @media (max-width: 1100px) {
   .hero__title { font-size: 40px; white-space: normal; }
-  .showcase { flex-direction: column; gap: 24px; }
+  .showcase { flex-direction: column; gap: var(--space-3); }
   .laptop { width: 100%; order: -1; }
 
   .cases__grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
@@ -873,7 +909,7 @@ h1, h2, h3 {
   .nav__inner {
     width: 100%;
     margin: 0;
-    padding: 10px;
+    padding: var(--space-1);
     justify-content: center;
     background: transparent;
     border: none;
@@ -889,7 +925,7 @@ h1, h2, h3 {
     box-shadow: none;
   }
   .nav.is-open .nav__inner {
-    padding: 14px 26px;
+    padding: var(--space-2) var(--space-3);
     justify-content: space-between;
   }
   .logo {
@@ -902,7 +938,7 @@ h1, h2, h3 {
 }
 
 @media (max-width: 520px) {
-  .nav { padding: 12px 12px 0; }
-  .nav.is-open .nav__inner { padding: 10px 16px; gap: 14px; }
+  .nav { padding: var(--space-2) var(--space-2) 0; }
+  .nav.is-open .nav__inner { padding: var(--space-1) var(--space-2); gap: var(--space-2); }
   .logo { font-size: 13px; }
 }

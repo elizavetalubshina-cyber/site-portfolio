@@ -97,7 +97,41 @@ if (catVideo && catCaption && catCues) {
   });
 }
 
-document.querySelectorAll('.nav__links a, .logo').forEach((link) => {
+const navHeader = document.querySelector('.nav');
+const navToggle = document.querySelector('.nav__toggle');
+const navMenu = document.querySelector('.nav__menu');
+
+if (navHeader && navToggle && navMenu) {
+  const closeNavMenu = () => {
+    navHeader.classList.remove('is-open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  };
+
+  navToggle.addEventListener('click', () => {
+    const isOpen = navHeader.classList.toggle('is-open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  navMenu.addEventListener('click', (e) => {
+    if (e.target.closest('a')) closeNavMenu();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (navHeader.classList.contains('is-open') && !navHeader.contains(e.target)) {
+      closeNavMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeNavMenu();
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 640) closeNavMenu();
+  });
+}
+
+document.querySelectorAll('.nav__links a, .nav__menu a, .logo').forEach((link) => {
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href');
     if (!id || id === '#' || !id.startsWith('#')) return;
@@ -108,16 +142,15 @@ document.querySelectorAll('.nav__links a, .logo').forEach((link) => {
   });
 });
 
-const siteNav = document.querySelector('.nav');
 const heroTitle = document.querySelector('.hero__title, .case-hero__title');
-if (siteNav && heroTitle) {
+if (navHeader && heroTitle) {
   // The name pill only appears once the header's bottom edge actually
   // reaches the top of the big hero title — not at a fixed scroll amount —
   // so it stays correct across viewport sizes and if the hero layout changes.
   const updateNavScrolled = () => {
-    const headerBottom = siteNav.getBoundingClientRect().bottom;
+    const headerBottom = navHeader.getBoundingClientRect().bottom;
     const titleTop = heroTitle.getBoundingClientRect().top;
-    siteNav.classList.toggle('is-scrolled', titleTop <= headerBottom);
+    navHeader.classList.toggle('is-scrolled', titleTop <= headerBottom);
   };
   updateNavScrolled();
   let ticking = false;

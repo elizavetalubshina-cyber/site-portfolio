@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tracktice Flow — Елизавета Любшина</title>
   <meta name="description" content="Настройка оборудования подсчёта пассажиропотока: интерфейс калибровки и системных настроек комплекса видеоаналитики. Кейс продуктового дизайнера." />
+
+  <link rel="canonical" href="https://dizlik.ru/cases/tracktice.html" />
+
+  <!-- Link preview: what Telegram, LinkedIn, Slack and search results show.
+       The image lives in public/og/ and is a plain file — replace it with
+       your own 1200x630 to change the preview, no code change needed. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Елизавета Любшина — Product Designer" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:url" content="https://dizlik.ru/cases/tracktice.html" />
+  <meta property="og:title" content="Tracktice Flow — Елизавета Любшина" />
+  <meta property="og:description" content="Настройка оборудования подсчёта пассажиропотока: интерфейс калибровки и системных настроек комплекса видеоаналитики. Кейс продуктового дизайнера." />
+  <meta property="og:image" content="https://dizlik.ru/og/tracktice.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Tracktice Flow — Елизавета Любшина" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,15 +32,28 @@
 </head>
 <body class="case-page">
   <header class="nav">
-    <div class="nav__inner">
-      <nav class="nav__links nav__links--left">
-        <a href="/#cases">Кейсы</a>
-        <a href="/#about">Обо мне</a>
-      </nav>
-      <a class="logo" href="/#top">Любшина Е.А.</a>
-      <nav class="nav__links nav__links--right">
-        <a href="/#contacts">Контакты</a>
-        <a href="#">Резюме</a>
+    <div class="nav__shell">
+      <div class="nav__inner">
+        <button class="nav__toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navMenu">
+          <span></span>
+        </button>
+        <nav class="nav__links nav__links--left">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+        </nav>
+        <a class="logo" href="/#top">Любшина Е.А.</a>
+        <nav class="nav__links nav__links--right">
+          <a href="/#contacts">Контакты</a>
+          <a href="#">Резюме</a>
+        </nav>
+      </div>
+      <nav class="nav__menu" id="navMenu">
+        <div class="nav__menu-panel">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+          <a href="/#contacts">Контакты</a>
+          <a href="#">Резюме</a>
+        </div>
       </nav>
     </div>
   </header>
@@ -252,36 +282,55 @@
     <section class="related container">
       <h2>Другие проекты</h2>
       <div class="related__grid">
-        <a class="related-case" href="/cases/vs-subtitles.html">
-          <div class="related-case__media">
-            <img src="/src/assets/vs-subtitles-keys.jpg" alt="Интерфейс VS Subtitles" />
+        <a class="case case--media-subtitles" href="/cases/vs-subtitles.html">
+          <div class="case__media"><img src="/src/assets/vs-subtitles-keys.jpg" alt="Интерфейс VS Subtitles" /></div>
+          <div class="case__body">
+            <h3>VS Subtitles</h3>
+            <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
+            <div class="case__meta">
+              <p class="case__stats">−35% времени подготовки · −25% на сравнение версий</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
           </div>
-          <p class="related-case__meta">Vidau · Web</p>
-          <h3 class="related-case__title">VS Subtitles</h3>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </a>
 
-        <a class="related-case" href="/cases/vs-ecosystem.html">
-          <div class="related-case__media">
-            <img src="/src/assets/vs-ecosystem-keys.png" alt="Интерфейс VS Ecosystem" />
+        <a class="case case--media-ecosystem" href="/cases/vs-ecosystem.html">
+          <div class="case__media"><img src="/src/assets/vs-ecosystem-keys.png" alt="Интерфейс VS Ecosystem" /></div>
+          <div class="case__body">
+            <h3>VS Ecosystem</h3>
+            <p class="case__desc">Лицензирование ПО в закрытом контуре</p>
+            <div class="case__meta">
+              <p class="case__stats">в продакшн не вышло</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
           </div>
-          <p class="related-case__meta">Vidau · Web</p>
-          <h3 class="related-case__title">VS Ecosystem</h3>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </a>
 
-        <a class="related-case" href="/cases/satellite.html">
-          <div class="related-case__media">
-            <img src="/src/assets/vs-satelite-keys.jpg" alt="Интерфейс Satellite" />
+        <a class="case case--media-satellite" href="/cases/satellite.html">
+          <div class="case__media"><img src="/src/assets/vs-satelite-keys.jpg" alt="Интерфейс Satellite" /></div>
+          <div class="case__body case__body--bottom">
+            <h3>Satellite</h3>
+            <p class="case__desc">Демо мониторинга группировок КА для выставки</p>
+            <div class="case__meta">
+              <p class="case__stats">реализовано в коде · работало на стенде выставки</p>
+              <p class="case__company">Sofikom</p>
+            </div>
           </div>
-          <p class="related-case__meta">Sofikom · Web</p>
-          <h3 class="related-case__title">Satellite</h3>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </a>
 
-        <a class="related-case" href="/cases/design-system.html">
-          <div class="related-case__media related-case__media--placeholder">
-            <span>Design system</span>
+        <a class="case case--empty" href="/cases/design-system.html">
+          <div class="case__body case__body--bottom">
+            <h3>Дизайн-система</h3>
+            <p class="case__desc">UI-kit, компоненты и правила консистентности</p>
+            <div class="case__meta">
+              <p class="case__stats">≈30 компонентов · общая основа для всей линейки</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
           </div>
-          <p class="related-case__meta">Vidau · Web</p>
-          <h3 class="related-case__title">Дизайн-система</h3>
+          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </a>
       </div>
     </section>

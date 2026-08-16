@@ -1,0 +1,6 @@
+# Search engine crawlers read this first.
+# Everything on the site is public and may be indexed.
+User-agent: *
+Allow: /
+
+Sitemap: https://dizlik.ru/sitemap.xml

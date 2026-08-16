@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- List of every page on the site, for search engines.
+     Adding a case? Add one <url> line here too. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://dizlik.ru/</loc></url>
+  <url><loc>https://dizlik.ru/cases/vs-subtitles.html</loc></url>
+  <url><loc>https://dizlik.ru/cases/satellite.html</loc></url>
+  <url><loc>https://dizlik.ru/cases/tracktice.html</loc></url>
+  <url><loc>https://dizlik.ru/cases/vs-ecosystem.html</loc></url>
+  <url><loc>https://dizlik.ru/cases/design-system.html</loc></url>
+</urlset>

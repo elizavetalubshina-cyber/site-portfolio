@@ -155,12 +155,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--space-2);
   overflow: hidden;
 }
 .short-ref span {
   font-size: 13px;
   color: var(--text-muted);
+  padding: 0 16px;
 }
 .short-ref img {
   width: 100%;
@@ -366,6 +366,36 @@
   gap: var(--space-2);
 }
 
+/* Text + media side by side (narrow case-block container) */
+.case-side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+  margin: 24px 0;
+}
+.case-side-by-side .case-figure {
+  margin: 0;
+}
+
+/* Text + placeholder side by side, used in Финальное решение */
+.case-scenario {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 24px;
+  align-items: center;
+  margin: 20px 0;
+}
+.case-scenario .case-figure {
+  margin: 0;
+}
+.case-scenario .case-figure__frame {
+  aspect-ratio: 4 / 3;
+}
+.case-scenario p {
+  margin: 0;
+}
+
 /* Stat callouts in Результат */
 .case-stats-row {
   display: grid;
@@ -453,4 +483,6 @@ kbd {
   .short__refs { flex-direction: column; }
   .related__grid { grid-template-columns: 1fr; }
   .short__stats { grid-template-columns: 1fr; }
+  .case-side-by-side { grid-template-columns: 1fr; }
+  .case-scenario { grid-template-columns: 1fr; }
 }

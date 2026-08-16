@@ -190,3 +190,50 @@ if (galleryPhotos.length > 1) {
     dot.addEventListener('click', () => showGalleryPhoto(i));
   });
 }
+
+// CV preview. The "Резюме" link points at the PDF for real, so it still opens
+// the file if this never runs; here the click is intercepted and the file shown
+// in place instead. showModal() is used rather than a hand-rolled overlay
+// because the preview contains an iframe: once focus moves into the PDF viewer,
+// key events happen inside that document and never reach a focus trap written
+// out here, so focus would walk out onto the page behind. The browser's own
+// modal handles that, along with Escape and stacking above everything else.
+const cvModal = document.getElementById('cvModal');
+
+if (cvModal && typeof cvModal.showModal === 'function') {
+  const cvFrame = cvModal.querySelector('[data-cv-frame]');
+  const cvTrigger = document.querySelector('[data-cv-open]');
+  const cvPdf = cvTrigger && cvTrigger.getAttribute('href');
+
+  cvTrigger?.addEventListener('click', (e) => {
+    // Leave the modified clicks alone — they mean "open somewhere else".
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+
+    // Fetch the PDF only when it is going to be displayed. Below 820px the
+    // frame is hidden and the fallback buttons take over, so nothing is
+    // downloaded until the visitor actually asks for the file.
+    if (cvFrame && !cvFrame.getAttribute('src') && getComputedStyle(cvFrame).display !== 'none') {
+      cvFrame.setAttribute('src', cvPdf);
+    }
+
+    document.body.classList.add('cv-open');
+    cvModal.showModal();
+  });
+
+  // Clicking the backdrop: with showModal the backdrop belongs to the dialog
+  // itself, so a click that lands on the dialog rather than on its contents
+  // came from outside the panel.
+  cvModal.addEventListener('click', (e) => {
+    if (e.target === cvModal) cvModal.close();
+  });
+
+  cvModal.querySelectorAll('[data-cv-close]').forEach((el) => {
+    el.addEventListener('click', () => cvModal.close());
+  });
+
+  // Fires for the close button, the backdrop and Escape alike.
+  cvModal.addEventListener('close', () => {
+    document.body.classList.remove('cv-open');
+  });
+}

@@ -195,7 +195,9 @@
           <div class="contacts" id="contacts">
             <a class="btn" href="https://t.me/dizzzlik" target="_blank" rel="noopener">Telegram: @dizzzlik</a>
             <a class="btn" href="mailto:le-designer@yandex.ru">le-designer@yandex.ru</a>
-            <a class="btn" href="#">Резюме</a>
+            <!-- A plain link to the file, so it still works if the script does
+                 not run; main.js intercepts the click and opens the preview. -->
+            <a class="btn" href="/lubshina-cv.pdf" data-cv-open>Резюме</a>
           </div>
         </div>
         <div class="about__photo" id="aboutPhotoGallery">
@@ -211,6 +213,31 @@
       </div>
     </section>
   </main>
+
+  <!-- CV preview. Hidden until the "Резюме" link is clicked; the PDF is only
+       fetched at that point, so the page does not carry 240 KB nobody asked
+       for. Mobile browsers do not render PDFs inside a frame reliably, so
+       below 820px the frame is swapped for buttons that open or save it. -->
+  <dialog class="cv" id="cvModal" aria-labelledby="cvTitle">
+    <div class="cv__bar">
+      <h2 class="cv__title" id="cvTitle">Резюме</h2>
+      <div class="cv__actions">
+        <a class="btn btn--fill" href="/lubshina-cv.pdf" download="Lubshina-Elizaveta-CV.pdf">Скачать PDF</a>
+        <button class="cv__close" type="button" data-cv-close aria-label="Закрыть резюме">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="cv__body">
+      <iframe class="cv__frame" title="Резюме — Любшина Елизавета" data-cv-frame></iframe>
+      <div class="cv__fallback">
+        <p>Браузер на этом устройстве не показывает PDF внутри страницы.</p>
+        <a class="btn btn--fill" href="/lubshina-cv.pdf" target="_blank" rel="noopener">Открыть резюме</a>
+      </div>
+    </div>
+  </dialog>
 
   <footer class="footer">
     <div class="container">© Елизавета Любшина · Product Designer · 2026</div>

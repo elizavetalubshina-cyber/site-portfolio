@@ -813,12 +813,25 @@ h1, h2, h3 {
 
 .about__intro {
   margin: 0 0 var(--space-2);
+  max-width: var(--measure);
   font-size: 15px;
   line-height: 1.6;
   color: var(--text-secondary);
 }
 .about__intro:last-of-type {
   margin-bottom: 0;
+}
+
+/* Where she is, how she works, whether she is looking. This is the one thing
+   in the section a recruiter scans for rather than reads, so it sits apart
+   from the prose above it instead of being buried as another paragraph. */
+.about__meta {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
 }
 
 .contacts {

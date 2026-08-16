@@ -7,3 +7,6 @@ src/assets/vs-subtitles-keys.png
 src/assets/vs-satelite-keys.png
 src/assets/about-me-1.HEIC
 src/assets/about-me-3.HEIC
+
+# Full-size exports kept on disk but out of git — see scripts/optimize-images.mjs
+src/assets/_originals/

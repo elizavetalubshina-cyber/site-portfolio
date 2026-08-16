@@ -142,21 +142,6 @@ document.querySelectorAll('.nav__links a, .nav__menu a, .logo').forEach((link) =
   });
 });
 
-// Case cards navigate via JS instead of a real <a href> so a long-press
-// on iOS Safari doesn't trigger the native link-preview popup.
-document.querySelectorAll('.case[data-href]').forEach((card) => {
-  const go = () => {
-    window.location.href = card.dataset.href;
-  };
-  card.addEventListener('click', go);
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      go();
-    }
-  });
-});
-
 const heroTitle = document.querySelector('.hero__title, .case-hero__title');
 if (navHeader && heroTitle) {
   // The name pill only appears once the header's bottom edge actually

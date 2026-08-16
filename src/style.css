@@ -619,20 +619,56 @@ h1, h2, h3 {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: transform 0.35s ease;
+  transition: transform 0.35s cubic-bezier(0.22, 0.7, 0.3, 1);
+
+  /* The card is a real <a href>, so it keeps everything a link gives for
+     free: Cmd/middle-click into a new tab, "copy link address", the URL
+     in the status bar on hover, crawlable by search engines, and it works
+     if JavaScript fails. These three properties are what suppress the
+     iOS Safari long-press preview and the text-selection callout — they
+     only do that job on the anchor itself, which is why the card has to
+     be the anchor rather than a div wrapping one. */
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  /* Removes the 300ms tap delay and the grey flash on tap in mobile
+     Safari/Chrome, so the press animation below is what the finger sees. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .case:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 3px;
 }
 
-.case:hover,
+/* Hover is gated to real pointers. On a touchscreen there is no way to
+   un-hover, so an ungated :hover leaves the card stuck enlarged after a
+   tap — which is what made a held card look wrong on mobile. */
+@media (hover: hover) and (pointer: fine) {
+  .case:hover {
+    transform: scale(1.03);
+    z-index: 2;
+  }
+}
+
+/* Press. The card gives way under the finger instead of growing: holding
+   something should feel like pushing it down, and on touch this is the
+   only state the user ever sees. Shorter duration than the hover
+   transition so the response reads as immediate, and a longer release
+   back (the 0.35s above) so letting go feels soft rather than snapped. */
 .case:active {
-  transform: scale(1.03);
-  z-index: 2;
+  transform: scale(0.98);
+  transition-duration: 0.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case {
+    transition: none;
+  }
+  .case:hover,
+  .case:active {
+    transform: none;
+  }
 }
 
 /* Bento hierarchy: Subtitles is the primary accent (2x2 module),

@@ -59,7 +59,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-img { max-width: 100%; display: block; }
+/* height:auto is required, not cosmetic. Every <img> carries width and height
+   attributes so the browser can reserve space before the file arrives, but
+   those attributes are presentational hints: wherever CSS sets only a width
+   (the floating hero icons, for one), the browser would otherwise take the
+   height straight from the attribute and stretch the picture. With height:auto
+   the attributes are used for the aspect ratio instead, which is what reserves
+   the space without distorting anything. Rules that deliberately set a height —
+   .tv__bg, .case__media img, .about__photo img, .short-ref img — are more
+   specific and still win. */
+img { max-width: 100%; height: auto; display: block; }
 
 .container {
   width: 100%;

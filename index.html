@@ -59,12 +59,12 @@
 
   <main>
     <section class="hero container" id="top">
-      <img class="hero__float hero__float--figma" src="/src/assets/hero-icon-figma.png" alt="" aria-hidden="true" />
-      <img class="hero__float hero__float--air" src="/src/assets/hero-icon-air.png" alt="" aria-hidden="true" />
-      <img class="hero__float hero__float--poppup" src="/src/assets/hero-icon-poppup.png" alt="" aria-hidden="true" />
-      <img class="hero__float hero__float--dashboard" src="/src/assets/hero-icon-dashboard.png" alt="" aria-hidden="true" />
-      <img class="hero__float hero__float--earth" src="/src/assets/hero-icon-earth.png" alt="" aria-hidden="true" />
-      <img class="hero__float hero__float--status" src="/src/assets/hero-icon-status.png" alt="" aria-hidden="true" />
+      <img class="hero__float hero__float--figma" src="/src/assets/hero-icon-figma.webp" alt="" aria-hidden="true" width="120" height="176" loading="lazy" decoding="async" />
+      <img class="hero__float hero__float--air" src="/src/assets/hero-icon-air.webp" alt="" aria-hidden="true" width="260" height="181" loading="lazy" decoding="async" />
+      <img class="hero__float hero__float--poppup" src="/src/assets/hero-icon-poppup.webp" alt="" aria-hidden="true" width="380" height="312" loading="lazy" decoding="async" />
+      <img class="hero__float hero__float--dashboard" src="/src/assets/hero-icon-dashboard.webp" alt="" aria-hidden="true" width="300" height="253" loading="lazy" decoding="async" />
+      <img class="hero__float hero__float--earth" src="/src/assets/hero-icon-earth.webp" alt="" aria-hidden="true" width="260" height="251" loading="lazy" decoding="async" />
+      <img class="hero__float hero__float--status" src="/src/assets/hero-icon-status.webp" alt="" aria-hidden="true" width="300" height="192" loading="lazy" decoding="async" />
 
       <div class="hero__intro">
         <h1 class="hero__title">Елизавета Любшина</h1>
@@ -74,10 +74,14 @@
 
       <div class="showcase">
         <div class="laptop">
-          <img class="laptop__tooltip" src="/src/assets/plashka.png" alt="VS Subtitles — субтитры и телетекст для прямого эфира" />
+          <img class="laptop__tooltip" src="/src/assets/plashka.webp" alt="VS Subtitles — субтитры и телетекст для прямого эфира" width="480" height="160" loading="lazy" decoding="async" />
           <div class="laptop__body">
             <div class="laptop__screen">
-              <img class="tv__bg" src="/src/assets/vs-subtitles-onair.png" alt="Интерфейс VS Subtitles" />
+              <!-- Largest element above the fold on the homepage, so this is
+                   what Largest Contentful Paint is measured against. The
+                   explicit hint is kept by scripts/optimize-images.mjs, which
+                   only fills in loading attributes where there are none. -->
+              <img class="tv__bg" src="/src/assets/vs-subtitles-onair.webp" alt="Интерфейс VS Subtitles" width="1920" height="1080" fetchpriority="high" />
 
               <div class="tv__video-frame">
                 <video class="tv__video" id="catVideo" autoplay muted loop playsinline>
@@ -107,7 +111,7 @@
       <div class="cases__grid">
 
         <a class="case case--hero case--media-subtitles" href="/cases/vs-subtitles.html">
-          <div class="case__media"><img src="/src/assets/vs-subtitles-keys.jpg" alt="Интерфейс VS Subtitles" /></div>
+          <div class="case__media"><img src="/src/assets/vs-subtitles-keys.webp" alt="Интерфейс VS Subtitles" width="1600" height="1088" loading="lazy" decoding="async" /></div>
           <div class="case__body">
             <h3>VS Subtitles</h3>
             <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
@@ -120,7 +124,7 @@
         </a>
 
         <a class="case case--wide case--media-satellite" href="/cases/satellite.html">
-          <div class="case__media"><img src="/src/assets/vs-satelite-keys.jpg" alt="Интерфейс Satellite" /></div>
+          <div class="case__media"><img src="/src/assets/vs-satelite-keys.webp" alt="Интерфейс Satellite" width="1600" height="900" loading="lazy" decoding="async" /></div>
           <div class="case__body case__body--bottom">
             <h3>Satellite</h3>
             <p class="case__desc">Демо мониторинга группировок КА для выставки</p>
@@ -133,7 +137,7 @@
         </a>
 
         <a class="case case--wide case--media-tracktice" href="/cases/tracktice.html">
-          <div class="case__media"><img src="/src/assets/Tracktice-keys.png" alt="Интерфейс Tracktice Flow" /></div>
+          <div class="case__media"><img src="/src/assets/Tracktice-keys.webp" alt="Интерфейс Tracktice Flow" width="1938" height="1046" loading="lazy" decoding="async" /></div>
           <div class="case__body case__body--bottom">
             <h3>Tracktice Flow</h3>
             <p class="case__desc">Админка настройки пассажиропотока</p>
@@ -146,7 +150,7 @@
         </a>
 
         <a class="case case--media-ecosystem" href="/cases/vs-ecosystem.html">
-          <div class="case__media"><img src="/src/assets/vs-ecosystem-keys.png" alt="Интерфейс VS Ecosystem" /></div>
+          <div class="case__media"><img src="/src/assets/vs-ecosystem-keys.webp" alt="Интерфейс VS Ecosystem" width="1920" height="1888" loading="lazy" decoding="async" /></div>
           <div class="case__body">
             <h3>VS Ecosystem</h3>
             <p class="case__desc">Лицензирование ПО в закрытом контуре</p>
@@ -190,9 +194,9 @@
           </div>
         </div>
         <div class="about__photo" id="aboutPhotoGallery">
-          <img src="/src/assets/about-me-1.jpg" alt="Елизавета Любшина" class="is-active" />
-          <img src="/src/assets/about-me-2.JPG" alt="Елизавета Любшина" />
-          <img src="/src/assets/about-me-3.jpg" alt="Елизавета Любшина" />
+          <img src="/src/assets/about-me-1.webp" alt="Елизавета Любшина" class="is-active" width="1200" height="675" loading="lazy" decoding="async" />
+          <img src="/src/assets/about-me-2.webp" alt="Елизавета Любшина" width="1200" height="1600" loading="lazy" decoding="async" />
+          <img src="/src/assets/about-me-3.webp" alt="Елизавета Любшина" width="1200" height="1600" loading="lazy" decoding="async" />
           <div class="photo-dots" role="group" aria-label="Переключение фото">
             <button type="button" class="photo-dot is-active" data-index="0" aria-label="Фото 1" aria-current="true"></button>
             <button type="button" class="photo-dot" data-index="1" aria-label="Фото 2"></button>

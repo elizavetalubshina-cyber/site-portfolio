@@ -2,6 +2,24 @@
 
 .case-page main { padding-bottom: var(--space-5); }
 
+/* The reading part of a case sits in a narrower container than the rest of the
+   site. Body copy is capped at --measure either way, so the site-wide 1200px
+   only ever widened the images, leaving them twice the width of the column
+   beside them and 576px of nothing to the right of every paragraph. At 920px
+   the images are about one and a half times the text instead of double, which
+   reads as an article with wide illustrations rather than a text column that
+   someone forgot to stretch, and the empty band drops to 296px.
+
+   "Другие проекты" deliberately keeps the full width: it is navigation to the
+   rest of the site rather than part of the article, and four cards need the
+   room. */
+.case-back,
+.case-hero,
+.short,
+.case-detail {
+  max-width: 920px;
+}
+
 .case-back {
   display: inline-flex;
   align-items: center;

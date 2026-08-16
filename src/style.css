@@ -965,7 +965,19 @@ h1, h2, h3 {
 
 /* ---------- Responsive ---------- */
 
-@media (max-width: 640px) {
+/* The icons sit at a distance from the page centre that shrinks with the
+   viewport, but not fast enough: solving the position of the outermost one
+   (earth, which also gains ~13px of bounding box from its rotation) against
+   the viewport edge gives a right edge of 473px + 220px x t past centre, so it
+   only clears the edge from about 1320px up. Below that the page could be
+   dragged sideways — 47px at 1101px wide, 7px at 1280px.
+
+   Clipping was the obvious fix and does not work here: overflow on body is not
+   propagated to the viewport, and on the root it still left the page
+   scrollable. So the icons simply stop at the width where their own geometry
+   stops fitting. Everything below that is the hero without its decorative
+   layer, which is what it already looked like on tablets. */
+@media (max-width: 1319px) {
   .hero__float { display: none; }
 }
 

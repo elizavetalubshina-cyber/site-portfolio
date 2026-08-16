@@ -143,12 +143,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 16px;
   overflow: hidden;
 }
 .short-ref span {
   font-size: 13px;
   color: var(--text-muted);
+  padding: 0 16px;
 }
 .short-ref img {
   width: 100%;
@@ -203,6 +203,7 @@
 .case-block h3 {
   font-size: 19px;
   margin: 32px 0 12px;
+  max-width: 720px;
 }
 
 .case-block h4 {
@@ -213,6 +214,10 @@
   margin: 22px 0 8px;
 }
 
+.case-block > p {
+  max-width: 720px;
+}
+
 .case-block p {
   font-size: 16px;
   line-height: 1.7;
@@ -220,6 +225,10 @@
   margin: 0 0 16px;
 }
 .case-block p:last-child { margin-bottom: 0; }
+
+.case-block > ul, .case-block > ol {
+  max-width: 720px;
+}
 
 .case-block ul, .case-block ol {
   margin: 0 0 16px;
@@ -318,6 +327,36 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+}
+
+/* Text + media side by side (narrow case-block container) */
+.case-side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+  margin: 24px 0;
+}
+.case-side-by-side .case-figure {
+  margin: 0;
+}
+
+/* Text + placeholder side by side, used in Финальное решение */
+.case-scenario {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 24px;
+  align-items: center;
+  margin: 20px 0;
+}
+.case-scenario .case-figure {
+  margin: 0;
+}
+.case-scenario .case-figure__frame {
+  aspect-ratio: 4 / 3;
+}
+.case-scenario p {
+  margin: 0;
 }
 
 /* Stat callouts in Результат */
@@ -450,4 +489,6 @@ kbd {
   .short__refs { flex-direction: column; }
   .related__grid { grid-template-columns: 1fr; }
   .short__stats { grid-template-columns: 1fr; }
+  .case-side-by-side { grid-template-columns: 1fr; }
+  .case-scenario { grid-template-columns: 1fr; }
 }

@@ -430,24 +430,6 @@
   margin: 0;
 }
 
-/* Text + placeholder side by side, used in Финальное решение */
-.case-scenario {
-  display: grid;
-  grid-template-columns: 1fr 200px;
-  gap: 24px;
-  align-items: center;
-  margin: 20px 0;
-}
-.case-scenario .case-figure {
-  margin: 0;
-}
-.case-scenario .case-figure__frame {
-  aspect-ratio: 4 / 3;
-}
-.case-scenario p {
-  margin: 0;
-}
-
 /* Stat callouts in Результат */
 .case-stats-row {
   display: grid;
@@ -536,5 +518,4 @@ kbd {
   .related__grid { grid-template-columns: 1fr; }
   .short__stats { grid-template-columns: 1fr; }
   .case-side-by-side { grid-template-columns: 1fr; }
-  .case-scenario { grid-template-columns: 1fr; }
 }

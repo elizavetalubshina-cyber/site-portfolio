@@ -93,10 +93,16 @@ h1, h2, h3 {
   padding: var(--space-2) var(--space-2) 0;
 }
 
+/* Grid, not flex: with two flanking nav groups of unequal width (left has
+   2 links, right has 2 links of different length), justify-content:
+   space-between put the logo wherever the leftover space landed rather
+   than at the true center. A 1fr auto 1fr grid keeps the outer columns
+   equal width regardless of how much content sits in them, so the logo
+   in the middle column is always dead center. */
 .nav__inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
   max-width: 1200px;
   margin: 0 auto;
@@ -107,6 +113,10 @@ h1, h2, h3 {
   box-shadow: 0 0 0 rgba(18, 20, 26, 0);
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, border-radius 0.3s ease;
 }
+.nav__toggle,
+.nav__links--left { grid-column: 1; justify-self: start; }
+.logo { grid-column: 2; justify-self: center; }
+.nav__links--right { grid-column: 3; justify-self: end; }
 
 .nav.is-scrolled .nav__inner {
   background: rgba(255, 255, 255, 0.75);
@@ -1217,8 +1227,8 @@ body.cv-open { overflow: hidden; }
     box-shadow: none;
   }
   .nav.is-open .nav__inner {
+    position: relative;
     padding: var(--space-2) var(--space-3);
-    justify-content: space-between;
   }
   .logo {
     display: none;
@@ -1226,6 +1236,10 @@ body.cv-open { overflow: hidden; }
   .nav.is-open .logo {
     display: block;
     opacity: 1 !important;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 

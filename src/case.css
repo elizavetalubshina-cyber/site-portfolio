@@ -185,6 +185,13 @@
   height: 100%;
   object-fit: cover;
 }
+.short__refs figure { margin: 0; }
+.short__refs figcaption {
+  margin-top: var(--space-1);
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
 
 .short__stats {
   display: grid;

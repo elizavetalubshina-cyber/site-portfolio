@@ -72,9 +72,7 @@
       <p class="case-hero__subtitle">Настройка оборудования подсчёта пассажиропотока — интерфейс калибровки и системных настроек комплекса видеоаналитики.</p>
 
       <figure class="case-cover">
-        <div class="case-figure__frame" style="aspect-ratio: 2.2/1;">
-          <p class="case-figure__label">cover.png — обложка кейса, экран калибровки крупно</p>
-        </div>
+        <img src="/src/assets/cases/tracktice/cover.webp" alt="Интерфейс Tracktice Flow — экран калибровки подсчёта" width="2304" height="1296" fetchpriority="high" />
       </figure>
     </section>
 
@@ -91,11 +89,12 @@
           <p>Интерфейс, который был до меня, визуально устарел: к началу проекта в компании прошёл редизайн логотипа и фирменного стиля. У стейкхолдера было своё видение знака — однотонный, напоминающий георгиевскую ленту, а каждый продукт линейки получил свой цвет: Flow — синий, Auto — жёлтый и так далее.</p>
 
           <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">logos-lineup.png — логотипы линейки продуктов, цветовое кодирование: Flow синий, Auto жёлтый</p></div>
+            <img src="/src/assets/cases/tracktice/logos-lineup.webp" alt="Главный экран корпоративного сайта Tracktice" width="2270" height="1266" loading="lazy" decoding="async" />
+            <figcaption>Корпоративный сайт Tracktice, который я тоже делала — оттуда обновлённый логотип и фирменный стиль компании.</figcaption>
           </figure>
 
           <h3>Задача</h3>
-          <p>Спроектировать интерфейс настройки так, чтобы инженер справлялся с большим объёмом технических параметров и мог проверить результат, не выходя из экрана.</p>
+          <p>Редизайн интерфейса настройки под новую стилистику компании и улучшение самого интерфейса: чтобы инженер справлялся с большим объёмом технических параметров и мог проверить результат, не выходя из экрана.</p>
           <p>Я была единственным дизайнером и отвечала за оба модуля целиком — от структуры экранов до передачи в разработку и ревью реализации.</p>
 
           <h3>Что сделала</h3>
@@ -114,12 +113,18 @@
         </div>
 
         <div class="short__refs">
-          <div class="short-ref">
-            <span>short-ref-calibration.png — экран калибровки, разметка линии на живом видеопотоке</span>
-          </div>
-          <div class="short-ref">
-            <span>short-ref-settings.png — системные настройки: сеть, сервер, время, GPS</span>
-          </div>
+          <figure>
+            <div class="short-ref"><img src="/src/assets/cases/tracktice/short-ref-calibration.webp" alt="Настройка линии подсчёта" width="1458" height="864" loading="lazy" decoding="async" /></div>
+            <figcaption>Настройка линии подсчёта</figcaption>
+          </figure>
+          <figure>
+            <div class="short-ref"><img src="/src/assets/cases/tracktice/short-ref-settings.webp" alt="Калибровка подсчёта по дверям" width="2304" height="1440" loading="lazy" decoding="async" /></div>
+            <figcaption>Калибровка по дверям</figcaption>
+          </figure>
+          <figure>
+            <div class="short-ref"><img src="/src/assets/cases/tracktice/settings.webp" alt="Системные настройки" width="2304" height="1296" loading="lazy" decoding="async" /></div>
+            <figcaption>Системные настройки</figcaption>
+          </figure>
         </div>
       </div>
     </section>
@@ -129,12 +134,12 @@
       <!-- Как работает подсчёт -->
       <div class="case-block">
         <h2>Как работает подсчёт</h2>
-        <p>Камера смотрит вниз на дверной проём. В кадре проходит виртуальная линия: пересечение в одну сторону — вход, в другую — выход. От того, где стоит линия, зависит, будет счётчик считать верно или начнёт терять и задваивать проходы.</p>
+        <p>Камера над дверью следит за одной линией в кадре. Когда человек её пересекает, счётчик прибавляет к «Вошло» или «Вышло» — как именно система определяет направление, сказать не могу. От того, где стоит линия, зависит, будет счётчик считать верно или начнёт терять и задваивать проходы.</p>
         <p>Чаще всего в интерфейс заходят один раз — при настройке аппаратуры. В редких случаях что-то донастраивают позже.</p>
 
         <figure class="case-figure">
-          <div class="case-figure__frame"><p class="case-figure__label">counting-schema.png — схема: камера над дверью → линия в кадре → счётчик in/out</p></div>
-          <figcaption>Рисуется за полчаса, объясняет продукт лучше скриншота.</figcaption>
+          <img src="/src/assets/cases/tracktice/counting-schema.webp" alt="Камера видит линию подсчёта и счётчик входов/выходов" width="834" height="1040" loading="lazy" decoding="async" />
+          <figcaption>Панель «Информация о системе»: линия в кадре и счётчик входов/выходов.</figcaption>
         </figure>
       </div>
 
@@ -158,26 +163,17 @@
         <p><strong>Переключение дверей в шапке экрана.</strong> Все камеры машины настраиваются в одном месте, без возврата в список.</p>
 
         <figure class="case-figure">
-          <div class="case-figure__frame"><p class="case-figure__label">calibration-screen-full.png — экран калибровки целиком</p></div>
+          <img src="/src/assets/cases/tracktice/calibration-screen-full.webp" alt="Экран калибровки подсчёта целиком" width="2304" height="1296" loading="lazy" decoding="async" />
         </figure>
-        <div class="case-figure-row">
-          <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">calibration-line-zone.png — зона линии рядом с кадром</p></div>
-          </figure>
-          <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">calibration-step-input.png — шаговый ввод</p></div>
-          </figure>
-        </div>
       </div>
 
       <!-- Системные настройки -->
       <div class="case-block">
         <h2>Системные настройки</h2>
         <p>Параметры устройства — сеть, сервер, время, GPS — разложены на четыре независимых блока по зоне ответственности. Внутри блока порядок полей повторяет порядок, в котором их обычно заполняют.</p>
-        <p>Одно решение, которое считаю здесь главным: поля «Дата» и «Время» отключаются при выборе NTP. Устройство синхронизирует время само, и ручной ввод в этом режиме ничего не изменит. Отключённое поле честнее скрытого: инженер видит, что параметр существует, и понимает, почему сейчас недоступен.</p>
 
         <figure class="case-figure">
-          <div class="case-figure__frame"><p class="case-figure__label">settings-ntp-time.png — блок «Системное время» с отключёнными полями</p></div>
+          <img src="/src/assets/cases/tracktice/settings.webp" alt="Экран системных настроек" width="2304" height="1296" loading="lazy" decoding="async" />
           <figcaption>При синхронизации по NTP ручной ввод отключается — поле видно, но недоступно.</figcaption>
         </figure>
       </div>
@@ -198,15 +194,10 @@
           <p>Главный вывод для меня: ограничение стоит принимать после того, как понял его цену, а не вместо этого.</p>
         </div>
 
-        <figure class="case-figure">
-          <div class="case-figure__frame"><p class="case-figure__label">line-drag-before-after.png — до/после, перетаскивание линии мышью</p></div>
-        </figure>
-
         <h3>2. Состояния</h3>
         <p>Оба экрана спроектированы под сценарий, в котором всё работает. Но инженер приходит в интерфейс наладки именно тогда, когда что-то не так.</p>
         <p>Что добавила бы:</p>
         <ul>
-          <li>Нет потока с камеры — вместо кадра сообщение и следующий шаг: проверить питание, проверить ссылку, повторить подключение</li>
           <li>Неверная RTSP-ссылка — валидация в момент ввода, а не после сохранения</li>
           <li>Настройки применяются — устройство перезагружается, показано, сколько это займёт. Без этого инженер думает, что зависло</li>
           <li>Несохранённые изменения при переключении двери — сейчас правки теряются молча</li>
@@ -216,23 +207,6 @@
         <div class="case-callout">
           <span class="case-callout__icon">💡</span>
           <p><strong>Почему это важнее визуала.</strong> Ошибка калибровки стоит повторного выезда на объект. Интерфейс, который не умеет объяснить, что пошло не так, перекладывает эту стоимость на инженера.</p>
-        </div>
-
-        <div class="case-figure-row">
-          <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">state-no-stream.png — нет потока с камеры</p></div>
-          </figure>
-          <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">state-invalid-rtsp.png — неверная RTSP-ссылка</p></div>
-          </figure>
-        </div>
-        <div class="case-figure-row">
-          <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">state-applying.png — настройки применяются</p></div>
-          </figure>
-          <figure class="case-figure">
-            <div class="case-figure__frame"><p class="case-figure__label">state-unsaved.png — несохранённые изменения</p></div>
-          </figure>
         </div>
       </div>
     </section>

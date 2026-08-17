@@ -1173,13 +1173,10 @@ body.cv-open { overflow: hidden; }
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
-  /* The number carries the page visually, but it is not the message —
-     the gradient lets it sit large without competing with the heading
-     under it for attention. */
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* The site's accent pink — the same colour the nav and button hovers
+     already use, so the number reads as part of the site rather than as
+     decoration invented for this page. */
+  color: var(--purple);
 }
 
 .notfound__title {

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Страница не найдена — Елизавета Любшина</title>
+  <meta name="description" content="Такой страницы на сайте нет: адрес указан с ошибкой или ссылка устарела." />
+
+  <!-- No canonical and no sitemap entry: this page stands in for every
+       wrong address on the domain, so there is nothing for it to be the
+       canonical version of. noindex keeps those addresses out of search
+       results — the page itself stays crawlable, so the links on it are
+       still followed back into the live site. -->
+  <meta name="robots" content="noindex" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Елизавета Любшина — Product Designer" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:title" content="Страница не найдена — Елизавета Любшина" />
+  <meta property="og:description" content="Такой страницы на сайте нет: адрес указан с ошибкой или ссылка устарела." />
+  <meta property="og:image" content="https://dizlik.ru/og/home.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Елизавета Любшина — Product Designer" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=Open+Sans:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="notfound-page">
+  <header class="nav">
+    <div class="nav__shell">
+      <div class="nav__inner">
+        <button class="nav__toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navMenu">
+          <span></span>
+        </button>
+        <nav class="nav__links nav__links--left">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+        </nav>
+        <a class="logo" href="/#top">Любшина Е.А.</a>
+        <nav class="nav__links nav__links--right">
+          <a href="/#contacts">Контакты</a>
+          <a href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать в TG</a>
+        </nav>
+      </div>
+      <nav class="nav__menu" id="navMenu">
+        <div class="nav__menu-panel">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+          <a href="/#contacts">Контакты</a>
+          <a href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать в TG</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="notfound container">
+      <p class="notfound__code">4<span class="notfound__zero">0<img class="notfound__cat" src="/src/assets/peeking_oriental_cat.svg" alt="" /></span>4</p>
+      <h1 class="notfound__title">Такой страницы нет</h1>
+      <p class="notfound__text">
+        Скорее всего, в адресе опечатка или ссылка устарела.
+        Сайт на месте — вот куда можно пойти дальше.
+      </p>
+
+      <div class="notfound__actions">
+        <a class="btn btn--fill" href="/">На главную</a>
+        <a class="btn" href="/#about">Обо мне</a>
+        <a class="btn" href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать в TG</a>
+      </div>
+
+      <!-- A dead end is the actual problem with a 404, not the wording:
+           the visitor came for something specific, so the page ends with
+           every case listed by name rather than a single "на главную". -->
+      <nav class="notfound__cases" aria-labelledby="notfoundCasesTitle">
+        <h2 class="notfound__cases-title" id="notfoundCasesTitle">Кейсы</h2>
+        <ul>
+          <li>
+            <a href="/cases/vs-subtitles.html">
+              <span class="notfound__case-name">VS Subtitles</span>
+              <span class="notfound__case-desc">Субтитры и телетекст для прямого эфира</span>
+            </a>
+          </li>
+          <li>
+            <a href="/cases/satellite.html">
+              <span class="notfound__case-name">Satellite</span>
+              <span class="notfound__case-desc">Демо мониторинга группировок КА для выставки</span>
+            </a>
+          </li>
+          <li>
+            <a href="/cases/tracktice.html">
+              <span class="notfound__case-name">Tracktice Flow</span>
+              <span class="notfound__case-desc">Админка настройки пассажиропотока</span>
+            </a>
+          </li>
+          <li>
+            <a href="/cases/vs-ecosystem.html">
+              <span class="notfound__case-name">VS Ecosystem</span>
+              <span class="notfound__case-desc">Лицензирование ПО в закрытом контуре</span>
+            </a>
+          </li>
+          <li>
+            <a href="/cases/design-system.html">
+              <span class="notfound__case-name">Дизайн-система</span>
+              <span class="notfound__case-desc">UI-kit, компоненты и правила консистентности</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© Елизавета Любшина · Product Designer · 2026</div>
+  </footer>
+</body>
+</html>

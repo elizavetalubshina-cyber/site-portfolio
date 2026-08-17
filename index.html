@@ -32,6 +32,21 @@
   <script type="module" src="/src/main.js"></script>
 </head>
 <body class="home-page">
+  <div class="preloader" id="preloader" role="status" aria-live="polite" aria-label="Страница загружается">
+    <div class="preloader__stage">
+      <span class="preloader__paw"></span>
+      <span class="preloader__paw"></span>
+      <span class="preloader__paw"></span>
+      <span class="preloader__paw"></span>
+      <span class="preloader__paw"></span>
+      <span class="preloader__paw"></span>
+      <div class="preloader__walk">
+        <img class="preloader__cat" src="/src/assets/walking-oriental-cat.webp" alt="" width="320" height="320" />
+      </div>
+    </div>
+    <p class="preloader__text"><span class="preloader__phrase" id="preloaderPhrase">Кейсы уже почти на экране</span><span class="preloader__dots"><span>.</span><span>.</span><span>.</span></span></p>
+  </div>
+
   <header class="nav">
     <div class="nav__shell">
       <div class="nav__inner">
@@ -76,7 +91,11 @@
 
       <div class="showcase">
         <div class="laptop">
-          <img class="laptop__tooltip" src="/src/assets/plashka.webp" alt="VS Subtitles — субтитры и телетекст для прямого эфира" width="480" height="160" loading="lazy" decoding="async" />
+          <div class="laptop__tooltip">
+            <p class="laptop__tooltip-title">VS Subtitles</p>
+            <p class="laptop__tooltip-desc">Субтитры и телетекст для прямого эфира</p>
+            <a class="btn laptop__tooltip-cta" href="/cases/vs-subtitles.html">Подробнее о кейсе</a>
+          </div>
           <div class="laptop__body">
             <div class="laptop__screen">
               <!-- Largest element above the fold on the homepage, so this is
@@ -104,8 +123,6 @@
               </div>
             </div>
           </div>
-
-          <a class="btn btn--fill" href="/cases/vs-subtitles.html">Подробнее о кейсе →</a>
         </div>
       </div>
     </section>
@@ -115,7 +132,7 @@
       <div class="cases__grid">
 
         <a class="case case--hero case--media-subtitles" href="/cases/vs-subtitles.html">
-          <div class="case__media"><img src="/src/assets/vs-subtitles-keys.webp" alt="Интерфейс VS Subtitles" width="1600" height="1088" loading="lazy" decoding="async" /></div>
+          <div class="case__media"><img src="/src/assets/vs-subtitles-keys.webp" alt="Интерфейс VS Subtitles" width="2304" height="1296" loading="lazy" decoding="async" /></div>
           <div class="case__body">
             <h3>VS Subtitles</h3>
             <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
@@ -166,7 +183,8 @@
           <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
         </a>
 
-        <a class="case case--broad case--empty" href="/cases/design-system.html">
+        <a class="case case--broad case--media-design-system" href="/cases/design-system.html">
+          <div class="case__media"><img src="/src/assets/cases/design-system/Cover.webp" alt="Обложка дизайн-системы Vidau" width="2304" height="1218" loading="lazy" decoding="async" /></div>
           <div class="case__body case__body--bottom">
             <h3>Дизайн-система</h3>
             <p class="case__desc">UI-kit, компоненты и правила консистентности</p>

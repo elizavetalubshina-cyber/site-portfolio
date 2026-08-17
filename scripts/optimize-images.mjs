@@ -27,7 +27,7 @@ import sharp from 'sharp';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const ASSETS = path.join(ROOT, 'src/assets');
 const ORIGINALS = path.join(ASSETS, '_originals');
-const HTML = ['index.html', 'cases/design-system.html', 'cases/satellite.html',
+const HTML = ['index.html', '404.html', 'cases/design-system.html', 'cases/satellite.html',
   'cases/tracktice.html', 'cases/vs-ecosystem.html', 'cases/vs-subtitles.html'];
 
 const MAX_WIDTH = 2304;   // 1152px layout column at 2x pixel density

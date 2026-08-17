@@ -1,3 +1,61 @@
+// The preloader is already in the HTML (no flash of unstyled content), so
+// this only ever hides it. It waits for the real 'load' event — not
+// DOMContentLoaded — so images have actually arrived, but never blocks
+// longer than MAX_VISIBLE in case some resource stalls. MIN_VISIBLE keeps
+// the cat from flickering past unseen on a fast, cached load.
+const preloader = document.getElementById('preloader');
+if (preloader) {
+  const MIN_VISIBLE = 950;
+  const MAX_VISIBLE = 4000;
+  const shownAt = performance.now();
+  let hidden = false;
+
+  // A different caption per page load, not per loader appearance — picked
+  // once up front rather than cycled through while the loader is up.
+  const phrases = [
+    'Кейсы уже почти на экране',
+    'Собираю для вас лучшие работы',
+    'Ещё пара шагов, и всё готово',
+    'Кот несёт кейсы прямо к вам',
+    'Секунду, здесь будет интересно',
+  ];
+  const phraseEl = document.getElementById('preloaderPhrase');
+  if (phraseEl) {
+    phraseEl.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+  }
+
+  const hidePreloader = () => {
+    if (hidden) return;
+    hidden = true;
+    const wait = Math.max(0, MIN_VISIBLE - (performance.now() - shownAt));
+    setTimeout(() => {
+      preloader.classList.add('is-hidden');
+      document.body.classList.remove('preloader-lock');
+      preloader.addEventListener('transitionend', () => preloader.remove(), { once: true });
+    }, wait);
+  };
+
+  document.body.classList.add('preloader-lock');
+
+  if (document.readyState === 'complete') {
+    hidePreloader();
+  } else {
+    window.addEventListener('load', hidePreloader, { once: true });
+  }
+  setTimeout(hidePreloader, MAX_VISIBLE);
+
+  // Back-forward cache restores skip 'load', and would otherwise show the
+  // loader again on every trip back to a page already seen this session.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      hidden = true;
+      preloader.classList.add('is-hidden');
+      document.body.classList.remove('preloader-lock');
+      preloader.remove();
+    }
+  });
+}
+
 // `lines` are fixed line breaks (not left to CSS wrap) so the caption
 // on the video and the row in the subtitles panel always match —
 // same two-line shape in both places, regardless of container width.
@@ -38,7 +96,7 @@ if (catVideo && catCaption && catCues) {
       return `<li class="tv__cue" data-index="${i}">
         <span class="tv__cue-meta">${String(i + 1).padStart(2, '0')} ${meta}</span>
         <strong class="tv__cue-num">${String(i + 1).padStart(2, '0')}</strong>
-        <span class="tv__cue-text">${cue.lines.join('<br>')}</span>
+        <span class="tv__cue-text">${cue.lines.join(' ')}</span>
       </li>`;
     })
     .join('');

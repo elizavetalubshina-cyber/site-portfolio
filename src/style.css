@@ -7,6 +7,7 @@
   --blue: #2f6bff;
   --green: #1fbf75;
   --red: #e6394a;
+  --purple: #d946ef;
   --dark-card: #16181d;
   --dark-card-2: #1d2027;
   --radius-lg: 24px;
@@ -141,6 +142,7 @@ h1, h2, h3 {
 }
 
 .nav__links a {
+  position: relative;
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 14px;
@@ -149,11 +151,24 @@ h1, h2, h3 {
   padding: var(--space-1) var(--space-2);
   margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1);
   border-radius: 999px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: color 0.2s ease;
+}
+.nav__links a::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.4) 0%, rgba(217, 70, 239, 0) 72%);
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+  pointer-events: none;
 }
 .nav__links a:hover {
-  color: var(--text);
-  background: rgba(18, 20, 26, 0.06);
+  color: var(--purple);
+}
+.nav__links a:hover::before {
+  opacity: 1;
 }
 
 
@@ -785,14 +800,14 @@ h1, h2, h3 {
 /* Same volumetric-badge feel as plashka.png in the hero: soft white
    gradient card with a gentle shadow, instead of a flat pill. */
 .tag {
-  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
+  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
   color: var(--text);
   font-size: 11px;
   font-weight: 500;
   padding: var(--space-half) var(--space-2);
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.35);
+  border: 1px solid rgba(217, 70, 239, 0.25);
+  box-shadow: 0 1px 2px rgba(217, 70, 239, 0.08), 0 10px 20px -8px rgba(217, 70, 239, 0.35);
 }
 
 /* ---------- About ---------- */
@@ -843,6 +858,7 @@ h1, h2, h3 {
 }
 
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   padding: var(--space-1) var(--space-3);
@@ -854,7 +870,24 @@ h1, h2, h3 {
   text-decoration: none;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
-.btn:hover { border-color: var(--blue); color: var(--blue); }
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.35) 0%, rgba(217, 70, 239, 0) 72%);
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+.btn:not(.btn--fill):hover {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+.btn:not(.btn--fill):hover::before {
+  opacity: 1;
+}
 
 .btn--fill {
   background: var(--text);

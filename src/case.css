@@ -13,7 +13,6 @@
    "Другие проекты" deliberately keeps the full width: it is navigation to the
    rest of the site rather than part of the article, and four cards need the
    room. */
-.case-back,
 .case-hero,
 .short,
 .case-detail {
@@ -21,22 +20,38 @@
 }
 
 .case-back {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  margin: var(--space-4) 0 0;
-  font-size: 14px;
+  justify-content: center;
+  margin: var(--space-4) 0 0 var(--space-3);
+  padding: var(--space-1);
+  font-size: 18px;
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
+  border-radius: 50%;
+  transition: color 0.2s ease;
 }
-.case-back:hover { color: var(--blue); }
+.case-back::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.35) 0%, rgba(217, 70, 239, 0) 72%);
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+.case-back:hover { color: var(--purple); }
+.case-back:hover::before { opacity: 1; }
 
 /* ---------- Hero ---------- */
 
 .case-hero {
-  margin-top: var(--space-3);
-  padding: var(--space-6) var(--space-3) var(--space-5);
+  margin-top: 0;
+  padding: var(--space-4) var(--space-3) var(--space-5);
 }
 
 .case-hero__tags {
@@ -316,7 +331,9 @@
   width: var(--space-4);
   height: var(--space-4);
   border-radius: 50%;
-  background: var(--border);
+  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
+  border: 1px solid rgba(217, 70, 239, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 4px rgba(217, 70, 239, 0.12), 0 14px 22px -10px rgba(217, 70, 239, 0.45);
   color: var(--text);
   font-family: var(--font-display);
   font-size: 13px;
@@ -331,9 +348,11 @@
 .case-callout {
   display: flex;
   gap: var(--space-2);
-  background: #f6f7f9;
-  border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-3);
+  background: linear-gradient(180deg, #fdf0fb 0%, #f8d7f0 100%);
+  border: 1px solid rgba(217, 70, 239, 0.18);
+  box-shadow: 0 1px 2px rgba(217, 70, 239, 0.06), 0 10px 20px -8px rgba(217, 70, 239, 0.22);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
   margin: var(--space-3) 0;
 }
 .case-callout__icon { flex-shrink: 0; font-size: 18px; line-height: 1.5; }
@@ -389,6 +408,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-2);
+}
+.case-figure-row--3 {
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 /* Text + media side by side (narrow case-block container) */

@@ -1138,6 +1138,130 @@ body.cv-open { overflow: hidden; }
   font-size: 13px;
 }
 
+/* ---------- 404 ---------- */
+
+/* The page a visitor lands on after a typo or a dead link. It keeps the
+   site's own header and footer on purpose: the browser has already told
+   them something went wrong, and a stripped-down error screen on top of
+   that reads as "the whole site is broken" rather than "this one address
+   is". Everything here is text and links, so the page costs nothing to
+   render and works even if the fonts never arrive. */
+.notfound {
+  /* Filling the first screen keeps the footer at the bottom instead of
+     floating halfway up under a short block of text. 100svh (not vh) is
+     the height that stays correct while mobile browser chrome slides in
+     and out; the subtraction is the nav height plus its offset. */
+  min-height: calc(100svh - 140px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-10);
+  text-align: center;
+}
+
+/* The block above already reserves the first screen and ends with its own
+   bottom padding, so the footer's usual 120px lead-in would only add empty
+   space between the last link and the rule. */
+.notfound-page .footer { margin-top: 0; }
+
+.notfound__code {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 120px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  /* The number carries the page visually, but it is not the message —
+     the gradient lets it sit large without competing with the heading
+     under it for attention. */
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.notfound__title {
+  margin: var(--space-2) 0 0;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.notfound__text {
+  margin: var(--space-2) auto 0;
+  max-width: var(--measure);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.notfound__actions {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.notfound__cases {
+  margin-top: var(--space-8);
+  width: 100%;
+  max-width: var(--measure-lg);
+  text-align: left;
+}
+
+.notfound__cases-title {
+  margin: 0 0 var(--space-2);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.notfound__cases ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.notfound__cases li {
+  border-bottom: 1px solid var(--border);
+}
+
+.notfound__cases a {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-1);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.notfound__cases a:hover {
+  background: rgba(217, 70, 239, 0.06);
+}
+
+.notfound__case-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.notfound__cases a:hover .notfound__case-name {
+  color: var(--purple);
+}
+
+.notfound__case-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
 /* ---------- Responsive ---------- */
 
 /* The icons sit at a distance from the page centre that shrinks with the
@@ -1175,6 +1299,12 @@ body.cv-open { overflow: hidden; }
 
   .about__grid { grid-template-columns: 1fr; }
   .about__photo { order: -1; aspect-ratio: 16/9; }
+
+  .notfound__code { font-size: 88px; }
+  .notfound__title { font-size: 26px; }
+  /* Name and description no longer fit on one line side by side. */
+  .notfound__cases a { flex-direction: column; gap: var(--space-half); }
+  .notfound__case-name { white-space: normal; }
 }
 
 @media (max-width: 640px) {

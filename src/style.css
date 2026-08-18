@@ -748,7 +748,9 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-half);
+  /* No flex gap: it stacked with the button's own margin and the two on-scale
+     values compounded into 12px, the one spacing on the site that was not a
+     multiple of the 8px step. The two gaps are set on the children instead. */
   padding: var(--space-2);
   background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
   border: 1px solid rgba(255, 255, 255, 0.8);
@@ -763,13 +765,13 @@ h1, h2, h3 {
   color: var(--text);
 }
 .laptop__tooltip-desc {
-  margin: 0;
+  margin: var(--space-half) 0 0;
   font-size: 13px;
   line-height: 1.4;
   color: var(--text-secondary);
 }
 .laptop__tooltip-cta {
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
   white-space: nowrap;
 }
 

@@ -261,6 +261,17 @@
   margin-top: var(--space-12);
 }
 
+/* Content column + sticky TOC. The 240px sidebar plus gap leaves the
+   content column at roughly --measure width, so figures (which fill their
+   column at 100% with no max-width of their own) end up sized to match
+   the text instead of stretching to the full 920px container. */
+.case-detail__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: var(--space-6);
+  align-items: start;
+}
+
 .case-block {
   margin: 0 0 var(--space-10);
 }
@@ -504,6 +515,187 @@ kbd {
   padding: var(--space-half) var(--space-1);
 }
 
+/* Headings land right at the viewport edge otherwise, tucked half under the
+   sticky header when a TOC link scrolls to them. */
+.short h2[id],
+.case-block h2[id],
+.case-block h3[id] {
+  scroll-margin-top: var(--space-12);
+}
+
+/* ---------- Case TOC ---------- */
+
+.case-toc {
+  position: sticky;
+  top: var(--space-12);
+}
+
+/* Trial styling for vs-subtitles only: the floating glass-pill look of the
+   scrolled header (.nav.is-scrolled .nav__inner), applied to a vertical
+   card instead of a horizontal bar. Not yet rolled out to the other cases —
+   swap the modifier class off the <nav> to revert. */
+.case-toc--badge {
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(18, 20, 26, 0.08), 0 2px 10px rgba(18, 20, 26, 0.04);
+}
+
+.case-toc__title {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.case-toc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+/* Jump to the next case study without scrolling to "Другие проекты" at the
+   foot of the page — a full list there was too heavy for the sidebar, so
+   this keeps it to one link. */
+.case-toc__next {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  /* The → glyph's own metrics sit it visibly below the box's true centre;
+     nudge it up rather than fight that with line-height/padding tricks. */
+  transform: translateY(-3px);
+}
+/* Same radial-glow hover as .case-back. */
+.case-toc__next::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(circle, rgba(172, 33, 162, 0.35) 0%, rgba(172, 33, 162, 0) 72%);
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+.case-toc__next:hover {
+  color: var(--purple);
+}
+.case-toc__next:hover::before {
+  opacity: 1;
+}
+
+.case-toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.case-toc > ol > li {
+  margin-bottom: var(--space-2);
+}
+.case-toc > ol > li:last-child {
+  margin-bottom: 0;
+}
+
+.case-toc a {
+  display: block;
+  padding: var(--space-half) 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.case-toc > ol > li > a,
+.case-toc > ol > li > .case-toc__row > a {
+  font-weight: 600;
+  color: var(--text);
+}
+.case-toc a:hover,
+.case-toc a.is-active {
+  color: var(--purple);
+}
+
+/* Only the section the visitor is currently reading shows its sub-items —
+   otherwise a long case pushes the whole menu past the viewport. Every
+   other section collapses to just its heading, with a chevron to open it
+   back up on request. */
+.case-toc__group > ol {
+  display: none;
+}
+.case-toc__group.is-expanded > ol {
+  display: block;
+}
+
+.case-toc__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-half);
+}
+.case-toc__row > a {
+  flex: 1;
+  min-width: 0;
+}
+
+.case-toc__toggle {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+.case-toc__toggle::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+.case-toc__toggle:hover {
+  color: var(--purple);
+}
+.case-toc__group.is-expanded > .case-toc__row > .case-toc__toggle::before {
+  transform: rotate(45deg);
+}
+
+.case-toc ol ol {
+  margin: var(--space-half) 0 0;
+}
+.case-toc ol ol a {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.case-toc ol ol a:hover,
+.case-toc ol ol a.is-active {
+  color: var(--purple);
+}
+
 /* ---------- Другие проекты ---------- */
 
 .related {
@@ -529,6 +721,10 @@ kbd {
   .short-ref { flex: 1 1 240px; }
   .case-stats-row { grid-template-columns: 1fr; }
   .related__grid { grid-template-columns: 1fr 1fr; }
+  /* No room for a sidebar once the text column itself has to shrink below
+     --measure; the TOC drops out and the content retakes the full width. */
+  .case-detail__layout { grid-template-columns: 1fr; }
+  .case-toc { display: none; }
 }
 
 @media (max-width: 640px) {

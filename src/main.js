@@ -189,7 +189,7 @@ if (navHeader && navToggle && navMenu) {
   });
 }
 
-document.querySelectorAll('.nav__links a, .nav__menu a, .logo').forEach((link) => {
+document.querySelectorAll('.nav__links a, .nav__menu a, .logo, .case-toc a').forEach((link) => {
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href');
     if (!id || id === '#' || !id.startsWith('#')) return;
@@ -340,4 +340,79 @@ if (deferredVideos.length) {
   } else {
     deferredVideos.forEach((v) => v.play().catch(() => v.setAttribute('controls', '')));
   }
+}
+
+// Case TOC: highlights whichever heading the visitor has scrolled past
+// most recently, so the sidebar reflects where they actually are, not just
+// where they last clicked. Sub-items only show for that section — a long
+// case would otherwise push the whole menu past the viewport — but a
+// chevron next to each top-level item lets the visitor pin one more
+// section open to browse it without leaving the current one.
+//
+// This tracks position directly (the last heading whose top has crossed
+// the header line) rather than watching an IntersectionObserver band.
+// A band leaves gaps: scroll past a heading before the next one reaches
+// the band and nothing is "current" for that whole stretch, so the open
+// group flickered shut mid-section. There's always exactly one current
+// heading this way (or none, above the first).
+const caseToc = document.querySelector('.case-toc');
+if (caseToc) {
+  const TOC_OFFSET = 100;
+  const tocLinks = [...caseToc.querySelectorAll('a[href^="#"]')];
+  const linkFor = (id) => tocLinks.find((link) => link.getAttribute('href') === `#${id}`);
+  const headings = tocLinks
+    .map((link) => document.getElementById(link.getAttribute('href').slice(1)))
+    .filter(Boolean);
+
+  let autoGroup = null;
+  // Only one manually pinned section stays open alongside the current one —
+  // opening a second would push the menu past the viewport on a long case,
+  // so pinning a new section closes whichever was pinned before it.
+  let pinnedGroup = null;
+
+  const applyExpansion = () => {
+    caseToc.querySelectorAll('.case-toc__group').forEach((group) => {
+      const open = group === autoGroup || group === pinnedGroup;
+      group.classList.toggle('is-expanded', open);
+      const toggle = group.querySelector(':scope > .case-toc__row > .case-toc__toggle');
+      if (toggle) toggle.setAttribute('aria-expanded', String(open));
+    });
+  };
+
+  caseToc.querySelectorAll('.case-toc__toggle').forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      const group = toggle.closest('.case-toc__group');
+      if (!group) return;
+      pinnedGroup = pinnedGroup === group ? null : group;
+      applyExpansion();
+    });
+  });
+
+  const setActive = () => {
+    // headings is in document order and so is page position, so the last
+    // one that has scrolled past the line is the section being read now.
+    let current = null;
+    for (const h of headings) {
+      if (h.getBoundingClientRect().top <= TOC_OFFSET) current = h;
+      else break;
+    }
+    tocLinks.forEach((link) => link.classList.remove('is-active'));
+    const activeLink = current && linkFor(current.id);
+    activeLink?.classList.add('is-active');
+    autoGroup = activeLink ? activeLink.closest('.case-toc__group') : null;
+    applyExpansion();
+  };
+
+  setActive();
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      setActive();
+      ticking = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
 }

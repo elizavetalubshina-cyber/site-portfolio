@@ -1162,10 +1162,10 @@ h1, h2, h3 {
   gap: var(--space-1);
 }
 /* Same volumetric-badge feel as plashka.png in the hero — a soft gradient card
-   with a gentle shadow rather than a flat pill — in the site's pink. This used
-   to be white with a .tag--accent modifier for the pink one, and the modifier
-   had only ever been put on a single case, so the same badge was two different
-   colours depending on which page you were on. */
+   with a gentle shadow rather than a flat pill. Pink is the badge, set here and
+   worn in the case heroes; it used to be a .tag--accent modifier that had only
+   ever been applied to one case, so the same badge was two different colours
+   depending on which page you had opened. */
 .tag {
   background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
   color: var(--text);
@@ -1175,6 +1175,16 @@ h1, h2, h3 {
   border-radius: 14px;
   border: 1px solid rgba(172, 33, 162, 0.25);
   box-shadow: 0 1px 2px rgba(172, 33, 162, 0.08), 0 10px 20px -8px rgba(172, 33, 162, 0.35);
+}
+/* On the bento cards the badge stays white. It sits on top of a product
+   screenshot there rather than on the page, and the pink would start competing
+   with the work underneath it — which is the one thing on that card that should
+   be doing the talking. Both the grid on the homepage and the "другие кейсы"
+   strip at the foot of each case use .tags, so this covers every card. */
+.tags .tag {
+  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.35);
 }
 
 /* ---------- About ---------- */

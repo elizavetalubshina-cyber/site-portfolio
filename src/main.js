@@ -295,3 +295,49 @@ if (cvModal && typeof cvModal.showModal === 'function') {
     document.body.classList.remove('cv-open');
   });
 }
+
+// Videos that wait their turn. `autoplay` makes the browser fetch the whole
+// file the moment the page opens, whatever `preload` says — on the Satellite
+// case that was 1434 KB of a 1.5 MB page, downloaded long before the visitor
+// had scrolled anywhere near it. With `preload="none"` and no `autoplay`
+// nothing is fetched until play() is called here, and the poster (the video's
+// own first frame) holds the space in the meantime, so the layout and the
+// picture look the same as before. Playback also stops on the way out of view.
+const deferredVideos = document.querySelectorAll('video[data-play-in-view]');
+
+if (deferredVideos.length) {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // `controls` is in the markup, not added here, so that with scripting off the
+  // video is still watchable instead of a frozen poster. Once this code is
+  // running it takes over starting and stopping, and the bar goes away — the
+  // block is far below the fold, so it is never on screen while that happens.
+  deferredVideos.forEach((v) => v.removeAttribute('controls'));
+
+  if (reducedMotion.matches) {
+    // Nothing starts moving on its own here: the poster stays and the controls
+    // go back, so the video is still watchable for anyone who wants it.
+    deferredVideos.forEach((v) => v.setAttribute('controls', ''));
+  } else if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            video.play().catch(() => {
+              // Autoplay refused (a browser setting, or a decode failure):
+              // hand the visitor the controls rather than a dead frame.
+              video.setAttribute('controls', '');
+            });
+          } else if (!video.paused) {
+            video.pause();
+          }
+        });
+      },
+      { rootMargin: '200px 0px' },
+    );
+    deferredVideos.forEach((v) => observer.observe(v));
+  } else {
+    deferredVideos.forEach((v) => v.play().catch(() => v.setAttribute('controls', '')));
+  }
+}

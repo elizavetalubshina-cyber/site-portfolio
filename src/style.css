@@ -306,7 +306,10 @@
   --bg: #ffffff;
   --text: #12141a;
   --text-secondary: #5b6472;
-  --text-muted: #9aa1ac;
+  /* 4.5:1 on the light backgrounds this is used on (was #9aa1ac — 2.42:1,
+     barely half the minimum). Every use is on --paper or white: captions,
+     dates, table headers, the footer, the 404 list label. */
+  --text-muted: #6b7280;
   --border: #e7e9ee;
   --blue: #2f6bff;
   --green: #1fbf75;
@@ -911,7 +914,10 @@ h1, h2, h3 {
   font-weight: 500;
   font-size: clamp(6px, 0.85cqw, 8px);
   background: #333333;
-  color: #999999;
+  /* #999 on #333 is what the real editor uses, but it lands at 4.43:1 — just
+     under the 4.5 minimum, and this is 8px text. Four steps lighter clears it
+     at 4.66 without changing how the mock reads. */
+  color: #9d9d9d;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -938,7 +944,7 @@ h1, h2, h3 {
   display: block;
   font-family: 'Open Sans', sans-serif;
   font-size: clamp(6px, 0.85cqw, 8px);
-  color: #999999;
+  color: #9d9d9d;  /* 4.66:1 on the #333 panel; #999 was 4.43 */
   font-weight: 600;
   margin-bottom: 0.5em;
 }
@@ -1121,7 +1127,11 @@ h1, h2, h3 {
   margin: 0;
   font-size: 12px;
   line-height: 1.35;
-  color: #767d89;
+  /* Sits on the card gradients, which run from #1c2530 to #0e1116. The old
+     #767d89 cleared 4.5:1 only against the dark end (4.56) and dropped to
+     3.73 against the light end, so the same line read differently depending
+     on where it fell. This clears it across the whole gradient: 5.0 to 6.1. */
+  color: #8b93a0;
 }
 .case__company {
   flex-shrink: 0;
@@ -1469,6 +1479,43 @@ h1, h2, h3 {
 /* showModal() does not stop the page underneath from scrolling. */
 body.cv-open { overflow: hidden; }
 
+/* ---------- Skip link ----------
+   The first Tab stop on every page. Without it a case page makes a keyboard
+   visitor walk nine navigation links before reaching the text — and there are
+   35 headings waiting after that. Off-screen until focused, so it costs
+   nothing visually; z-index clears the preloader, which sits at 9999. */
+
+.skip-link {
+  position: fixed;
+  top: var(--space-1);
+  left: var(--space-1);
+  z-index: 10000;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--purple);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  /* Moved out of sight rather than hidden: display:none and visibility:hidden
+     would take it out of the tab order as well, which is the whole point. */
+  transform: translateY(calc(-100% - var(--space-2)));
+  transition: transform 0.15s ease;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+/* Falls back for browsers without :focus-visible support. */
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link { transition: none; }
+}
+
 /* ---------- Footer ---------- */
 
 .footer {
@@ -1537,6 +1584,10 @@ body.cv-open { overflow: hidden; }
   height: auto;
   pointer-events: none;
   user-select: none;
+  /* Pixel art. It used to be a PNG wrapped in an <svg> that carried
+     image-rendering="pixelated" on the <image> element; the wrapper is gone,
+     so the hint lives here now and the cat resolves the same way. */
+  image-rendering: pixelated;
 }
 
 .notfound__title {

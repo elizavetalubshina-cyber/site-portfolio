@@ -228,6 +228,12 @@
   border-color: rgba(172, 33, 162, 0.25);
   box-shadow: 0 1px 2px rgba(172, 33, 162, 0.08), 0 10px 20px -8px rgba(172, 33, 162, 0.35);
 }
+/* The pink tile is darker than the white one, and --text-secondary lands at
+   4.4:1 against its lower half — the only place on the site where that token
+   misses. A shade darker here only, rather than moving the token everywhere. */
+.short-stat--accent .short-stat__label {
+  color: #555e6c;
+}
 .short-stat__value {
   font-family: var(--font-display);
   font-size: 30px;

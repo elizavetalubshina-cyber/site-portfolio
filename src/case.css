@@ -468,7 +468,10 @@
 .case-stat__label {
   margin-top: var(--space-1);
   font-size: 13px;
-  color: var(--text-secondary);
+  /* The pink tile is darker than the white one it replaced, and
+     --text-secondary lands at 4.4:1 against its lower half — just under the
+     minimum. Same shade darker as .short-stat--accent .short-stat__label. */
+  color: #555e6c;
   line-height: 1.4;
 }
 

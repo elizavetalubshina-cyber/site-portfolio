@@ -1721,6 +1721,20 @@ body.cv-open { overflow: hidden; }
   .showcase { flex-direction: column; gap: var(--space-3); }
   .laptop { width: 100%; order: -1; }
 
+  /* The tooltip is a card floating over the corner of the laptop, sized at
+     40% of it. That reads on a wide screen; once the laptop itself drops to
+     full width here, 40% is still a cramped little card hanging off the
+     screenshot's corner. It stops floating and becomes a full-width block
+     instead — placed after .laptop__body in the markup, so in normal flow
+     it lands below the screenshot rather than above it. */
+  .laptop__tooltip {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: var(--space-2);
+    align-items: flex-start;
+  }
+
   .cases__grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .case--broad, .case--hero, .case--wide { grid-column: auto; grid-row: auto; }
 
@@ -1732,20 +1746,6 @@ body.cv-open { overflow: hidden; }
   /* Name and description no longer fit on one line side by side. */
   .notfound__cases a { flex-direction: column; gap: var(--space-half); }
   .notfound__case-name { white-space: normal; }
-}
-
-@media (max-width: 760px) {
-  /* The tooltip is a card floating over the corner of the laptop, sized at 40%
-     of it. That reads on a wide screen; on a phone the laptop is only ~340px
-     across, so 40% covers most of the screenshot and the card still hangs its
-     5.3% off the left edge into nothing. Below this width it stops floating and
-     becomes an ordinary block above the screenshot, reading as its caption. */
-  .laptop__tooltip {
-    position: static;
-    width: 100%;
-    margin-top: var(--space-2);
-    align-items: flex-start;
-  }
 }
 
 @media (max-width: 640px) {

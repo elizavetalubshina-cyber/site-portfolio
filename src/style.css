@@ -641,8 +641,8 @@ h1, h2, h3 {
 
 .hero__float--dashboard {
   width: 150px;
-  top: 30px;
-  left: calc(50% + (130px + 210px * var(--t)));
+  top: 215px;
+  left: calc(50% + (260px + 210px * var(--t)));
   animation: hero-float-dashboard 6s ease-in-out infinite;
   animation-delay: -2s;
 }

@@ -228,6 +228,12 @@
   border-color: rgba(172, 33, 162, 0.25);
   box-shadow: 0 1px 2px rgba(172, 33, 162, 0.08), 0 10px 20px -8px rgba(172, 33, 162, 0.35);
 }
+/* The pink tile is darker than the white one, and --text-secondary lands at
+   4.4:1 against its lower half — the only place on the site where that token
+   misses. A shade darker here only, rather than moving the token everywhere. */
+.short-stat--accent .short-stat__label {
+  color: #555e6c;
+}
 .short-stat__value {
   font-family: var(--font-display);
   font-size: 30px;
@@ -515,6 +521,11 @@ kbd {
 @media (max-width: 640px) {
   .case-figure-row { grid-template-columns: 1fr; }
   .short__refs { flex-direction: column; }
+  /* The row layout above leaves `flex: 1 1 240px` behind: in a column the
+     basis becomes a height, and 240px of height on a 16/10.5 box forces it
+     ~366px wide — wider than a 320px screen, which is what made the page
+     scroll sideways. In a column these want full width and natural height. */
+  .short-ref { flex: none; width: 100%; }
   .related__grid { grid-template-columns: 1fr; }
   .short__stats { grid-template-columns: 1fr; }
   .case-side-by-side { grid-template-columns: 1fr; }

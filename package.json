@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "images": "node scripts/optimize-images.mjs",
     "predev": "npm run images",
-    "prebuild": "npm run images"
+    "prebuild": "npm run images",
+    "weight": "node scripts/check-weight.mjs",
+    "postbuild": "npm run weight"
   },
   "devDependencies": {
     "sharp": "^0.35.3",

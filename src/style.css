@@ -744,7 +744,8 @@ h1, h2, h3 {
   top: -14.222%;
   left: -5.333%;
   z-index: 3;
-  width: 40%;
+  width: max-content;
+  max-width: 40%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1079,6 +1080,17 @@ h1, h2, h3 {
   object-fit: cover;
   object-position: top;
 }
+/* The source screenshot is a wide dashboard: video preview, a "Сюжеты" list,
+   then the actual subtitle cue panel at the far right. Cover's default centred
+   crop lands mostly on the story list, so this pins to the right edge and
+   zooms in a bit further to keep the cue panel — the part that reads as
+   "subtitles" at a glance — in frame instead of chrome around it. */
+.case--media-subtitles .case__media img {
+  object-position: right top;
+  transform: scale(1.5);
+  transform-origin: right center;
+}
+
 .case--media-ecosystem .case__media {
   background: linear-gradient(160deg, #1a2230, #0e1116 65%);
 }

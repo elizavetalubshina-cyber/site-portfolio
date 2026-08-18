@@ -515,6 +515,11 @@ kbd {
 @media (max-width: 640px) {
   .case-figure-row { grid-template-columns: 1fr; }
   .short__refs { flex-direction: column; }
+  /* The row layout above leaves `flex: 1 1 240px` behind: in a column the
+     basis becomes a height, and 240px of height on a 16/10.5 box forces it
+     ~366px wide — wider than a 320px screen, which is what made the page
+     scroll sideways. In a column these want full width and natural height. */
+  .short-ref { flex: none; width: 100%; }
   .related__grid { grid-template-columns: 1fr; }
   .short__stats { grid-template-columns: 1fr; }
   .case-side-by-side { grid-template-columns: 1fr; }

@@ -1161,22 +1161,30 @@ h1, h2, h3 {
   display: flex;
   gap: var(--space-1);
 }
-/* Same volumetric-badge feel as plashka.png in the hero: soft white
-   gradient card with a gentle shadow, instead of a flat pill. */
+/* Same volumetric-badge feel as plashka.png in the hero — a soft gradient card
+   with a gentle shadow rather than a flat pill. Pink is the badge, set here and
+   worn in the case heroes; it used to be a .tag--accent modifier that had only
+   ever been applied to one case, so the same badge was two different colours
+   depending on which page you had opened. */
 .tag {
-  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
+  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
   color: var(--text);
   font-size: 11px;
   font-weight: 500;
   padding: var(--space-half) var(--space-2);
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.35);
-}
-.tag--accent {
-  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
-  border-color: rgba(172, 33, 162, 0.25);
+  border: 1px solid rgba(172, 33, 162, 0.25);
   box-shadow: 0 1px 2px rgba(172, 33, 162, 0.08), 0 10px 20px -8px rgba(172, 33, 162, 0.35);
+}
+/* On the bento cards the badge stays white. It sits on top of a product
+   screenshot there rather than on the page, and the pink would start competing
+   with the work underneath it — which is the one thing on that card that should
+   be doing the talking. Both the grid on the homepage and the "другие кейсы"
+   strip at the foot of each case use .tags, so this covers every card. */
+.tags .tag {
+  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.35);
 }
 
 /* ---------- About ---------- */
@@ -1686,6 +1694,12 @@ body.cv-open { overflow: hidden; }
    layer, which is what it already looked like on tablets. */
 @media (max-width: 1319px) {
   .hero__float { display: none; }
+  /* The 66vh the intro reserves is room for those floating icons to hover in.
+     With the icons gone the reservation is just empty screen — on a 844px-tall
+     phone it centred 274px of text inside 557px, so the first thing below the
+     name was ~140px of nothing, then another ~140px before the laptop. The text
+     now sets its own height and --space-7 above the showcase does the spacing. */
+  .hero__intro { min-height: 0; }
 }
 
 @media (max-width: 1100px) {
@@ -1704,6 +1718,20 @@ body.cv-open { overflow: hidden; }
   /* Name and description no longer fit on one line side by side. */
   .notfound__cases a { flex-direction: column; gap: var(--space-half); }
   .notfound__case-name { white-space: normal; }
+}
+
+@media (max-width: 760px) {
+  /* The tooltip is a card floating over the corner of the laptop, sized at 40%
+     of it. That reads on a wide screen; on a phone the laptop is only ~340px
+     across, so 40% covers most of the screenshot and the card still hangs its
+     5.3% off the left edge into nothing. Below this width it stops floating and
+     becomes an ordinary block above the screenshot, reading as its caption. */
+  .laptop__tooltip {
+    position: static;
+    width: 100%;
+    margin-top: var(--space-2);
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1738,15 +1766,30 @@ body.cv-open { overflow: hidden; }
     border-radius: 28px;
   }
   .nav__inner {
+    /* Flex, not the three-column grid of the wide layout. Only the burger is
+       visible here, but columns 2 and 3 still existed at zero width and kept
+       their 24px gaps on either side — 48px of phantom track that the centring
+       then split evenly, leaving the burger sitting 24px left of the middle of
+       its own circle. Flex has nothing to centre but the button itself. It also
+       gives the name a real containing block when the menu opens: as a grid item
+       the absolutely positioned logo resolved its 50% against its own empty
+       column instead of the bar, which is why it sat against the right edge. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
     width: 100%;
     margin: 0;
     padding: var(--space-1);
-    justify-content: center;
     background: transparent;
     border: none;
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+  /* Open, the bar is full width: the close button belongs at its start. */
+  .nav.is-open .nav__inner {
+    justify-content: flex-start;
   }
   .nav.is-scrolled .nav__inner {
     background: transparent;

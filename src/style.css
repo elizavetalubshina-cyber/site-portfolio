@@ -496,17 +496,13 @@ h1, h2, h3 {
   background: transparent;
   border-radius: 999px;
   cursor: pointer;
-  transition: box-shadow 0.2s ease;
-}
-/* Same soft pink glow as .nav__links a, not a flat filled circle — but the
-   burger's three bars already own the button's span/::before/::after, so
-   there's no pseudo-element left to hold a blurred radial-gradient layer.
-   A wide, low-opacity box-shadow reads the same way without needing one.
-   :active is the one that matters on a phone: touch has no hover to speak
-   of, and without it the button gave no feedback on tap at all. */
-.nav__toggle:hover,
-.nav__toggle:active {
-  box-shadow: 0 0 22px 10px rgba(172, 33, 162, 0.35);
+  /* Otherwise mobile browsers flash their own blue tap-highlight rect on
+     press. */
+  -webkit-tap-highlight-color: transparent;
+  /* Without this, WebKit/Blink draw their own native pressed-button fill
+     (a light grey/white disc) under :active. */
+  -webkit-appearance: none;
+  appearance: none;
 }
 .nav__toggle span,
 .nav__toggle::before,
@@ -519,7 +515,7 @@ h1, h2, h3 {
   height: 2px;
   border-radius: 2px;
   background: var(--text);
-  transition: transform 0.25s ease, opacity 0.2s ease;
+  transition: transform 0.25s ease, opacity 0.2s ease, background-color 0.2s ease;
 }
 .nav__toggle span {
   transform: translate(-50%, -50%);
@@ -539,40 +535,77 @@ h1, h2, h3 {
 .nav.is-open .nav__toggle::after {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
+/* Colour change instead of a background shape — sidesteps the whole
+   "circle behind the burger" question raised earlier. */
+.nav__toggle:active span,
+.nav__toggle:active::before,
+.nav__toggle:active::after {
+  background: var(--purple);
+}
+@media (hover: hover) {
+  .nav__toggle:hover span,
+  .nav__toggle:hover::before,
+  .nav__toggle:hover::after {
+    background: var(--purple);
+  }
+}
 
 .nav__menu {
-  max-height: 0;
-  overflow: hidden;
-  /* `max-height: 0` hides the panel but leaves its links in the tab order —
-     four invisible stops before anything on the page. `visibility` takes them
-     out. It is a discrete property: it flips to visible at the start of the
-     opening transition and holds until the end of the closing one, so the
-     slide still plays in both directions. */
+  /* Overlays below the shell instead of sitting in normal flow — flow
+     content made opening the menu grow .nav__shell's height and push the
+     entire page down underneath it, when it should just drop down on top. */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  /* No max-height/overflow: hidden here on purpose: on mobile this box
+     goes back into normal flow inside the frosted shell (see the
+     max-width: 640px block), which has to size itself to the menu — a
+     clamped height would stop it. Nothing needs clipping to stay hidden
+     anyway; visibility does that on its own, and position: absolute
+     keeps it out of the page's flow while closed. */
   visibility: hidden;
-  transition: max-height 0.35s ease, visibility 0.35s ease;
+  transition: visibility 0.35s ease;
 }
 .nav.is-open .nav__menu {
-  max-height: 320px;
   visibility: visible;
 }
 .nav__menu-panel {
   display: flex;
   flex-direction: column;
+  align-items: center;
   max-width: 1200px;
   margin: 0 auto;
+  /* Stands in for the old max-height slide now that .nav__menu itself no
+     longer animates a size — same "drops down" feel without needing the
+     overflow: hidden ancestor that broke the blur. margin-top, not
+     transform: a transformed element gets its own composite layer in
+     WebKit, and backdrop-filter can't sample through that layer — which
+     is exactly the bug this was meant to avoid, just via a different
+     property triggering the same thing. */
+  margin-top: -8px;
   padding: 0 var(--space-3);
   opacity: 0;
-  transition: opacity 0.25s ease, padding 0.35s ease;
+  /* No transition on the way out — the animated one lives on the
+     .is-open rule, so it only plays while opening. Closing snaps the
+     shell back to the small pill instantly (its geometry isn't
+     transitioned either), and the glass goes with it, so a fade here
+     left the links hanging as bare text over the page for a quarter
+     second. Menu and card now disappear together. */
+  transition: none;
 }
 .nav__menu-panel a {
   position: relative;
+  width: 100%;
   color: var(--text-secondary);
   text-decoration: none;
+  text-align: center;
   font-size: 15px;
   font-weight: 500;
   padding: var(--space-2) 0;
   border-top: 1px solid var(--border);
   transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 .nav__menu-panel a:first-child {
   border-top: none;
@@ -590,17 +623,27 @@ h1, h2, h3 {
   z-index: -1;
   pointer-events: none;
 }
-.nav__menu-panel a:hover,
 .nav__menu-panel a:active {
-  color: var(--text);
+  color: var(--purple);
 }
-.nav__menu-panel a:hover::before,
 .nav__menu-panel a:active::before {
   opacity: 1;
 }
+@media (hover: hover) {
+  .nav__menu-panel a:hover {
+    color: var(--purple);
+  }
+  .nav__menu-panel a:hover::before {
+    opacity: 1;
+  }
+}
 .nav.is-open .nav__menu-panel {
   opacity: 1;
+  margin-top: 0;
   padding: var(--space-1) var(--space-3) var(--space-1);
+  /* Opening only: this rule applies as .is-open is added, so the fade
+     plays coming in and not going out (see .nav__menu-panel above). */
+  transition: opacity 0.25s ease, margin-top 0.3s ease, padding 0.35s ease;
 }
 
 /* ---------- Hero ---------- */
@@ -1791,16 +1834,32 @@ body.cv-open { overflow: hidden; }
     display: block;
   }
   .nav__shell {
+    position: relative;
     width: 58px;
     max-width: 1200px;
     margin: 0;
     border-radius: 999px;
     background: transparent;
     border: 1px solid transparent;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    transition: width 0.3s ease, border-radius 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Geometry (width, border-radius) deliberately not transitioned here.
+       Opening swaps the shell to position: absolute and its width to auto,
+       so the box resizes in one step no matter what — but border-radius
+       kept easing 28px <-> 999px across that instant jump, which drew a
+       full-size ellipse for ~0.3s on the way out. Shape changes at once,
+       the glass still fades. */
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
+  /* ONE glass surface for the whole card, never two stacked or abutting.
+     Two separate backdrop-filter elements meeting edge-to-edge each blur
+     only the slice of page behind themselves, so their blurred results
+     don't line up and the join shows as a step — that was the line under
+     the logo (proved by removing every shadow and border at the seam: it
+     stayed). Putting the filter on an ancestor instead doesn't work
+     either: a backdrop-filter element becomes a "backdrop root", and
+     descendants can then only sample its already-filtered, effectively
+     empty content — that was the earlier near-transparent menu.
+     So: the shell alone is frosted, and the menu moves back inside its
+     box (below) so one filter covers both halves. */
   .nav.is-scrolled .nav__shell,
   .nav.is-open .nav__shell {
     background: rgba(255, 255, 255, 0.75);
@@ -1809,9 +1868,42 @@ body.cv-open { overflow: hidden; }
     border-color: rgba(255, 255, 255, 0.6);
     box-shadow: 0 10px 30px rgba(18, 20, 26, 0.08), 0 2px 10px rgba(18, 20, 26, 0.04);
   }
+  /* Taking the shell out of flow (below) leaves .nav with nothing but its
+     own padding — it collapsed 70px -> 16px and yanked the page up 54px.
+     Pinned to the height it has when closed, so opening the menu moves
+     nothing behind it. */
+  .nav.is-open {
+    height: 70px;
+  }
   .nav.is-open .nav__shell {
-    width: 100%;
+    /* Absolute so the menu can sit in normal flow inside this box —
+       letting the shell grow to wrap both halves — without that growth
+       adding height to .nav and shoving the page down, which is what
+       made the menu push everything when it was in flow originally.
+       .nav is sticky, so it's the containing block; left/right match the
+       16px padding the shell sat inside before, and top stays auto so it
+       keeps its static position. */
+    position: absolute;
+    left: var(--space-2);
+    right: var(--space-2);
+    width: auto;
     border-radius: 28px;
+  }
+  /* Back in flow, so it's inside the shell's frosted box rather than an
+     overlay hanging below it. */
+  .nav.is-open .nav__menu {
+    position: static;
+  }
+  /* Both halves are now just content on the shell's single glass — no
+     backgrounds, filters, borders or shadows of their own to seam. */
+  .nav.is-open .nav__inner,
+  .nav.is-open .nav__menu-panel {
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
   }
   .nav__inner {
     /* Flex, not the three-column grid of the wide layout. Only the burger is
@@ -1839,6 +1931,10 @@ body.cv-open { overflow: hidden; }
   .nav.is-open .nav__inner {
     justify-content: flex-start;
   }
+  /* The wide layout frosts .nav__inner; on mobile the shell does it
+     instead, so this has to be cleared or the two stack — 0.75 over 0.75
+     reads as ~0.94 and blurs twice, which is why the closed burger pill
+     looked solid rather than glassy. */
   .nav.is-scrolled .nav__inner {
     background: transparent;
     backdrop-filter: none;

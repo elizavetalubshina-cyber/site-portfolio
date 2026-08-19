@@ -665,7 +665,7 @@ h1, h2, h3 {
 
 .hero__float--status {
   width: 150px;
-  top: 150px;
+  top: 215px;
   left: calc(50% - (360px + 270px * var(--t)));
   animation: hero-float-status 6.2s ease-in-out infinite;
   animation-delay: -5s;

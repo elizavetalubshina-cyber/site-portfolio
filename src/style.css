@@ -496,9 +496,17 @@ h1, h2, h3 {
   background: transparent;
   border-radius: 999px;
   cursor: pointer;
+  transition: box-shadow 0.2s ease;
 }
-.nav__toggle:hover {
-  background: rgba(18, 20, 26, 0.06);
+/* Same soft pink glow as .nav__links a, not a flat filled circle — but the
+   burger's three bars already own the button's span/::before/::after, so
+   there's no pseudo-element left to hold a blurred radial-gradient layer.
+   A wide, low-opacity box-shadow reads the same way without needing one.
+   :active is the one that matters on a phone: touch has no hover to speak
+   of, and without it the button gave no feedback on tap at all. */
+.nav__toggle:hover,
+.nav__toggle:active {
+  box-shadow: 0 0 22px 10px rgba(172, 33, 162, 0.35);
 }
 .nav__toggle span,
 .nav__toggle::before,
@@ -557,6 +565,7 @@ h1, h2, h3 {
   transition: opacity 0.25s ease, padding 0.35s ease;
 }
 .nav__menu-panel a {
+  position: relative;
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 15px;
@@ -568,8 +577,26 @@ h1, h2, h3 {
 .nav__menu-panel a:first-child {
   border-top: none;
 }
-.nav__menu-panel a:hover {
+/* Same radial-glow press feedback as .nav__links a, sized to the row
+   instead of a pill — the mobile menu's links are full-width. */
+.nav__menu-panel a::before {
+  content: "";
+  position: absolute;
+  inset: -2px calc(var(--space-2) * -1);
+  background: radial-gradient(ellipse, rgba(172, 33, 162, 0.4) 0%, rgba(172, 33, 162, 0) 72%);
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+.nav__menu-panel a:hover,
+.nav__menu-panel a:active {
   color: var(--text);
+}
+.nav__menu-panel a:hover::before,
+.nav__menu-panel a:active::before {
+  opacity: 1;
 }
 .nav.is-open .nav__menu-panel {
   opacity: 1;

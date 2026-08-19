@@ -44,8 +44,10 @@
   z-index: -1;
   pointer-events: none;
 }
-.case-back:hover { color: var(--purple); }
-.case-back:hover::before { opacity: 1; }
+.case-back:hover,
+.case-back:active { color: var(--purple); }
+.case-back:hover::before,
+.case-back:active::before { opacity: 1; }
 
 /* ---------- Hero ---------- */
 

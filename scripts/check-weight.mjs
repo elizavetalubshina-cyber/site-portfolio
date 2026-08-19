@@ -36,11 +36,13 @@ const BUDGET_TOTAL = 6 * 1024 * 1024;
 // allowance is just above where the page sits today, so the guard still bites.
 // Delete an entry once the underlying thing is fixed.
 const ALLOWANCES = {
-  // cat-video.mp4 is 3.7 MB and sits in the laptop in the hero, above the
-  // fold, playing on arrival — deferring it would change what the first screen
-  // looks like, which is a design decision, not a build one. Whoever reworks
-  // the hero should take the video with it and drop this line.
-  'index.html': { eager: 4000 * 1024 },
+  // cat-video.mp4 sits in the laptop in the hero, above the fold, playing
+  // on arrival — deferring it would change what the first screen looks
+  // like, which is a design decision, not a build one. Re-encoded down to
+  // ~1.5 MB (was 3.7 MB); the allowance is just above where that leaves the
+  // page. Whoever reworks the hero should take the video with it and drop
+  // this line.
+  'index.html': { eager: 2100 * 1024 },
 };
 
 const kb = (n) => (n / 1024).toFixed(0).padStart(5) + ' KB';

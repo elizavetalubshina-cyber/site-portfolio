@@ -2,11 +2,9 @@
 
    Served from this site, not from Google. They used to come from
    fonts.googleapis.com, and that stylesheet is render-blocking: the browser
-   will not run a script until it has arrived. main.js sets the preloader's
-   own four-second failsafe, so a slow answer from Google delayed the very
-   timer meant to protect against a slow answer — measured at 8.9 seconds of
-   loading screen when the font CSS took 8 seconds. A fast failure was
-   harmless; only a slow reply hurt, which is the awkward case to rely on.
+   will not paint until it has arrived. A slow answer from Google once held
+   the whole page blank for 8 seconds — a fast failure was harmless, only a
+   slow reply hurt, which is the awkward case to design around.
 
    Now there is no external request at all: these @font-face rules live in the
    stylesheet the page already loads, and unicode-range means a visitor
@@ -586,8 +584,14 @@ h1, h2, h3 {
   padding-top: var(--space-4);
 }
 
+/* Bounded so the centred title/role/pitch block can't drift into the
+   floating icons above and below it: on a short window (lots of browser
+   chrome eating into the viewport) 66vh would rise enough to run the
+   title into the figma icon; on a very tall one it would sink into the
+   air/dashboard icons. The floor and ceiling cap both ends while 66vh
+   still governs the common case in between. */
 .hero__intro {
-  min-height: 66vh;
+  min-height: clamp(560px, 66vh, 660px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -625,8 +629,8 @@ h1, h2, h3 {
 
 .hero__float--air {
   width: 130px;
-  top: 330px;
-  left: calc(50% + (310px + 40px * var(--t)));
+  top: 380px;
+  left: calc(50% + (400px + 40px * var(--t)));
   animation: hero-float-air 6.5s ease-in-out infinite;
   animation-delay: -1.2s;
 }
@@ -647,10 +651,13 @@ h1, h2, h3 {
   animation-delay: -2s;
 }
 
-/* Pulled up into the top-right corner, past the dashboard icon. */
+/* Pulled up into the top-right corner, past the dashboard icon — but kept
+   well clear of the nav row above it (nav has no background of its own
+   until .is-scrolled adds the pill, so at rest there's nothing to hide
+   behind). */
 .hero__float--earth {
   width: 130px;
-  top: 50px;
+  top: 65px;
   left: calc(50% + (330px + 220px * var(--t)));
   animation: hero-float-earth 7.5s ease-in-out infinite;
   animation-delay: -4s;
@@ -1505,7 +1512,7 @@ body.cv-open { overflow: hidden; }
    The first Tab stop on every page. Without it a case page makes a keyboard
    visitor walk nine navigation links before reaching the text — and there are
    35 headings waiting after that. Off-screen until focused, so it costs
-   nothing visually; z-index clears the preloader, which sits at 9999. */
+   nothing visually; z-index clears the sticky nav. */
 
 .skip-link {
   position: fixed;
@@ -1835,117 +1842,3 @@ body.cv-open { overflow: hidden; }
   .logo { font-size: 13px; }
 }
 
-/* Preloader ------------------------------------------------------------
-   Shown inline in the HTML (no "loading" flash of unstyled content) and
-   dismissed by main.js once the page has actually finished loading. The
-   cat walk and paw trail are two independently-animated layers so their
-   transforms don't fight: .preloader__walk owns the horizontal pass
-   (plus the fade that hides the snap-back at the loop point), and
-   .preloader__cat only ever animates its own vertical bob. */
-.preloader {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
-  transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-.preloader.is-hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-body.preloader-lock {
-  overflow: hidden;
-}
-
-.preloader__stage {
-  position: relative;
-  width: 320px;
-  max-width: 80vw;
-  height: 190px;
-}
-
-.preloader__paw {
-  position: absolute;
-  bottom: 18px;
-  width: 18px;
-  height: 18px;
-  background: var(--purple);
-  opacity: 0;
-  -webkit-mask: url('/src/assets/paw-print.svg') no-repeat center / contain;
-  mask: url('/src/assets/paw-print.svg') no-repeat center / contain;
-  animation: preloader-paw 2.6s ease-in-out infinite;
-}
-.preloader__paw:nth-child(even) { bottom: 28px; }
-.preloader__paw:nth-child(1) { left: calc(50% - 120px); animation-delay: 0s; }
-.preloader__paw:nth-child(2) { left: calc(50% - 72px); animation-delay: 0.35s; }
-.preloader__paw:nth-child(3) { left: calc(50% - 24px); animation-delay: 0.7s; }
-.preloader__paw:nth-child(4) { left: calc(50% + 24px); animation-delay: 1.05s; }
-.preloader__paw:nth-child(5) { left: calc(50% + 72px); animation-delay: 1.4s; }
-.preloader__paw:nth-child(6) { left: calc(50% + 120px); animation-delay: 1.75s; }
-
-.preloader__walk {
-  position: absolute;
-  left: 50%;
-  bottom: 44px;
-  width: 150px;
-  margin-left: -75px;
-  animation: preloader-walk 2.6s ease-in-out infinite;
-}
-.preloader__cat {
-  display: block;
-  width: 100%;
-  height: auto;
-  image-rendering: pixelated;
-  animation: preloader-bob 0.42s ease-in-out infinite;
-}
-
-.preloader__text {
-  margin: 0;
-  font-size: 15px;
-  color: var(--text-secondary);
-  text-align: center;
-}
-.preloader__dots span {
-  display: inline-block;
-  animation: preloader-dot 1.4s ease-in-out infinite;
-}
-.preloader__dots span:nth-child(2) { animation-delay: 0.2s; }
-.preloader__dots span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes preloader-walk {
-  0% { transform: translateX(-130px); opacity: 0; }
-  6% { opacity: 1; }
-  50% { transform: translateX(0); }
-  94% { opacity: 1; }
-  100% { transform: translateX(130px); opacity: 0; }
-}
-@keyframes preloader-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-@keyframes preloader-paw {
-  0%, 100% { opacity: 0; transform: scale(0.6); }
-  15% { opacity: 0.55; transform: scale(1); }
-  40% { opacity: 0; transform: scale(1); }
-}
-@keyframes preloader-dot {
-  0%, 80%, 100% { opacity: 0.2; }
-  40% { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .preloader__walk,
-  .preloader__cat,
-  .preloader__paw,
-  .preloader__dots span {
-    animation: none !important;
-  }
-  .preloader__walk { left: 50%; transform: translateX(0); opacity: 1; }
-  .preloader__paw { opacity: 0.4; }
-}

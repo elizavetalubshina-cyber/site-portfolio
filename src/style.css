@@ -466,10 +466,19 @@ h1, h2, h3 {
   padding: var(--space-1) var(--space-2);
   margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1);
   border-radius: 999px;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, top 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
-.nav__links a:hover {
+/* Press lifts the link a couple of pixels; hover only lights it up, no
+   lift. `top`, not transform: these links sit inside .nav__inner, which
+   is backdrop-filtered once scrolled, and a transform would give each
+   link its own stacking context — that pulls the ::before glow
+   (z-index: -1) out from behind the frosted bar and repaints it on top.
+   They're already position: relative, so `top` moves them the same 2px
+   without touching layout or paint order. */
+.nav__links a:active {
   color: var(--purple);
+  top: -2px;
 }
 .nav__links a::before {
   content: "";
@@ -482,8 +491,16 @@ h1, h2, h3 {
   z-index: -1;
   pointer-events: none;
 }
-.nav__links a:hover::before {
+.nav__links a:active::before {
   opacity: 1;
+}
+@media (hover: hover) {
+  .nav__links a:hover {
+    color: var(--purple);
+  }
+  .nav__links a:hover::before {
+    opacity: 1;
+  }
 }
 
 .nav__toggle {
@@ -1336,11 +1353,22 @@ h1, h2, h3 {
   font-weight: 500;
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn:not(.btn--fill):hover {
+/* Press adds the same small lift the header links get; hover stays as it
+   was, colour only. :hover is gated to real pointers throughout so it
+   doesn't latch on after a tap on touch. */
+.btn:not(.btn--fill):active {
   border-color: var(--purple);
   color: var(--purple);
+  transform: translateY(-2px);
+}
+@media (hover: hover) {
+  .btn:not(.btn--fill):hover {
+    border-color: var(--purple);
+    color: var(--purple);
+  }
 }
 
 .btn--fill {
@@ -1350,12 +1378,20 @@ h1, h2, h3 {
   box-shadow: 0 12px 24px -8px rgba(172, 33, 162, 0.35);
   transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.btn--fill:hover {
-  background: #8a1a84;
-  color: #fff;
-  border-color: transparent;
-  transform: translateY(-2px);
-  box-shadow: 0 16px 28px -8px rgba(172, 33, 162, 0.4);
+/* Press is a darker tone and nothing else — no lift, no bigger shadow.
+   Roughly half the resting purple's brightness: it has to clear the
+   hover shade (#8a1a84) by enough to still register on a pointer, since
+   hover has already darkened the button before the press lands. */
+.btn--fill:active {
+  background: #5f1259;
+}
+/* Hover lifts, press darkens — the two states say different things
+   rather than both recolouring the button. */
+@media (hover: hover) {
+  .btn--fill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 28px -8px rgba(172, 33, 162, 0.4);
+  }
 }
 
 .laptop__tooltip-cta {
@@ -1369,12 +1405,24 @@ h1, h2, h3 {
   box-shadow: 0 8px 16px -6px rgba(172, 33, 162, 0.5);
   transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.btn.laptop__tooltip-cta:hover {
-  background: #9b1e92;
+/* Filled like .btn--fill, so it follows the same split: hover lifts,
+   press darkens. It carries .btn without .btn--fill though, so the
+   outline button's rules land on it too — hence restating colour and
+   border, and cancelling the lift that .btn:not(.btn--fill):active
+   would otherwise add on press. */
+.btn.laptop__tooltip-cta:active {
+  background: #5f1259;
   color: #fff;
   border: none;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 20px -6px rgba(172, 33, 162, 0.55);
+  transform: none;
+}
+@media (hover: hover) {
+  .btn.laptop__tooltip-cta:hover {
+    color: #fff;
+    border: none;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px -6px rgba(172, 33, 162, 0.55);
+  }
 }
 
 .about__photo {

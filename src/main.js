@@ -409,7 +409,7 @@ function startSpace() {
     // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
     // m: the point bursting into the tunnel walls.
-    const m = ease(clamp01((sy - (tunnelTop - h * (flight ? 0.9 : 1))) / (h * (flight ? 0.8 : 0.35))));
+    const m = ease(clamp01((sy - (tunnelTop - h * (flight ? 0.9 : 1.2))) / (h * (flight ? 0.8 : 0.75))));
     // e: the tunnel letting go as "Обо мне" comes up.
     const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
     // Camera depth in the tunnel.
@@ -452,7 +452,7 @@ function startSpace() {
 
     // Short trails while things move fast (the fall, the tunnel), none at
     // rest, so the ring stays crisp.
-    const trail = still ? 0 : Math.max(k * (1 - m), flight ? m * (1 - e) * 0.55 : 0) * 0.55;
+    const trail = still ? 0 : Math.max(k * Math.pow(1 - m, flight ? 1 : 4), flight ? m * (1 - e) * 0.55 : 0) * 0.55;
     if (trail > 0.02) {
       ctx.globalAlpha = 1;
       ctx.fillStyle = `rgba(${BG}, ${1 - trail})`;
@@ -463,6 +463,7 @@ function startSpace() {
 
     const drift = still ? 0 : time * 0.001;
     const near = [], mid = [], far = [], accent = [], stars = [], streaks = [];
+    const flowDust = [], flowAccent = [];
     const tcx = w / 2, tcy = h / 2;
     const halfDiag = Math.hypot(w, h) / 2 + 20;
     const wall = Math.max(w, h) * 0.55;
@@ -491,19 +492,25 @@ function startSpace() {
       let bucket = 0;
       let streak = 0, dirX = 0, dirY = 0;
 
-      // Flow: the point pours out into a stream that runs down through the
-      // cases. Most of the dust keeps close to the line; a share drifts
-      // wider, so the cases sit among particles rather than beside a rope.
+      // Flow: the stream does not grow out of the point. It fades in where it
+      // belongs while the point fades out, its dust drawing in from wider to
+      // its line as it comes, the way it did in the first version.
       if (m > 0 && !flight) {
         const d = ((p.s + (still ? 0 : time * p.speed)) % 1) * path.total;
         const q = onPath(d);
-        const wide = 70 + 260 * p.fall * p.fall;
+        const wide = (70 + 260 * p.fall * p.fall) * (1 + 2.5 * (1 - m));
         const wob = Math.sin(d * 0.008 + drift + p.phase) * 12;
         const off = p.band * wide + wob;
-        const sx = q.x + q.nx * off;
-        const syy = q.y + q.ny * off - sy;
-        x += (sx - x) * m;
-        y += (syy - y) * m;
+        let fx = q.x + q.nx * off;
+        let fy = q.y + q.ny * off - sy;
+        if (e > 0) {
+          fx += (p.u * w - fx) * e;
+          fy += (p.v * h - fy) * e;
+        }
+        if (fx > -4 && fx < w + 4 && fy > -4 && fy < h + 4) {
+          (p.accent ? flowAccent : flowDust).push(fx, fy, p.size);
+        }
+        if (m >= 1) continue;
       }
 
       // Tunnel walls: a cylinder seen from inside, drawn in perspective.
@@ -570,10 +577,14 @@ function startSpace() {
     };
     const fade = 1 - e * 0.6;
     paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
-    paint(far, 'rgb(236, 233, 255)', 0.45 * fade);
-    paint(mid, 'rgb(236, 233, 255)', 0.75 * fade);
-    paint(near, 'rgb(236, 233, 255)', 0.85 * fade);
-    paint(accent, 'rgb(214, 107, 208)', 0.95 * fade);
+    // In flow mode the ring's last dust fades out as the stream fades in.
+    const ringFade = flight ? 1 : 1 - m;
+    paint(flowDust, 'rgb(236, 233, 255)', 0.85 * m * fade);
+    paint(flowAccent, 'rgb(214, 107, 208)', 0.95 * m * fade);
+    paint(far, 'rgb(236, 233, 255)', 0.45 * fade * ringFade);
+    paint(mid, 'rgb(236, 233, 255)', 0.75 * fade * ringFade);
+    paint(near, 'rgb(236, 233, 255)', 0.85 * fade * ringFade);
+    paint(accent, 'rgb(214, 107, 208)', 0.95 * fade * ringFade);
     if (streaks.length) {
       ctx.globalAlpha = 0.75;
       ctx.strokeStyle = 'rgb(236, 233, 255)';

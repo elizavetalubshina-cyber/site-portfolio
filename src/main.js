@@ -267,7 +267,7 @@ function startSpace() {
   const about = document.getElementById('about');
   const still = reducedMotion.matches;
 
-  const COUNT = 7500;
+  const COUNT = 14000;
   const REPEL = 110;
   // Tunnel world: depth of the visible stretch, the distance at which
   // something is drawn at its real size, and the gap between cases.
@@ -447,9 +447,15 @@ function startSpace() {
       const hr = hero.getBoundingClientRect();
       tags.forEach((tag, i) => {
         const a = (i / tags.length) * Math.PI * 2 + spin * 0.9 + 0.35;
-        const x = cx + Math.cos(a) * R * 1.04 * pull;
-        const oy = Math.sin(a) * R * 1.04 * pull;
-        tag.style.transform = `translate(${x - hr.left}px, ${cy + oy - hr.top}px) translate(-50%, -50%)`;
+        // Just outside the ring, and anchored on the side facing it, so the
+        // label reads against clear sky instead of over the dust: on the
+        // right of the ring it starts at the point, on the left it ends there.
+        const ca = Math.cos(a), sa = Math.sin(a);
+        const r = R * pull * 1.1 + 16;
+        const x = cx + ca * r;
+        // Kept clear of the nav at the top and on screen at the bottom.
+        const oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * r));
+        tag.style.transform = `translate(${x - hr.left}px, ${cy + oy - hr.top}px) translate(${-50 * (1 - ca)}%, ${-50 * (1 - sa)}%)`;
         const shown = 1 - clamp01(k * 1.6);
         tag.style.opacity = String(shown);
         tag.style.pointerEvents = shown > 0.4 ? 'auto' : 'none';
@@ -509,9 +515,9 @@ function startSpace() {
       if (m > 0 && !flight) {
         const d = ((p.s + streamT * p.speed) % 1) * path.total;
         const q = onPath(d);
-        const wide = (110 + 150 * p.fall * p.fall) * (0.8 + 0.4 * Math.abs(p.band)) * (1 + 2.5 * (1 - m));
+        const wide = (120 + 60 * p.fall * p.fall) * (1 + 2.5 * (1 - m));
         // Two strands half a turn apart; a little jitter keeps them dusty.
-        const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.12;
+        const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
         const off = Math.cos(turn) * wide;
         const depth = Math.sin(turn);
         let fx = q.x + q.nx * off;
@@ -521,7 +527,10 @@ function startSpace() {
           fy += (p.v * h - fy) * e;
         }
         if (fx > -4 && fx < w + 4 && fy > -4 && fy < h + 4) {
-          const sz = p.size * (1 + 0.55 * depth) * (1 + rush * 0.35);
+          const sz = p.size * 1.2 * (1 + 0.55 * depth) * (1 + rush * 0.35);
+          // A little scatter across the strand so it reads as dust, not a line.
+          fx += q.nx * p.band * 14;
+          fy += q.ny * p.band * 14;
           (p.accent ? flowAccent : depth > 0 ? flowDust : flowBack).push(fx, fy, sz);
         }
         if (m >= 1) continue;

@@ -371,8 +371,11 @@ function startSpace() {
     spin += dt * spinSpeed;
 
     const hb = head.getBoundingClientRect();
+    // The centre of everything is the middle of the screen, where the pinned
+    // name sits. Tying it to the name made the core ride up with the page
+    // once the hero let go.
     const cx = w / 2;
-    const cy = hb.top + hb.height / 2;
+    const cy = h / 2;
     const R = Math.min(w * 0.3, h * 0.42);
     const pull = Math.pow(1 - k, 0.9);
 
@@ -412,7 +415,8 @@ function startSpace() {
     const tcx = w / 2, tcy = h / 2;
     const halfDiag = Math.hypot(w, h) / 2 + 20;
     const wall = Math.max(w, h) * 0.55;
-    const twist = cam * 0.00025;
+    // Vortex: the walls wind into a spiral down the tunnel and keep turning.
+    const twist = cam * 0.0006 + (still ? 0 : time * 0.00035);
 
     for (const p of pts) {
       if (p.star) {
@@ -441,7 +445,7 @@ function startSpace() {
       if (m > 0) {
         const z = ((((p.tz - cam - flow) % DEPTH) + DEPTH) % DEPTH) + 40;
         const s = FOCUS / z;
-        const a = p.ta + twist;
+        const a = p.ta + twist + z * 0.0011;
         const txp = tcx + Math.cos(a) * wall * p.tr * s;
         const typ = tcy + Math.sin(a) * wall * p.tr * s;
         x += (txp - x) * m;
@@ -451,8 +455,9 @@ function startSpace() {
         // Near the viewer the dust is drawn as short streaks pointing away
         // from the centre, the way things smear past at speed.
         streak = m * (1 - e) * Math.min(42, 10 * s);
-        dirX = Math.cos(a);
-        dirY = Math.sin(a);
+        // Streaks follow the spiral: part outward, mostly round.
+        dirX = Math.cos(a + 1.1);
+        dirY = Math.sin(a + 1.1);
       }
 
       // Faint scatter by "Обо мне".

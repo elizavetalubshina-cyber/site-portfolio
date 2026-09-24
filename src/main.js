@@ -284,7 +284,11 @@ function startSpace() {
     a: Math.random() * Math.PI * 2,
     band: gauss(),
     inner: Math.random() < 0.16,
-    star: Math.random() < 0.1,
+    star: Math.random() < 0.13,
+    // Stars fill a disc a little larger than the screen's diagonal, so they
+    // can swirl round the centre without ever leaving a corner bare.
+    sa: Math.random() * Math.PI * 2,
+    sr: Math.sqrt(Math.random()),
     fall: Math.random(),
     ta: Math.random() * Math.PI * 2,
     // Walls are built of rings at even steps down the tunnel, so the
@@ -406,17 +410,20 @@ function startSpace() {
     const drift = still ? 0 : time * 0.001;
     const near = [], mid = [], far = [], accent = [], stars = [], streaks = [];
     const tcx = w / 2, tcy = h / 2;
+    const halfDiag = Math.hypot(w, h) / 2 + 20;
     const wall = Math.max(w, h) * 0.55;
     const twist = cam * 0.00025;
 
     for (const p of pts) {
       if (p.star) {
-        let x = p.u * w;
-        let y = (((p.v * h * 1.4 - sy * 0.06) % h) + h) % h;
-        // Even the stars lean into the pull.
-        x += (cx - x) * k * k * 0.35 * (1 - m);
-        y += (cy - y) * k * k * 0.35 * (1 - m);
-        stars.push(x, y, p.size * 0.8);
+        // A whirlpool rather than a squeeze: stars turn round the centre,
+        // those near it turning and sinking more, those at the rim barely,
+        // so the edges of the screen stay full.
+        const rn = p.sr;
+        const swirl = k * k * (1.4 / (rn + 0.25));
+        const rr = rn * halfDiag * (1 - 0.45 * k * k * (1 - rn));
+        const a = p.sa + swirl + (still ? 0 : time * 0.000004);
+        stars.push(w / 2 + Math.cos(a) * rr, h / 2 + Math.sin(a) * rr, p.size * 0.8);
         continue;
       }
 

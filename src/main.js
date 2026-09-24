@@ -267,7 +267,7 @@ function startSpace() {
   const about = document.getElementById('about');
   const still = reducedMotion.matches;
 
-  const COUNT = 4200;
+  const COUNT = 7500;
   const REPEL = 110;
   // Tunnel world: depth of the visible stretch, the distance at which
   // something is drawn at its real size, and the gap between cases.
@@ -289,7 +289,7 @@ function startSpace() {
     ta: Math.random() * Math.PI * 2,
     // Walls are built of rings at even steps down the tunnel, so the
     // perspective reads as a tube rather than a cloud.
-    tz: Math.floor(Math.random() * 36) * (DEPTH / 36) + Math.random() * 8,
+    tz: Math.floor(Math.random() * 44) * (DEPTH / 44) + Math.random() * 8,
     tr: 1 + gauss() * 0.03,
     u: Math.random(),
     v: Math.random(),
@@ -531,6 +531,10 @@ function startSpace() {
     // Flight: each case comes out of the depth, reads at full size, and
     // flies past the viewer.
     if (flight) {
+      // Until the stage pins, it is still sliding up from below; this holds
+      // the cases at the centre of the screen meanwhile, so they only ever
+      // come out of the depth and never ride up with the page.
+      const lift = Math.max(0, tunnelEl.getBoundingClientRect().top);
       cards.forEach((card, i) => {
         const z = caseDepth(i) - cam;
         let op = 0, sc = 0.1;
@@ -539,7 +543,7 @@ function startSpace() {
           op = clamp01((sc - 0.4) / 0.35) * (1 - clamp01((sc - 1.3) / 0.6)) * m;
         }
         card.style.opacity = String(op);
-        card.style.transform = `translate(-50%, -50%) scale(${Math.min(sc, 4)})`;
+        card.style.transform = `translate(-50%, calc(-50% - ${lift}px)) scale(${Math.min(sc, 4)})`;
         card.style.pointerEvents = op > 0.85 ? 'auto' : 'none';
         card.style.zIndex = String(100 - i);
       });

@@ -37,6 +37,10 @@
 </head>
 <body class="home-page">
   <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <!-- Particle field behind the whole homepage: a ring around the name that
+       flows into a stream by the cases and scatters by "Обо мне" (main.js).
+       Decorative, desktop only. -->
+  <canvas class="particles" id="particles" aria-hidden="true"></canvas>
 
   <header class="nav">
     <div class="nav__shell">
@@ -101,6 +105,32 @@
             <img src="/src/assets/hero/design-system.webp" alt="" width="800" height="423" decoding="async" />
             <span class="hero__tile-label">Дизайн-система</span>
           </span>
+        </a>
+      </div>
+
+      <!-- Desktop: case names sit on the particle ring, each showing its cover
+           on hover. Same links as the cases grid below, so kept out of the
+           accessibility tree. -->
+      <div class="hero__marks" id="heroMarks">
+        <a class="hero__mark" href="/cases/vs-subtitles.html" data-mark="subtitles" tabindex="-1" aria-hidden="true">
+          <span class="hero__mark-text">VS Subtitles</span>
+          <span class="hero__mark-preview"><img src="/src/assets/hero/subtitles.webp" alt="" width="800" height="544" decoding="async" /></span>
+        </a>
+        <a class="hero__mark" href="/cases/satellite.html" data-mark="satellite" tabindex="-1" aria-hidden="true">
+          <span class="hero__mark-text">Satellite</span>
+          <span class="hero__mark-preview"><img src="/src/assets/hero/satellite.webp" alt="" width="800" height="444" decoding="async" /></span>
+        </a>
+        <a class="hero__mark" href="/cases/tracktice.html" data-mark="tracktice" tabindex="-1" aria-hidden="true">
+          <span class="hero__mark-text">Tracktice Flow</span>
+          <span class="hero__mark-preview"><img src="/src/assets/hero/tracktice.webp" alt="" width="800" height="450" decoding="async" /></span>
+        </a>
+        <a class="hero__mark" href="/cases/vs-ecosystem.html" data-mark="ecosystem" tabindex="-1" aria-hidden="true">
+          <span class="hero__mark-text">VS Ecosystem</span>
+          <span class="hero__mark-preview"><img src="/src/assets/hero/ecosystem.webp" alt="" width="800" height="442" decoding="async" /></span>
+        </a>
+        <a class="hero__mark" href="/cases/design-system.html" data-mark="design-system" tabindex="-1" aria-hidden="true">
+          <span class="hero__mark-text">Дизайн-система</span>
+          <span class="hero__mark-preview"><img src="/src/assets/hero/design-system.webp" alt="" width="800" height="423" decoding="async" /></span>
         </a>
       </div>
 

@@ -1432,6 +1432,109 @@ h1, h2, h3 {
 
 /* ---------- Responsive ---------- */
 
+/* ---------- Particle field and case marks (desktop) ---------- */
+
+/* Fixed behind everything on the homepage; the page content stacks above it.
+   The field is drawn by main.js and only on a wide screen with a real
+   pointer, so the phone layout below never shows it. */
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.home-page main,
+.home-page .footer {
+  position: relative;
+  z-index: 1;
+}
+
+.hero__marks {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Small caps in a monospace face, a square bullet in the accent colour:
+   reads as an annotation on the ring rather than as a button. Positioned
+   from main.js onto points of the ring. */
+.hero__mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-half) var(--space-1);
+  border-radius: 6px;
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text);
+  text-decoration: none;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.6s ease, background-color 0.25s ease;
+}
+.hero__mark::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--purple);
+}
+.hero__marks.is-ready .hero__mark { opacity: var(--fade, 1); }
+
+.hero__mark-preview {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--space-1));
+  width: 260px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(18, 20, 26, 0.08), 0 30px 60px -24px rgba(18, 20, 26, 0.5);
+  opacity: 0;
+  transform: translate(-50%, 8px) scale(0.96);
+  transform-origin: bottom center;
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 0.7, 0.3, 1);
+  pointer-events: none;
+}
+.hero__mark-preview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top;
+}
+/* Marks in the lower half open their preview downward, so it never runs
+   into the name. */
+.hero__mark.is-below .hero__mark-preview {
+  bottom: auto;
+  top: calc(100% + var(--space-1));
+  transform-origin: top center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero__mark:hover { background: rgba(172, 33, 162, 0.08); }
+  .hero__mark:hover .hero__mark-preview {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (min-width: 901px) {
+  .hero__stage { display: none; }
+}
+@media (max-width: 900px) {
+  .particles,
+  .hero__marks { display: none; }
+}
+
 /* Below a laptop the covers stop floating: there is no room around the name,
    and on touch there is no cursor for them to follow. They line up as a
    swipeable strip under the name instead, so the first screen on a phone

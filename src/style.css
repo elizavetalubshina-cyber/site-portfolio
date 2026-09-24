@@ -1470,6 +1470,15 @@ h1, h2, h3 {
      right where the top of the ring runs, so it would swallow the hover of
      a topic passing under it. Only the links themselves take the pointer;
      the hidden logo takes nothing until it shows. */
+  /* The nav floats over the page instead of taking room above it. In flow
+     it pushed the pinned hero ~70px down, so the first bit of scroll only
+     slid the ring up to the centre before the fall could start. */
+  .home-page .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+
   .home-page .nav,
   .home-page .nav__shell,
   .home-page .nav__inner { pointer-events: none; }

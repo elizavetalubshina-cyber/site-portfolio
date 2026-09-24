@@ -353,7 +353,7 @@ if (particleCanvas && wideScreen.matches) {
     t: Math.pow(Math.random(), 0.75),
     u: Math.random(),
     v: Math.random(),
-    size: Math.random() < 0.85 ? 1.2 : 2,
+    size: Math.random() < 0.8 ? 1.6 : 2.4,
     accent: Math.random() < 0.06,
     phase: Math.random() * Math.PI * 2,
     ox: 0, oy: 0,
@@ -363,9 +363,11 @@ if (particleCanvas && wideScreen.matches) {
   let heroH = 1, aboutTop = 1;
 
   const layout = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     w = window.innerWidth;
     h = window.innerHeight;
+    // Safari gives up on canvases past ~16.7M pixels and draws nothing, so
+    // the backing store stays under that even on a tall window at 2x.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / (w * h)));
     particleCanvas.width = w * dpr;
     particleCanvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -420,7 +422,7 @@ if (particleCanvas && wideScreen.matches) {
     // never competes with the text it sits under.
     ctx.globalAlpha = 1 - toScatter * 0.7;
     const accent = [];
-    ctx.fillStyle = 'rgba(18, 20, 26, 0.55)';
+    ctx.fillStyle = 'rgba(18, 20, 26, 0.7)';
 
     for (const p of pts) {
       // Ring: on the ellipse, a few inside it, some loose stars around.

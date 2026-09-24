@@ -1432,11 +1432,10 @@ h1, h2, h3 {
 
 /* ---------- Responsive ---------- */
 
-/* ---------- Particle field and case marks (desktop) ---------- */
+/* ---------- Space homepage (desktop) ---------- */
 
 /* Fixed behind everything on the homepage; the page content stacks above it.
-   The field is drawn by main.js and only on a wide screen with a real
-   pointer, so the phone layout below never shows it. */
+   Drawn by main.js on wide windows only, so the phone layout never shows it. */
 .particles {
   position: fixed;
   inset: 0;
@@ -1451,88 +1450,207 @@ h1, h2, h3 {
   z-index: 1;
 }
 
-.hero__marks {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-}
+.hero__orbit,
+.journey { display: none; }
 
-/* Small caps in a monospace face, a square bullet in the accent colour:
-   reads as an annotation on the ring rather than as a button. Positioned
-   from main.js onto points of the ring. */
-.hero__mark {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-half) var(--space-1);
-  border-radius: 6px;
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--text);
-  text-decoration: none;
-  pointer-events: auto;
-  opacity: 0;
-  transition: opacity 0.6s ease, background-color 0.25s ease;
-}
-.hero__mark::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--purple);
-}
-.hero__marks.is-ready .hero__mark { opacity: var(--fade, 1); }
+@media (min-width: 901px) {
+  /* Night sky: the homepage alone turns dark on a wide screen. The same
+     tokens drive every colour on the page, so redefining them here repaints
+     the nav, about and footer too. The case pages stay light. */
+  .home-page {
+    --bg: #07070b;
+    --text: #f1f0f6;
+    --text-secondary: #a9a7b8;
+    --text-muted: #8a889a;
+    --border: rgba(255, 255, 255, 0.12);
+    --purple: #d66bd0;
+    color-scheme: dark;
+  }
+  .home-page .nav.is-scrolled .nav__inner {
+    background: rgba(12, 12, 18, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
 
-.hero__mark-preview {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + var(--space-1));
-  width: 260px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(18, 20, 26, 0.08), 0 30px 60px -24px rgba(18, 20, 26, 0.5);
-  opacity: 0;
-  transform: translate(-50%, 8px) scale(0.96);
-  transform-origin: bottom center;
-  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 0.7, 0.3, 1);
-  pointer-events: none;
-}
-.hero__mark-preview img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: top;
-}
-/* Marks in the lower half open their preview downward, so it never runs
-   into the name. */
-.hero__mark.is-below .hero__mark-preview {
-  bottom: auto;
-  top: calc(100% + var(--space-1));
-  transform-origin: top center;
-}
+  /* The pinned hero: this wrapper is taller than the screen, the hero sticks
+     while it scrolls past, and that distance is the fall into the hole. */
+  .intro { height: 210vh; }
+  .intro .hero {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .hero__stage { display: none; }
+  .hero__head { will-change: transform, opacity; }
 
-@media (hover: hover) and (pointer: fine) {
-  .hero__mark:hover { background: rgba(172, 33, 162, 0.08); }
-  .hero__mark:hover .hero__mark-preview {
+  .hero__orbit {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  /* Small caps in a monospace face, square bullet in the accent: reads as an
+     annotation drifting with the dust. Positioned every frame from main.js. */
+  .hero__orbit-tag {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--text);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  .hero__orbit-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--purple);
+  }
+
+  /* ---------- Cases along the stream ---------- */
+
+  .cases { margin-top: 0; }
+  .cases > h2 {
+    margin: 0;
+    padding-top: var(--space-8);
+    text-align: center;
+  }
+  .cases__grid { display: none; }
+
+  .journey { display: block; }
+
+  .journey__case {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: clamp(32px, 5vw, 96px);
+    align-items: center;
+    min-height: 85vh;
+    padding: var(--space-6) 0;
+  }
+  .journey__case--right { grid-template-columns: 5fr 7fr; }
+  .journey__case--right .journey__cover { order: 2; }
+
+  .journey__cover {
+    position: relative;
+    display: block;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: #111118;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 40px 120px -40px rgba(214, 107, 208, 0.45);
+    transition: transform 0.6s cubic-bezier(0.22, 0.7, 0.3, 1), box-shadow 0.6s ease;
+  }
+  .journey__cover img {
+    display: block;
+    width: 100%;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .journey__cover:hover {
+      transform: scale(1.02);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.14),
+        0 50px 140px -40px rgba(214, 107, 208, 0.6);
+    }
+  }
+
+  .journey__index {
+    margin: 0 0 var(--space-2);
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--purple);
+  }
+  .journey__title {
+    margin: 0 0 var(--space-2);
+    font-size: clamp(32px, 3.4vw, 56px);
+    line-height: 1.05;
+  }
+  .journey__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .journey__title a::after {
+    content: ' →';
+    color: var(--purple);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .journey__title a:hover::after { opacity: 1; }
+  }
+  .journey__desc {
+    margin: 0 0 var(--space-2);
+    max-width: 440px;
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  .journey__stats {
+    margin: 0 0 var(--space-3);
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+  .journey__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-3);
+  }
+  .journey__company {
+    margin-right: var(--space-1);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .journey__tag {
+    padding: var(--space-half) var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Each case surfaces as the stream reaches it. */
+  .journey__case .journey__cover,
+  .journey__case .journey__text {
+    opacity: 0;
+    transform: translateY(48px);
+    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 0.7, 0.3, 1);
+  }
+  .journey__case .journey__text { transition-delay: 0.12s; }
+  .journey__case.is-visible .journey__cover,
+  .journey__case.is-visible .journey__text {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: none;
+  }
+
+  .about { margin-top: var(--space-8); }
+}
+
+@media (min-width: 901px) and (prefers-reduced-motion: reduce) {
+  .journey__case .journey__cover,
+  .journey__case .journey__text {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 
-@media (min-width: 901px) {
-  .hero__stage { display: none; }
-}
 @media (max-width: 900px) {
-  .particles,
-  .hero__marks { display: none; }
+  .particles { display: none; }
 }
 
 /* Below a laptop the covers stop floating: there is no room around the name,

@@ -213,259 +213,233 @@ if (caseToc) {
   window.addEventListener('resize', onScroll);
 }
 
-// Hero covers react to the cursor, each in its own way, so the stage reads
-// as five objects rather than one layer sliding about:
-//   follow  - leans toward the cursor and tilts to face it
-//   inverse - drifts the opposite way, as if further back
-//   spin    - turns with the cursor's horizontal position
-//   magnet  - pulled in when the cursor comes close
-//   repel   - pushed away when the cursor comes close
-// Every value eases toward its target each frame instead of snapping, which
-// is what makes the motion feel weighted. Only on a real pointer with motion
-// allowed: on touch the covers are a static strip (the 900px rule in style.css).
-const heroStage = document.getElementById('heroStage');
-const canDrift = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 901px)');
+// Space homepage (desktop). One field of particles tells the whole story:
+//   1. a ring of dust turning round the name, with the topics of the work
+//      orbiting in it;
+//   2. scrolling while the hero is pinned turns the ring into a black hole:
+//      it spins faster, the dark centre grows, the name is pulled in, and the
+//      screen goes black;
+//   3. out of the dark comes a stream that runs down the page through each
+//      case cover in turn, so the particles lead from one case to the next;
+//   4. by "Обо мне" the dust settles into a faint scatter.
+// Stars sit behind all of it. The cursor pushes the dust aside. Only on
+// windows wider than the phone layout; with reduced motion it holds still.
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const particleCanvas = document.getElementById('particles');
+const wideScreen = window.matchMedia('(min-width: 901px)');
 
-if (heroStage) {
-  const behaviours = {
-    subtitles: 'follow',
-    satellite: 'inverse',
-    'design-system': 'spin',
-    tracktice: 'magnet',
-    ecosystem: 'repel',
-  };
-  const RADIUS = 340;
-  const keys = ['tx', 'ty', 'rx', 'ry', 'rz', 's'];
-  const rest = { tx: 0, ty: 0, rx: 0, ry: 0, rz: 0, s: 1 };
-
-  const tiles = [...heroStage.querySelectorAll('.hero__tile')].map((el) => {
-    const name = [...el.classList].find((c) => c.startsWith('hero__tile--')).slice('hero__tile--'.length);
-    return { el, mode: behaviours[name] || 'follow', cx: 0, cy: 0, cur: { ...rest }, target: { ...rest } };
-  });
-
-  // Centres are measured without the transforms applied, relative to the
-  // stage, so scrolling and the covers' own movement do not skew them.
-  const measure = () => {
-    tiles.forEach((t) => {
-      t.cx = t.el.offsetLeft + t.el.offsetWidth / 2;
-      t.cy = t.el.offsetTop + t.el.offsetHeight / 2;
-    });
-  };
-  measure();
-  window.addEventListener('resize', measure);
-
-  let frame = 0;
-
-  const setTargets = (px, py, nx, ny) => {
-    tiles.forEach((t) => {
-      const g = t.target;
-      Object.assign(g, rest);
-      const dx = px - t.cx;
-      const dy = py - t.cy;
-      const dist = Math.hypot(dx, dy) || 1;
-      const near = Math.max(0, 1 - dist / RADIUS);
-      switch (t.mode) {
-        case 'follow':
-          g.tx = nx * 44; g.ty = ny * 32; g.ry = nx * 14; g.rx = -ny * 10;
-          break;
-        case 'inverse':
-          g.tx = -nx * 40; g.ty = -ny * 28;
-          break;
-        case 'spin':
-          g.rz = nx * 14; g.ty = ny * 10;
-          break;
-        case 'magnet':
-          g.tx = dx * 0.3 * near; g.ty = dy * 0.3 * near; g.s = 1 + 0.06 * near;
-          break;
-        case 'repel':
-          g.tx = (-dx / dist) * 70 * near; g.ty = (-dy / dist) * 70 * near; g.rz = (dx / dist) * -8 * near;
-          break;
+const journeyCases = document.querySelectorAll('.journey__case');
+if (journeyCases.length && 'IntersectionObserver' in window) {
+  const reveal = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        reveal.unobserve(entry.target);
       }
     });
-  };
-
-  const render = () => {
-    let moving = false;
-    tiles.forEach((t) => {
-      keys.forEach((k) => {
-        const d = t.target[k] - t.cur[k];
-        t.cur[k] += d * 0.08;
-        if (Math.abs(d) > 0.01) moving = true;
-      });
-      const c = t.cur;
-      t.el.style.transform = `perspective(900px) translate3d(${c.tx}px, ${c.ty}px, 0) rotateX(${c.rx}deg) rotateY(${c.ry}deg) rotate(${c.rz}deg) scale(${c.s})`;
-    });
-    frame = moving ? requestAnimationFrame(render) : 0;
-  };
-  const kick = () => { if (!frame) frame = requestAnimationFrame(render); };
-
-  window.addEventListener('pointermove', (e) => {
-    if (!canDrift.matches || reducedMotion.matches) return;
-    const box = heroStage.getBoundingClientRect();
-    setTargets(
-      e.clientX - box.left,
-      e.clientY - box.top,
-      (e.clientX / window.innerWidth) * 2 - 1,
-      (e.clientY / window.innerHeight) * 2 - 1,
-    );
-    kick();
-  }, { passive: true });
-
-  // Cursor left the window: everything settles back to where it started.
-  document.documentElement.addEventListener('mouseleave', () => {
-    tiles.forEach((t) => Object.assign(t.target, rest));
-    kick();
-  });
+  }, { threshold: 0.25 });
+  journeyCases.forEach((el) => reveal.observe(el));
+} else {
+  journeyCases.forEach((el) => el.classList.add('is-visible'));
 }
-
-// Particle field (desktop). One set of points with three shapes it can take:
-//   ring    - an ellipse of dust around the name on the first screen
-//   stream  - a band that narrows to the right, flowing past the cases
-//   scatter - sparse dust over the whole screen by "Обо мне"
-// Every point has a home in each shape; the scroll position picks the mix,
-// so scrolling down pours the ring into the stream and then lets it settle.
-// The cursor pushes points aside. Drawn on any window wider than the phone
-// layout, touch or not; with reduced motion asked for it holds still.
-const particleCanvas = document.getElementById('particles');
-const heroMarks = document.getElementById('heroMarks');
-const wideScreen = window.matchMedia('(min-width: 901px)');
 
 if (particleCanvas && wideScreen.matches) {
   const ctx = particleCanvas.getContext('2d');
+  const intro = document.getElementById('intro');
   const hero = document.querySelector('.home-page .hero');
   const head = document.querySelector('.home-page .hero__head');
+  const orbit = document.getElementById('heroOrbit');
+  const tags = orbit ? [...orbit.children] : [];
+  const journey = document.getElementById('journey');
+  const covers = journey ? [...journey.querySelectorAll('.journey__cover')] : [];
   const about = document.getElementById('about');
   const still = reducedMotion.matches;
 
-  const COUNT = 2400;
+  const COUNT = 4200;
   const REPEL = 110;
+  const STREAM_WIDTH = 85;
   const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+  const clamp01 = (n) => Math.min(1, Math.max(0, n));
+  const ease = (n) => n * n * (3 - 2 * n);
 
-  // Per-point constants: which part of each shape it belongs to, its size,
-  // its wobble. Shapes are rebuilt on resize from these, so a point keeps
-  // its place in every shape across resizes.
   const pts = Array.from({ length: COUNT }, () => ({
-    angle: Math.random() * Math.PI * 2,
+    a: Math.random() * Math.PI * 2,
     band: gauss(),
-    inner: Math.random() < 0.18,
-    star: Math.random() < 0.14,
-    t: Math.pow(Math.random(), 0.75),
+    inner: Math.random() < 0.16,
+    star: Math.random() < 0.1,
+    fall: 0.5 + Math.random(),
+    s: Math.random(),
+    speed: 0.000012 + Math.random() * 0.00002,
     u: Math.random(),
     v: Math.random(),
-    size: Math.random() < 0.8 ? 1.6 : 2.4,
-    accent: Math.random() < 0.06,
+    size: Math.random() < 0.8 ? 1.4 : 2.2,
+    accent: Math.random() < 0.07,
     phase: Math.random() * Math.PI * 2,
-    ox: 0, oy: 0,
+    ox: 0,
+    oy: 0,
   }));
 
-  let w = 0, h = 0, ring = { cx: 0, cy: 0, rx: 0, ry: 0 };
-  let heroH = 1, aboutTop = 1;
+  let w = 0, h = 0, diag = 0;
+  let introTop = 0, introH = 1, aboutTop = 1;
+  let path = { x: [], y: [], len: [], total: 1 };
+
+  // The stream's course: from just above the cases, through the centre of
+  // every cover, and on past the last one. A Catmull-Rom curve through
+  // those points, sampled densely with the running length at each sample.
+  const buildPath = () => {
+    if (!journey || !covers.length) return;
+    const top = journey.getBoundingClientRect().top + window.scrollY;
+    const bottom = top + journey.offsetHeight;
+    const pts2 = [{ x: w / 2, y: top - h * 0.6 }, { x: w / 2, y: top - h * 0.1 }];
+    covers.forEach((c) => {
+      const r = c.getBoundingClientRect();
+      pts2.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
+    });
+    pts2.push({ x: w / 2, y: bottom + h * 0.2 }, { x: w / 2, y: bottom + h * 0.8 });
+
+    const x = [], y = [], len = [];
+    let total = 0;
+    for (let i = 0; i < pts2.length - 1; i++) {
+      const p0 = pts2[Math.max(0, i - 1)], p1 = pts2[i], p2 = pts2[i + 1], p3 = pts2[Math.min(pts2.length - 1, i + 2)];
+      for (let j = 0; j < 80; j++) {
+        const t = j / 80, t2 = t * t, t3 = t2 * t;
+        const px = 0.5 * (2 * p1.x + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
+        const py = 0.5 * (2 * p1.y + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
+        if (x.length) total += Math.hypot(px - x[x.length - 1], py - y[y.length - 1]);
+        x.push(px); y.push(py); len.push(total);
+      }
+    }
+    path = { x, y, len, total: total || 1 };
+  };
+
+  // Point on the stream at a given distance along it, plus the unit normal
+  // there, so a particle can sit to one side of the centre line.
+  const onPath = (d) => {
+    const { x, y, len } = path;
+    let lo = 0, hi = len.length - 1;
+    while (lo < hi - 1) {
+      const mid = (lo + hi) >> 1;
+      if (len[mid] < d) lo = mid; else hi = mid;
+    }
+    const seg = len[hi] - len[lo] || 1;
+    const f = (d - len[lo]) / seg;
+    const dx = x[hi] - x[lo], dy = y[hi] - y[lo];
+    const n = Math.hypot(dx, dy) || 1;
+    return { x: x[lo] + dx * f, y: y[lo] + dy * f, nx: -dy / n, ny: dx / n };
+  };
 
   const layout = () => {
     w = window.innerWidth;
     h = window.innerHeight;
-    // Safari gives up on canvases past ~16.7M pixels and draws nothing, so
-    // the backing store stays under that even on a tall window at 2x.
+    diag = Math.hypot(w, h);
+    // Safari gives up on canvases past ~16.7M pixels and draws nothing.
     const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / (w * h)));
     particleCanvas.width = w * dpr;
     particleCanvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const box = head.getBoundingClientRect();
-    ring = {
-      cx: box.left + box.width / 2,
-      cy: box.top + window.scrollY + box.height / 2,
-      rx: Math.min(w * 0.3, h * 0.62),
-      ry: Math.min(h * 0.4, w * 0.3),
-    };
-    heroH = hero.offsetHeight;
+    introTop = intro.getBoundingClientRect().top + window.scrollY;
+    introH = intro.offsetHeight;
     aboutTop = about.getBoundingClientRect().top + window.scrollY;
-
-    placeMarks();
+    buildPath();
   };
-
-  // Case names sit on the ring, clear of the name band across the middle.
-  const markAngles = { subtitles: 205, 'design-system': 262, satellite: 322, tracktice: 142, ecosystem: 38 };
-  function placeMarks() {
-    if (!heroMarks) return;
-    const heroTop = hero.getBoundingClientRect().top + window.scrollY;
-    heroMarks.querySelectorAll('.hero__mark').forEach((el) => {
-      const a = (markAngles[el.dataset.mark] * Math.PI) / 180;
-      const x = ring.cx + Math.cos(a) * ring.rx;
-      const y = ring.cy - heroTop + Math.sin(a) * ring.ry;
-      el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-      el.classList.toggle('is-below', Math.sin(a) > 0);
-    });
-    heroMarks.classList.add('is-ready');
-  }
 
   const mouse = { x: -9999, y: -9999 };
   window.addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
   document.documentElement.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 
-  const clamp01 = (n) => Math.min(1, Math.max(0, n));
-  const ease = (n) => n * n * (3 - 2 * n);
+  let last = 0;
+  let spin = 0;
 
   const draw = (time) => {
+    const dt = still ? 0 : Math.min(50, time - last || 16);
+    last = time;
     const sy = window.scrollY;
-    // 0 -> 1 while the hero scrolls away; 0 -> 1 as "Обо мне" comes up.
-    const toStream = ease(clamp01(sy / (heroH * 0.85)));
-    const toScatter = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
-    const spin = still ? 0 : time * 0.00004;
-    const drift = still ? 0 : time * 0.001;
 
-    if (heroMarks) heroMarks.style.setProperty('--fade', String(1 - clamp01(toStream * 3)));
+    // k: how far into the fall, 0 at rest, 1 when the screen has gone black.
+    const k = ease(clamp01((sy - introTop) / (introH - h)));
+    // j: the stream taking over as the pinned hero lets go.
+    const j = ease(clamp01((sy - (introTop + introH - h * 1.45)) / (h * 0.75)));
+    const settle = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
+
+    const spinSpeed = 0.00006 + k * k * 0.0016;
+    spin += dt * spinSpeed;
+
+    const hb = head.getBoundingClientRect();
+    const cx = hb.left + hb.width / 2;
+    const cy = hb.top + hb.height / 2;
+    const rx = Math.min(w * 0.3, h * 0.62);
+    const ry = Math.min(h * 0.4, w * 0.3);
+    const grow = 1 + 2.4 * k * k;
+    const flat = 1 - 0.45 * k;
+    const holeR = Math.pow(k, 2.2) * diag * 0.75;
+
+    // The name is pulled into the centre, turning as it goes.
+    head.style.transform = k > 0 ? `scale(${1 - 0.92 * k}) rotate(${-30 * k}deg)` : '';
+    head.style.opacity = String(1 - clamp01(k * 1.3));
+
+    // Topics ride the ring, fading while they pass behind the name.
+    if (tags.length) {
+      const hr = hero.getBoundingClientRect();
+      tags.forEach((tag, i) => {
+        const a = (i / tags.length) * Math.PI * 2 + spin * 0.9 + 0.35;
+        const x = cx + Math.cos(a) * rx * 1.04 * grow;
+        const oy = Math.sin(a) * ry * 1.04 * grow * flat;
+        const nearName = clamp01((Math.abs(oy) - hb.height / 2) / 60);
+        tag.style.transform = `translate(${x - hr.left}px, ${cy + oy - hr.top}px) translate(-50%, -50%)`;
+        tag.style.opacity = String(nearName * (1 - clamp01(k * 1.6)));
+      });
+    }
 
     ctx.clearRect(0, 0, w, h);
-    // Settled into dust behind "Обо мне", the field fades well back so it
-    // never competes with the text it sits under.
-    ctx.globalAlpha = 1 - toScatter * 0.7;
+    const drift = still ? 0 : time * 0.001;
+    const stars = [];
     const accent = [];
-    ctx.fillStyle = 'rgba(18, 20, 26, 0.7)';
+    ctx.globalAlpha = 1 - settle * 0.6;
+    ctx.fillStyle = 'rgba(236, 233, 255, 0.78)';
 
     for (const p of pts) {
-      // Ring: on the ellipse, a few inside it, some loose stars around.
-      let rxp, ryp;
       if (p.star) {
-        rxp = p.u * w;
-        ryp = p.v * h - sy * 0.3;
-      } else {
-        const r = p.inner ? Math.sqrt(p.u) * 0.85 : 1 + p.band * 0.09;
-        const a = p.angle + spin;
-        rxp = ring.cx + Math.cos(a) * ring.rx * r;
-        // The ring "dives": it sinks with the page as the hero leaves.
-        ryp = ring.cy - sy * 0.55 + Math.sin(a) * ring.ry * r;
+        const y = (((p.v * h * 1.4 - sy * 0.06) % h) + h) % h;
+        stars.push(p.u * w, y, p.size * 0.8);
+        continue;
       }
 
-      // Stream: wide cloud on the left narrowing into a band on the right.
-      const spread = Math.pow(1 - p.t, 1.3) * h * 0.42 + h * 0.025;
-      const sxp = -w * 0.05 + p.t * w * 1.12;
-      const syp = h * 0.55 + p.band * spread + Math.sin(p.t * 6 + drift) * h * 0.04;
+      // Ring, spinning faster and falling inward as k grows.
+      p.a += dt * spinSpeed * (1 + p.fall * k * 2.5);
+      const r0 = p.inner ? Math.sqrt(p.u) * 0.85 : 1 + p.band * 0.09;
+      const r = r0 * grow * (1 - k * 0.35 * p.fall);
+      let x = cx + Math.cos(p.a) * rx * r;
+      let y = cy + Math.sin(p.a) * ry * r * flat;
 
-      // Scatter: loose even dust.
-      const cxp = p.u * w;
-      const cyp = p.v * h;
+      // Stream through the cases.
+      if (j > 0) {
+        const d = (((p.s + (still ? 0 : time * p.speed)) % 1) * path.total);
+        const q = onPath(d);
+        const wobble = Math.sin(d * 0.01 + drift + p.phase) * 10;
+        const sx = q.x + q.nx * (p.band * STREAM_WIDTH + wobble);
+        const syy = q.y + q.ny * (p.band * STREAM_WIDTH + wobble) - sy;
+        x += (sx - x) * j;
+        y += (syy - y) * j;
+      }
 
-      let x = rxp + (sxp - rxp) * toStream;
-      let y = ryp + (syp - ryp) * toStream;
-      x += (cxp - x) * toScatter;
-      y += (cyp - y) * toScatter;
+      // Faint scatter by "Обо мне".
+      if (settle > 0) {
+        x += (p.u * w - x) * settle;
+        y += (p.v * h - y) * settle;
+      }
 
       if (!still) {
-        x += Math.sin(drift + p.phase) * 2;
-        y += Math.cos(drift * 0.8 + p.phase) * 2;
+        x += Math.sin(drift + p.phase) * 1.5;
+        y += Math.cos(drift * 0.8 + p.phase) * 1.5;
       }
 
-      // Cursor push, eased so the dust closes back in softly.
-      const dx = x - mouse.x;
-      const dy = y - mouse.y;
-      const d = Math.hypot(dx, dy);
+      const dx = x - mouse.x, dy = y - mouse.y;
+      const dm = Math.hypot(dx, dy);
       let tx = 0, ty = 0;
-      if (d < REPEL && d > 0.1 && !still) {
-        const f = (1 - d / REPEL) * 42;
-        tx = (dx / d) * f;
-        ty = (dy / d) * f;
+      if (dm < REPEL && dm > 0.1 && !still) {
+        const f = (1 - dm / REPEL) * 40;
+        tx = (dx / dm) * f;
+        ty = (dy / dm) * f;
       }
       p.ox += (tx - p.ox) * 0.12;
       p.oy += (ty - p.oy) * 0.12;
@@ -473,16 +447,37 @@ if (particleCanvas && wideScreen.matches) {
       y += p.oy;
 
       if (x < -4 || x > w + 4 || y < -4 || y > h + 4) continue;
-      if (p.accent) accent.push(x, y, p.size);
+      if (p.accent) accent.push(x, y, p.size + 0.6);
       else ctx.fillRect(x, y, p.size, p.size);
     }
 
-    ctx.fillStyle = 'rgba(172, 33, 162, 0.8)';
-    for (let i = 0; i < accent.length; i += 3) ctx.fillRect(accent[i], accent[i + 1], accent[i + 2] + 0.6, accent[i + 2] + 0.6);
+    ctx.fillStyle = 'rgba(214, 107, 208, 0.95)';
+    for (let i = 0; i < accent.length; i += 3) ctx.fillRect(accent[i], accent[i + 1], accent[i + 2], accent[i + 2]);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+    for (let i = 0; i < stars.length; i += 3) ctx.fillRect(stars[i], stars[i + 1], stars[i + 2], stars[i + 2]);
+
+    // The hole: a disc of night with a thin glowing rim, drawn over the dust
+    // it swallows. It fades once the stream has taken over.
+    const holeAlpha = 1 - j;
+    if (holeR > 2 && holeAlpha > 0) {
+      ctx.globalAlpha = holeAlpha;
+      const g = ctx.createRadialGradient(cx, cy, holeR * 0.7, cx, cy, holeR * 1.12);
+      g.addColorStop(0, 'rgba(7, 7, 11, 1)');
+      g.addColorStop(0.72, 'rgba(7, 7, 11, 1)');
+      g.addColorStop(0.8, 'rgba(214, 107, 208, 0.55)');
+      g.addColorStop(0.86, 'rgba(236, 233, 255, 0.25)');
+      g.addColorStop(1, 'rgba(7, 7, 11, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(cx, cy, holeR * 1.12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
   };
 
   layout();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+  window.addEventListener('load', layout);
   window.addEventListener('resize', layout);
 
   if (still) {

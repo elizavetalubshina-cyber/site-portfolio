@@ -70,6 +70,10 @@
   </header>
 
   <main id="main" tabindex="-1">
+    <!-- Desktop: the hero stays pinned while this wrapper scrolls past, and
+         that scroll drives the ring into a black hole that pulls the name in
+         (main.js). On a phone it is just the hero. -->
+    <div class="intro" id="intro">
     <section class="hero container container--wide" id="top">
       <!-- Case covers scattered across the full width. They drift after the
            cursor on a real pointer (main.js) and each one opens its case.
@@ -108,30 +112,16 @@
         </a>
       </div>
 
-      <!-- Desktop: case names sit on the particle ring, each showing its cover
-           on hover. Same links as the cases grid below, so kept out of the
-           accessibility tree. -->
-      <div class="hero__marks" id="heroMarks">
-        <a class="hero__mark" href="/cases/vs-subtitles.html" data-mark="subtitles" tabindex="-1" aria-hidden="true">
-          <span class="hero__mark-text">VS Subtitles</span>
-          <span class="hero__mark-preview"><img src="/src/assets/hero/subtitles.webp" alt="" width="800" height="544" decoding="async" /></span>
-        </a>
-        <a class="hero__mark" href="/cases/satellite.html" data-mark="satellite" tabindex="-1" aria-hidden="true">
-          <span class="hero__mark-text">Satellite</span>
-          <span class="hero__mark-preview"><img src="/src/assets/hero/satellite.webp" alt="" width="800" height="444" decoding="async" /></span>
-        </a>
-        <a class="hero__mark" href="/cases/tracktice.html" data-mark="tracktice" tabindex="-1" aria-hidden="true">
-          <span class="hero__mark-text">Tracktice Flow</span>
-          <span class="hero__mark-preview"><img src="/src/assets/hero/tracktice.webp" alt="" width="800" height="450" decoding="async" /></span>
-        </a>
-        <a class="hero__mark" href="/cases/vs-ecosystem.html" data-mark="ecosystem" tabindex="-1" aria-hidden="true">
-          <span class="hero__mark-text">VS Ecosystem</span>
-          <span class="hero__mark-preview"><img src="/src/assets/hero/ecosystem.webp" alt="" width="800" height="442" decoding="async" /></span>
-        </a>
-        <a class="hero__mark" href="/cases/design-system.html" data-mark="design-system" tabindex="-1" aria-hidden="true">
-          <span class="hero__mark-text">Дизайн-система</span>
-          <span class="hero__mark-preview"><img src="/src/assets/hero/design-system.webp" alt="" width="800" height="423" decoding="async" /></span>
-        </a>
+      <!-- Desktop: what the work is about, flying round the ring with the
+           particles. Words from the case tags and the "Обо мне" section. -->
+      <div class="hero__orbit" id="heroOrbit" aria-hidden="true">
+        <span class="hero__orbit-tag">B2B</span>
+        <span class="hero__orbit-tag">Web</span>
+        <span class="hero__orbit-tag">Enterprise</span>
+        <span class="hero__orbit-tag">Дизайн-система</span>
+        <span class="hero__orbit-tag">Прямой эфир</span>
+        <span class="hero__orbit-tag">Спутниковый мониторинг</span>
+        <span class="hero__orbit-tag">Видеоаналитика</span>
       </div>
 
       <div class="hero__head">
@@ -139,9 +129,75 @@
         <p class="hero__role">Product Designer&nbsp;·&nbsp;B2B&nbsp;·&nbsp;Web&nbsp;·&nbsp;5&nbsp;лет опыта</p>
       </div>
     </section>
+    </div>
 
     <section class="cases container container--wide" id="cases">
       <h2>Кейсы</h2>
+
+      <!-- Desktop: the cases one by one along the particle stream that comes
+           out of the black hole. The grid below is the phone layout. -->
+      <div class="journey" id="journey">
+        <article class="journey__case journey__case--left">
+          <a class="journey__cover" href="/cases/vs-subtitles.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/vs-subtitles/cover.webp" alt="" width="2304" height="1567" loading="lazy" decoding="async" />
+          </a>
+          <div class="journey__text">
+            <p class="journey__index">01 / 05</p>
+            <h3 class="journey__title"><a href="/cases/vs-subtitles.html">VS Subtitles</a></h3>
+            <p class="journey__desc">Субтитры и телетекст для прямого эфира</p>
+            <p class="journey__stats">−35% времени подготовки, −25% на сравнение версий</p>
+            <div class="journey__meta"><span class="journey__company">Vidau Systems</span><span class="journey__tag">B2B</span><span class="journey__tag">Web</span></div>
+          </div>
+        </article>
+        <article class="journey__case journey__case--right">
+          <a class="journey__cover" href="/cases/satellite.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/satellite/cover.webp" alt="" width="1600" height="889" loading="lazy" decoding="async" />
+          </a>
+          <div class="journey__text">
+            <p class="journey__index">02 / 05</p>
+            <h3 class="journey__title"><a href="/cases/satellite.html">Satellite</a></h3>
+            <p class="journey__desc">Демо мониторинга группировок КА для выставки</p>
+            <p class="journey__stats">работало на стенде выставки</p>
+            <div class="journey__meta"><span class="journey__company">Sofikom</span><span class="journey__tag">B2B</span><span class="journey__tag">Web</span></div>
+          </div>
+        </article>
+        <article class="journey__case journey__case--left">
+          <a class="journey__cover" href="/cases/tracktice.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/tracktice/cover.webp" alt="" width="2304" height="1296" loading="lazy" decoding="async" />
+          </a>
+          <div class="journey__text">
+            <p class="journey__index">03 / 05</p>
+            <h3 class="journey__title"><a href="/cases/tracktice.html">Tracktice Flow</a></h3>
+            <p class="journey__desc">Админка настройки пассажиропотока</p>
+            <p class="journey__stats">внедрён и работает в эксплуатации</p>
+            <div class="journey__meta"><span class="journey__company">Tracktice</span><span class="journey__tag">B2B</span><span class="journey__tag">Web</span></div>
+          </div>
+        </article>
+        <article class="journey__case journey__case--right">
+          <a class="journey__cover" href="/cases/vs-ecosystem.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/vs-ecosystem/Cover.webp" alt="" width="2304" height="1274" loading="lazy" decoding="async" />
+          </a>
+          <div class="journey__text">
+            <p class="journey__index">04 / 05</p>
+            <h3 class="journey__title"><a href="/cases/vs-ecosystem.html">VS Ecosystem</a></h3>
+            <p class="journey__desc">Лицензирование ПО в закрытом контуре</p>
+            <div class="journey__meta"><span class="journey__company">Vidau Systems</span><span class="journey__tag">B2B</span><span class="journey__tag">Web</span></div>
+          </div>
+        </article>
+        <article class="journey__case journey__case--left">
+          <a class="journey__cover" href="/cases/design-system.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/design-system/Cover.webp" alt="" width="2304" height="1218" loading="lazy" decoding="async" />
+          </a>
+          <div class="journey__text">
+            <p class="journey__index">05 / 05</p>
+            <h3 class="journey__title"><a href="/cases/design-system.html">Дизайн-система</a></h3>
+            <p class="journey__desc">UI-kit, компоненты и правила консистентности</p>
+            <p class="journey__stats">≈30 компонентов, общая основа для всей линейки</p>
+            <div class="journey__meta"><span class="journey__company">Vidau Systems</span><span class="journey__tag">Дизайн-система</span><span class="journey__tag">Enterprise</span></div>
+          </div>
+        </article>
+      </div>
+
       <div class="cases__grid">
 
         <a class="case case--hero case--media-subtitles" href="/cases/vs-subtitles.html">

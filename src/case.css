@@ -191,7 +191,7 @@
 .short-ref {
   aspect-ratio: 16 / 10.5;
   border-radius: var(--radius-md);
-  background: #f1f2f5;
+  background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,15 +232,14 @@
 /* Same volumetric-badge feel as plashka.png in the hero: soft white
    gradient card with a gentle shadow, instead of a flat tint. */
 .short-stat {
-  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.18);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
 }
 .short-stat--accent {
-  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
-  border-color: rgba(172, 33, 162, 0.25);
+  background: rgba(214, 107, 208, 0.14);
+  border-color: rgba(214, 107, 208, 0.35);
   box-shadow: 0 1px 2px rgba(172, 33, 162, 0.08), 0 10px 20px -8px rgba(172, 33, 162, 0.35);
 }
 /* The pink tile is darker than the white one, and --text-secondary lands at
@@ -368,9 +367,9 @@
   width: var(--space-4);
   height: var(--space-4);
   border-radius: 50%;
-  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
-  border: 1px solid rgba(172, 33, 162, 0.25);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 4px rgba(172, 33, 162, 0.12), 0 14px 22px -10px rgba(172, 33, 162, 0.45);
+  background: rgba(214, 107, 208, 0.14);
+  border: 1px solid rgba(214, 107, 208, 0.35);
+  box-shadow: 0 2px 4px rgba(172, 33, 162, 0.12), 0 14px 22px -10px rgba(172, 33, 162, 0.45);
   color: var(--text);
   font-family: var(--font-display);
   font-size: 13px;
@@ -385,7 +384,7 @@
 .case-callout {
   display: flex;
   gap: var(--space-2);
-  background: linear-gradient(180deg, #fdf0fb 0%, #f8d7f0 100%);
+  background: rgba(214, 107, 208, 0.1);
   border: 1px solid rgba(172, 33, 162, 0.18);
   box-shadow: 0 1px 2px rgba(172, 33, 162, 0.06), 0 10px 20px -8px rgba(172, 33, 162, 0.22);
   border-radius: var(--radius-md);
@@ -400,8 +399,8 @@
   color: var(--text);
 }
 .case-callout--todo {
-  background: #fdf6e3;
-  border: 1px dashed #d8c48f;
+  background: rgba(216, 196, 143, 0.1);
+  border: 1px dashed rgba(216, 196, 143, 0.5);
 }
 
 /* Figure / image placeholder */
@@ -416,7 +415,7 @@
 .case-figure__frame {
   aspect-ratio: 16 / 10;
   border-radius: var(--radius-md);
-  background: repeating-linear-gradient(135deg, #f1f2f5, #f1f2f5 10px, #e9eaee 10px, #e9eaee 20px);
+  background: repeating-linear-gradient(135deg, var(--surface), var(--surface) 10px, var(--surface-2) 10px, var(--surface-2) 20px);
   border: 1px dashed var(--border);
   display: flex;
   align-items: center;
@@ -471,8 +470,8 @@
 }
 /* Same volumetric pink-accent card as .short-stat--accent in Коротко. */
 .case-stat {
-  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
-  border: 1px solid rgba(172, 33, 162, 0.25);
+  background: rgba(214, 107, 208, 0.14);
+  border: 1px solid rgba(214, 107, 208, 0.35);
   box-shadow: 0 1px 2px rgba(172, 33, 162, 0.08), 0 10px 20px -8px rgba(172, 33, 162, 0.35);
   border-radius: var(--radius-md);
   padding: var(--space-3);
@@ -517,7 +516,7 @@
 kbd {
   font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
   font-size: 12px;
-  background: #f1f2f5;
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: var(--space-half) var(--space-1);
@@ -545,10 +544,10 @@ kbd {
 .case-toc--badge {
   padding: var(--space-3);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(12, 12, 18, 0.6);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 30px rgba(18, 20, 26, 0.08), 0 2px 10px rgba(18, 20, 26, 0.04);
 }
 

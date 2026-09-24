@@ -39,6 +39,12 @@ document.querySelectorAll('.nav__links a, .nav__menu a, .logo, .case-toc a').for
     const target = document.querySelector(id);
     if (!target) return;
     e.preventDefault();
+    // The homepage hero is pinned inside the fall animation, so its own
+    // position is wherever the fall has got to; the top means the page top.
+    if (id === '#top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
@@ -226,11 +232,11 @@ if (caseToc) {
 //        flow   - the cases scroll by as a list and the tunnel runs round
 //                 them;
 //   4. by "Обо мне" the dust settles into a faint scatter.
-// Stars sit behind it all; the cursor pushes the ring's dust aside. Only on
-// windows wider than the phone layout; with reduced motion it holds still.
+// Stars sit behind it all; the cursor pushes the ring's dust aside. On
+// every screen size; with reduced motion it holds still.
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const particleCanvas = document.getElementById('particles');
-const wideScreen = window.matchMedia('(min-width: 901px)');
+const narrowScreen = window.matchMedia('(max-width: 900px)');
 const tunnelEl = document.getElementById('tunnel');
 const flight = !!tunnelEl && tunnelEl.classList.contains('tunnel--flight');
 
@@ -249,9 +255,6 @@ if (flowCases.length && 'IntersectionObserver' in window) {
   flowCases.forEach((el) => el.classList.add('is-visible'));
 }
 
-// Started the first time the window is wide enough, not only at load: an
-// embedded preview can load while its panel is still narrow or hidden and
-// only widen afterwards, and the field has to come up when it does.
 let spaceStarted = false;
 function startSpace() {
   if (spaceStarted || !particleCanvas) return;
@@ -267,7 +270,8 @@ function startSpace() {
   const about = document.getElementById('about');
   const still = reducedMotion.matches;
 
-  const COUNT = 14000;
+  // Fewer particles on a phone: the screen is smaller and so is the budget.
+  const COUNT = narrowScreen.matches ? 5000 : 14000;
   const REPEL = 110;
   // Tunnel world: depth of the visible stretch, the distance at which
   // something is drawn at its real size, and the gap between cases.
@@ -310,7 +314,9 @@ function startSpace() {
   let introTop = 0, introH = 1, tunnelTop = 0, tunnelH = 1, aboutTop = 1;
 
   const layout = () => {
-    w = window.innerWidth;
+    // clientWidth, not innerWidth: on a phone anything poking past the edge
+    // widens innerWidth and would push the ring off centre.
+    w = document.documentElement.clientWidth;
     h = window.innerHeight;
     // Safari gives up on canvases past ~16.7M pixels and draws nothing.
     const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / Math.max(1, w * h)));
@@ -436,7 +442,8 @@ function startSpace() {
     // once the hero let go.
     const cx = w / 2;
     const cy = h / 2;
-    const R = Math.min(w * 0.3, h * 0.42);
+    // Same radius as --ring in style.css.
+    const R = narrowScreen.matches ? Math.min(w * 0.42, h * 0.36) : Math.min(w * 0.3, h * 0.42);
     const pull = Math.pow(1 - k, 0.9);
 
     // The name shrinks into the point and fades, without turning.
@@ -454,8 +461,14 @@ function startSpace() {
         const r = R * pull * 1.1 + 16;
         const x = cx + ca * r;
         // Kept clear of the nav at the top and on screen at the bottom.
-        const oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * r));
-        tag.style.transform = `translate(${x - hr.left}px, ${cy + oy - hr.top}px) translate(${-50 * (1 - ca)}%, ${-50 * (1 - sa)}%)`;
+        let oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * r));
+        // On a narrow screen there is no room beside the ring, so a label
+        // would cross the name; it steps round the name's band instead.
+        const band = hb.height / 2 + 14;
+        if (w - 2 * r < 300 && Math.abs(oy) < band) oy = (sa < 0 ? -band - 12 : band);
+        const tw = tag.offsetWidth;
+        const left = Math.min(w - tw - 8, Math.max(8, x - tw * (1 - ca) / 2));
+        tag.style.transform = `translate(${left - hr.left}px, ${cy + oy - hr.top}px) translate(0, ${-50 * (1 - sa)}%)`;
         const shown = 1 - clamp01(k * 1.6);
         tag.style.opacity = String(shown);
         tag.style.pointerEvents = shown > 0.4 ? 'auto' : 'none';
@@ -664,8 +677,32 @@ function startSpace() {
   }
 }
 
-if (wideScreen.matches) {
-  startSpace();
-} else {
-  wideScreen.addEventListener('change', (e) => { if (e.matches) startSpace(); });
+startSpace();
+
+// Case pages and the 404 share the homepage's night sky: a still field of
+// stars behind the text, drawn once (and again on resize), nothing moving
+// while the case is being read.
+if (!particleCanvas) {
+  const sky = document.createElement('canvas');
+  sky.className = 'sky';
+  sky.setAttribute('aria-hidden', 'true');
+  document.body.prepend(sky);
+  const stars = Array.from({ length: 420 }, () => ({
+    x: Math.random(), y: Math.random(), s: Math.random() < 0.85 ? 1 : 1.8, a: 0.2 + Math.random() * 0.5,
+  }));
+  const paintSky = () => {
+    const w = window.innerWidth, h = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    sky.width = w * dpr;
+    sky.height = h * dpr;
+    const c = sky.getContext('2d');
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.fillStyle = '#ece9ff';
+    stars.forEach((st) => {
+      c.globalAlpha = st.a;
+      c.fillRect(st.x * w, st.y * h, st.s, st.s);
+    });
+  };
+  paintSky();
+  window.addEventListener('resize', paintSky);
 }

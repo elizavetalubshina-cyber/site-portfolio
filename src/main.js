@@ -339,7 +339,11 @@ function startSpace() {
   // screen of scroll, and within it the camera slows almost to a stop at the
   // point where the case is at full size, so there is time to read it.
   const cameraAt = (p) => {
-    const seg = p * cards.length;
+    // A short run-up before the first case, so it starts far down the
+    // tunnel, a speck inside the ring, rather than already half grown.
+    const LEAD = 1.6;
+    const seg = p * (cards.length + LEAD) - LEAD;
+    if (seg < 0) return SPACING * seg;
     const i = Math.min(cards.length - 1, Math.floor(seg));
     const u = seg - i;
     return SPACING * (i + u + 0.15 * Math.sin(2 * Math.PI * u));
@@ -550,7 +554,8 @@ function startSpace() {
         let op = 0, sc = 0.1;
         if (z > 40) {
           sc = FOCUS / z;
-          op = clamp01((sc - 0.4) / 0.35) * (1 - clamp01((sc - 1.3) / 0.6)) * m;
+          // Hidden until the tunnel has fully formed, then grows from a speck.
+          op = clamp01((sc - 0.1) / 0.55) * (1 - clamp01((sc - 1.3) / 0.6)) * clamp01((m - 0.85) / 0.15);
         }
         card.style.opacity = String(op);
         card.style.transform = `translate(-50%, calc(-50% - ${lift}px)) scale(${Math.min(sc, 4)})`;

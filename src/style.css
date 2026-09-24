@@ -1499,6 +1499,16 @@ h1, h2, h3 {
     position: absolute;
     left: 0;
     top: 0;
+    padding: var(--space-half) var(--space-1);
+    border-radius: 6px;
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0;
+    pointer-events: auto;
+    will-change: transform, opacity;
+    transition: background-color 0.2s ease;
+  }
+  .hero__orbit-label {
     display: flex;
     align-items: center;
     gap: var(--space-1);
@@ -1508,15 +1518,75 @@ h1, h2, h3 {
     letter-spacing: 0.1em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: var(--text);
-    opacity: 0;
-    will-change: transform, opacity;
   }
-  .hero__orbit-tag::before {
+  .hero__orbit-label::before {
     content: '';
     width: 6px;
     height: 6px;
     background: var(--purple);
+  }
+
+  /* Preview card: cover, name, one line on what it is, and the way in.
+     Opens above the tag, or below it for tags in the upper half of the
+     screen, so it always has room. */
+  .hero__orbit-preview {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + var(--space-1));
+    width: 280px;
+    padding: var(--space-1) var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    background: rgba(18, 18, 26, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 30px 80px -30px rgba(214, 107, 208, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 8px) scale(0.96);
+    transform-origin: bottom center;
+    transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 0.7, 0.3, 1), visibility 0s linear 0.35s;
+  }
+  .hero__orbit-tag.is-below .hero__orbit-preview {
+    bottom: auto;
+    top: calc(100% + var(--space-1));
+    transform-origin: top center;
+  }
+  .hero__orbit-preview img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+    border-radius: var(--radius-sm);
+  }
+  .hero__orbit-title {
+    display: block;
+    margin: var(--space-2) var(--space-1) var(--space-half);
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .hero__orbit-desc {
+    display: block;
+    margin: 0 var(--space-1);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+  }
+  .hero__orbit-more {
+    display: block;
+    margin: var(--space-1) var(--space-1) 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--purple);
+  }
+  .hero__orbit-tag:hover { background: rgba(214, 107, 208, 0.14); z-index: 2; }
+  .hero__orbit-tag:hover .hero__orbit-preview {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0) scale(1);
+    transition-delay: 0s;
   }
 
   /* ---------- Cases along the stream ---------- */

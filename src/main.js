@@ -290,7 +290,7 @@ if (particleCanvas && wideScreen.matches) {
     if (!journey || !covers.length) return;
     const top = journey.getBoundingClientRect().top + window.scrollY;
     const bottom = top + journey.offsetHeight;
-    const pts2 = [{ x: w / 2, y: top - h * 0.6 }, { x: w / 2, y: top - h * 0.1 }];
+    const pts2 = [{ x: w / 2, y: top - h * 1.8 }, { x: w / 2, y: top - h * 0.1 }];
     covers.forEach((c) => {
       const r = c.getBoundingClientRect();
       pts2.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
@@ -349,6 +349,14 @@ if (particleCanvas && wideScreen.matches) {
 
   let last = 0;
   let spin = 0;
+  // While a topic is hovered the orbit eases to a stop, so the tag and its
+  // preview hold still under the cursor.
+  let hovering = false;
+  let pace = 1;
+  tags.forEach((tag) => {
+    tag.addEventListener('pointerenter', () => { hovering = true; });
+    tag.addEventListener('pointerleave', () => { hovering = false; });
+  });
 
   const draw = (time) => {
     const dt = still ? 0 : Math.min(50, time - last || 16);
@@ -361,16 +369,18 @@ if (particleCanvas && wideScreen.matches) {
     const j = ease(clamp01((sy - (introTop + introH - h * 1.45)) / (h * 0.75)));
     const settle = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
 
-    const spinSpeed = 0.00006 + k * k * 0.0016;
+    pace += ((hovering && k === 0 ? 0 : 1) - pace) * 0.12;
+    const spinSpeed = (0.00006 + k * k * 0.0016) * pace;
     spin += dt * spinSpeed;
 
     const hb = head.getBoundingClientRect();
     const cx = hb.left + hb.width / 2;
     const cy = hb.top + hb.height / 2;
-    const rx = Math.min(w * 0.3, h * 0.62);
-    const ry = Math.min(h * 0.4, w * 0.3);
+    // A circle at any window shape: one radius for both axes.
+    const rx = Math.min(w * 0.3, h * 0.42);
+    const ry = rx;
     const grow = 1 + 2.4 * k * k;
-    const flat = 1 - 0.45 * k;
+    const flat = 1;
     const holeR = Math.pow(k, 2.2) * diag * 0.75;
 
     // The name is pulled into the centre, turning as it goes.
@@ -386,7 +396,12 @@ if (particleCanvas && wideScreen.matches) {
         const oy = Math.sin(a) * ry * 1.04 * grow * flat;
         const nearName = clamp01((Math.abs(oy) - hb.height / 2) / 60);
         tag.style.transform = `translate(${x - hr.left}px, ${cy + oy - hr.top}px) translate(-50%, -50%)`;
-        tag.style.opacity = String(nearName * (1 - clamp01(k * 1.6)));
+        const shown = nearName * (1 - clamp01(k * 1.6));
+        tag.style.opacity = String(shown);
+        tag.style.pointerEvents = shown > 0.4 ? 'auto' : 'none';
+        // Preview opens toward the room: down from tags in the upper half,
+        // up from tags in the lower half, so it never leaves the screen.
+        tag.classList.toggle('is-below', cy + oy < h / 2);
       });
     }
 

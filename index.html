@@ -113,15 +113,55 @@
       </div>
 
       <!-- Desktop: what the work is about, flying round the ring with the
-           particles. Words from the case tags and the "Обо мне" section. -->
+           particles. Each topic opens its case and shows a preview on hover;
+           the orbit stops while one is hovered. Out of the tab order and the
+           accessibility tree: the same cases are linked right below. -->
       <div class="hero__orbit" id="heroOrbit" aria-hidden="true">
-        <span class="hero__orbit-tag">B2B</span>
-        <span class="hero__orbit-tag">Web</span>
-        <span class="hero__orbit-tag">Enterprise</span>
-        <span class="hero__orbit-tag">Дизайн-система</span>
-        <span class="hero__orbit-tag">Прямой эфир</span>
-        <span class="hero__orbit-tag">Спутниковый мониторинг</span>
-        <span class="hero__orbit-tag">Видеоаналитика</span>
+        <a class="hero__orbit-tag" href="/cases/vs-subtitles.html" tabindex="-1">
+          <span class="hero__orbit-label">Прямой эфир</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/subtitles.webp" alt="" width="800" height="544" decoding="async" />
+            <span class="hero__orbit-title">VS Subtitles</span>
+            <span class="hero__orbit-desc">Субтитры и телетекст для прямого эфира</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/satellite.html" tabindex="-1">
+          <span class="hero__orbit-label">Спутниковый мониторинг</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/satellite.webp" alt="" width="800" height="444" decoding="async" />
+            <span class="hero__orbit-title">Satellite</span>
+            <span class="hero__orbit-desc">Демо мониторинга группировок КА для выставки</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/tracktice.html" tabindex="-1">
+          <span class="hero__orbit-label">Видеоаналитика</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/tracktice.webp" alt="" width="800" height="450" decoding="async" />
+            <span class="hero__orbit-title">Tracktice Flow</span>
+            <span class="hero__orbit-desc">Админка настройки пассажиропотока</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/vs-ecosystem.html" tabindex="-1">
+          <span class="hero__orbit-label">Лицензирование ПО</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/ecosystem.webp" alt="" width="800" height="442" decoding="async" />
+            <span class="hero__orbit-title">VS Ecosystem</span>
+            <span class="hero__orbit-desc">Лицензирование ПО в закрытом контуре</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/design-system.html" tabindex="-1">
+          <span class="hero__orbit-label">Дизайн-система</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/design-system.webp" alt="" width="800" height="423" decoding="async" />
+            <span class="hero__orbit-title">Дизайн-система</span>
+            <span class="hero__orbit-desc">UI-kit, компоненты и правила консистентности</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
       </div>
 
       <div class="hero__head">

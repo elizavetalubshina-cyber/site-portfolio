@@ -219,7 +219,7 @@ if (caseToc) {
 // movement feel weighted. Only on a real pointer with motion allowed: on
 // touch the covers are a static strip (see the 900px rule in style.css).
 const heroStage = document.getElementById('heroStage');
-const heroName = document.querySelector('.home-page .hero__title');
+const heroName = document.querySelector('.home-page .hero__head');
 const canDrift = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 901px)');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 

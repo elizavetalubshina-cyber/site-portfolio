@@ -695,13 +695,21 @@ h1, h2, h3 {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   min-height: clamp(600px, calc(100svh - 104px), 980px);
   padding-top: var(--space-3);
   padding-bottom: var(--space-4);
 }
 
-.hero__top,
+/* Name and role hold the middle of the screen; auto margins centre the pair
+   in whatever height is left above the pitch row. */
+.hero__head {
+  position: relative;
+  z-index: 2;
+  margin: auto 0;
+  text-align: center;
+  pointer-events: none;
+}
+
 .hero__bottom {
   position: relative;
   z-index: 2;
@@ -711,46 +719,25 @@ h1, h2, h3 {
   gap: var(--space-3);
   pointer-events: none;
 }
-.hero__top { align-items: baseline; }
 .hero__cta { pointer-events: auto; }
 
 .hero__role {
-  margin: 0;
-  font-size: 16px;
+  margin: var(--space-3) 0 0;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text);
-}
-
-.hero__status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  margin: 0;
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-.hero__status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 4px rgba(31, 191, 117, 0.18);
 }
 
 /* Sized to the width, not to a fixed step: "Елизавета Любшина" in Unbounded
    800 is 13.9 em wide, so this makes the name span the full column at any
    window size between a laptop and a 1920px monitor. */
 .hero__title {
-  position: relative;
-  z-index: 2;
   margin: 0;
   font-size: min(calc((100vw - 2 * var(--gutter)) / 13.9), 132px);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
   white-space: nowrap;
-  text-align: center;
-  pointer-events: none;
   will-change: transform;
 }
 
@@ -844,11 +831,11 @@ h1, h2, h3 {
    on a short one, so the covers never grow into the name or the pitch when
    browser chrome eats the viewport. */
 .hero__stage { --u: min(1vw, 1.55vh); }
-.hero__tile--subtitles     { --x: 3%;  --y: 14%; --w: calc(21 * var(--u)); --rot: -5deg; --delay: 0.05s; }
-.hero__tile--design-system { --x: 38%; --y: 9%;  --w: calc(13 * var(--u)); --rot: 3deg;  --delay: 0.2s; }
-.hero__tile--satellite     { --x: 72%; --y: 12%; --w: calc(19 * var(--u)); --rot: 5deg;  --delay: 0.12s; }
-.hero__tile--tracktice     { --x: 26%; --y: 60%; --w: calc(17 * var(--u)); --rot: -3deg; --delay: 0.28s; }
-.hero__tile--ecosystem     { --x: 58%; --y: 62%; --w: calc(15 * var(--u)); --rot: 6deg;  --delay: 0.35s; }
+.hero__tile--subtitles     { --x: 3%;  --y: 7%;  --w: calc(21 * var(--u)); --rot: -5deg; --delay: 0.05s; }
+.hero__tile--design-system { --x: 38%; --y: 4%;  --w: calc(13 * var(--u)); --rot: 3deg;  --delay: 0.2s; }
+.hero__tile--satellite     { --x: 72%; --y: 6%;  --w: calc(19 * var(--u)); --rot: 5deg;  --delay: 0.12s; }
+.hero__tile--tracktice     { --x: 26%; --y: 64%; --w: calc(17 * var(--u)); --rot: -3deg; --delay: 0.28s; }
+.hero__tile--ecosystem     { --x: 58%; --y: 66%; --w: calc(15 * var(--u)); --rot: 6deg;  --delay: 0.35s; }
 
 @media (prefers-reduced-motion: reduce) {
   .hero__tile-card { animation: none; transition: none; }
@@ -1475,9 +1462,8 @@ h1, h2, h3 {
     gap: var(--space-4);
     padding-top: var(--space-2);
   }
-  .hero__top { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+  .hero__head { order: 1; margin: 0; text-align: left; }
   .hero__title {
-    order: 1;
     font-size: calc((100vw - 2 * var(--gutter)) / 7.6);
     white-space: normal;
     text-align: left;

@@ -1451,7 +1451,7 @@ h1, h2, h3 {
 }
 
 .hero__orbit,
-.journey { display: none; }
+.tunnel { display: none; }
 
 @media (min-width: 901px) {
   /* Night sky: the homepage alone turns dark on a wide screen. The same
@@ -1610,30 +1610,34 @@ h1, h2, h3 {
     transition-delay: 0s;
   }
 
-  /* ---------- Cases along the stream ---------- */
+  /* ---------- Cases in the tunnel ---------- */
 
+  /* The heading stays for the anchor and for screen readers; on screen the
+     tunnel itself says what this is. */
   .cases { margin-top: 0; }
   .cases > h2 {
-    margin: 0;
-    padding-top: var(--space-8);
-    text-align: center;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
   .cases__grid { display: none; }
 
-  .journey { display: block; }
+  .tunnel { display: block; }
 
-  .journey__case {
+  /* Shared card look: cover and text side by side. */
+  .tunnel__case {
     display: grid;
     grid-template-columns: 7fr 5fr;
-    gap: clamp(32px, 5vw, 96px);
+    gap: clamp(32px, 4vw, 72px);
     align-items: center;
-    min-height: 85vh;
-    padding: var(--space-6) 0;
   }
-  .journey__case--right { grid-template-columns: 5fr 7fr; }
-  .journey__case--right .journey__cover { order: 2; }
+  .tunnel__case--right { grid-template-columns: 5fr 7fr; }
+  .tunnel__case--right .tunnel__cover { order: 2; }
 
-  .journey__cover {
+  .tunnel__cover {
     position: relative;
     display: block;
     border-radius: var(--radius-lg);
@@ -1642,71 +1646,70 @@ h1, h2, h3 {
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.08),
       0 40px 120px -40px rgba(214, 107, 208, 0.45);
-    transition: transform 0.6s cubic-bezier(0.22, 0.7, 0.3, 1), box-shadow 0.6s ease;
+    transition: box-shadow 0.4s ease;
   }
-  .journey__cover img {
+  .tunnel__cover img {
     display: block;
     width: 100%;
   }
   @media (hover: hover) and (pointer: fine) {
-    .journey__cover:hover {
-      transform: scale(1.02);
+    .tunnel__cover:hover {
       box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.14),
-        0 50px 140px -40px rgba(214, 107, 208, 0.6);
+        0 0 0 1px rgba(255, 255, 255, 0.16),
+        0 50px 140px -40px rgba(214, 107, 208, 0.65);
     }
   }
 
-  .journey__index {
+  .tunnel__index {
     margin: 0 0 var(--space-2);
     font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     font-size: 12px;
     letter-spacing: 0.12em;
     color: var(--purple);
   }
-  .journey__title {
+  .tunnel__title {
     margin: 0 0 var(--space-2);
     font-size: clamp(32px, 3.4vw, 56px);
     line-height: 1.05;
   }
-  .journey__title a {
+  .tunnel__title a {
     color: inherit;
     text-decoration: none;
   }
-  .journey__title a::after {
+  .tunnel__title a::after {
     content: ' →';
     color: var(--purple);
     opacity: 0;
     transition: opacity 0.25s ease;
   }
   @media (hover: hover) and (pointer: fine) {
-    .journey__title a:hover::after { opacity: 1; }
+    .tunnel__title a:hover::after { opacity: 1; }
   }
-  .journey__desc {
+  .tunnel__desc {
     margin: 0 0 var(--space-2);
     max-width: 440px;
     font-size: 18px;
     line-height: 1.45;
     color: var(--text);
   }
-  .journey__stats {
+  .tunnel__stats {
     margin: 0 0 var(--space-3);
     font-size: 15px;
     color: var(--text-secondary);
   }
-  .journey__meta {
+  .tunnel__meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-1);
     margin-top: var(--space-3);
   }
-  .journey__company {
+  .tunnel__company {
     margin-right: var(--space-1);
     font-size: 13px;
     color: var(--text-muted);
   }
-  .journey__tag {
+  .tunnel__tag {
     padding: var(--space-half) var(--space-2);
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -1714,16 +1717,50 @@ h1, h2, h3 {
     color: var(--text-secondary);
   }
 
-  /* Each case surfaces as the stream reaches it. */
-  .journey__case .journey__cover,
-  .journey__case .journey__text {
+  /* Flight: the stage is pinned for as long as the tunnel block scrolls by
+     (one screen per case plus the entry), and main.js moves each case from
+     the depth of the tunnel toward the viewer by scaling it. */
+  .tunnel--flight { height: 600vh; }
+  .tunnel--flight .tunnel__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .tunnel--flight .tunnel__case {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(1120px, 80vw);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.2);
+    will-change: transform, opacity;
+  }
+  /* A soft pool of night behind the case, so the streaks flying past do not
+     run through the text. */
+  .tunnel--flight .tunnel__case::before {
+    content: '';
+    position: absolute;
+    inset: -12% -8%;
+    z-index: -1;
+    background: radial-gradient(closest-side, rgba(7, 7, 11, 0.92), rgba(7, 7, 11, 0.7) 60%, rgba(7, 7, 11, 0));
+  }
+
+  /* Flow: the cases scroll by as an ordinary list and the tunnel walls run
+     round them in the background. */
+  .tunnel--flow .tunnel__case {
+    min-height: 90vh;
+    padding: var(--space-6) 0;
+  }
+  .tunnel--flow .tunnel__case .tunnel__cover,
+  .tunnel--flow .tunnel__case .tunnel__text {
     opacity: 0;
     transform: translateY(48px);
     transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 0.7, 0.3, 1);
   }
-  .journey__case .journey__text { transition-delay: 0.12s; }
-  .journey__case.is-visible .journey__cover,
-  .journey__case.is-visible .journey__text {
+  .tunnel--flow .tunnel__case .tunnel__text { transition-delay: 0.12s; }
+  .tunnel--flow .tunnel__case.is-visible .tunnel__cover,
+  .tunnel--flow .tunnel__case.is-visible .tunnel__text {
     opacity: 1;
     transform: none;
   }
@@ -1732,8 +1769,8 @@ h1, h2, h3 {
 }
 
 @media (min-width: 901px) and (prefers-reduced-motion: reduce) {
-  .journey__case .journey__cover,
-  .journey__case .journey__text {
+  .tunnel--flow .tunnel__case .tunnel__cover,
+  .tunnel--flow .tunnel__case .tunnel__text {
     opacity: 1;
     transform: none;
     transition: none;

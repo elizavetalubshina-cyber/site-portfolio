@@ -215,21 +215,27 @@ if (caseToc) {
 
 // Space homepage (desktop). One field of particles tells the whole story:
 //   1. a ring of dust turning round the name, with the topics of the work
-//      orbiting in it;
-//   2. scrolling while the hero is pinned turns the ring into a black hole:
-//      it spins faster, the dark centre grows, the name is pulled in, and the
-//      screen goes black;
-//   3. out of the dark comes a stream that runs down the page through each
-//      case cover in turn, so the particles lead from one case to the next;
+//      orbiting it;
+//   2. scrolling while the hero is pinned sucks the ring in: the dust
+//      spirals ever faster into one point and the name shrinks into it;
+//   3. out of that point the dust flies apart into the walls of a tunnel,
+//      and the cases are in the tunnel. Two ways to show them:
+//        flight - the stage is pinned and the scroll flies down the tunnel,
+//                 each case coming up out of its depth, pausing to be read,
+//                 then passing by;
+//        flow   - the cases scroll by as a list and the tunnel runs round
+//                 them;
 //   4. by "Обо мне" the dust settles into a faint scatter.
-// Stars sit behind all of it. The cursor pushes the dust aside. Only on
+// Stars sit behind it all; the cursor pushes the ring's dust aside. Only on
 // windows wider than the phone layout; with reduced motion it holds still.
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const particleCanvas = document.getElementById('particles');
 const wideScreen = window.matchMedia('(min-width: 901px)');
+const tunnelEl = document.getElementById('tunnel');
+const flight = !!tunnelEl && tunnelEl.classList.contains('tunnel--flight');
 
-const journeyCases = document.querySelectorAll('.journey__case');
-if (journeyCases.length && 'IntersectionObserver' in window) {
+const flowCases = tunnelEl && !flight ? tunnelEl.querySelectorAll('.tunnel__case') : [];
+if (flowCases.length && 'IntersectionObserver' in window) {
   const reveal = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
@@ -238,9 +244,9 @@ if (journeyCases.length && 'IntersectionObserver' in window) {
       }
     });
   }, { threshold: 0.25 });
-  journeyCases.forEach((el) => reveal.observe(el));
+  flowCases.forEach((el) => reveal.observe(el));
 } else {
-  journeyCases.forEach((el) => el.classList.add('is-visible'));
+  flowCases.forEach((el) => el.classList.add('is-visible'));
 }
 
 // Started the first time the window is wide enough, not only at load: an
@@ -250,20 +256,26 @@ let spaceStarted = false;
 function startSpace() {
   if (spaceStarted || !particleCanvas) return;
   spaceStarted = true;
+
   const ctx = particleCanvas.getContext('2d');
   const intro = document.getElementById('intro');
   const hero = document.querySelector('.home-page .hero');
   const head = document.querySelector('.home-page .hero__head');
   const orbit = document.getElementById('heroOrbit');
   const tags = orbit ? [...orbit.children] : [];
-  const journey = document.getElementById('journey');
-  const covers = journey ? [...journey.querySelectorAll('.journey__cover')] : [];
+  const cards = tunnelEl ? [...tunnelEl.querySelectorAll('.tunnel__case')] : [];
   const about = document.getElementById('about');
   const still = reducedMotion.matches;
 
   const COUNT = 4200;
   const REPEL = 110;
-  const STREAM_WIDTH = 85;
+  // Tunnel world: depth of the visible stretch, the distance at which
+  // something is drawn at its real size, and the gap between cases.
+  const DEPTH = 6000;
+  const FOCUS = 600;
+  const SPACING = 1600;
+  const BG = '7, 7, 11';
+
   const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
   const clamp01 = (n) => Math.min(1, Math.max(0, n));
   const ease = (n) => n * n * (3 - 2 * n);
@@ -273,9 +285,12 @@ function startSpace() {
     band: gauss(),
     inner: Math.random() < 0.16,
     star: Math.random() < 0.1,
-    fall: 0.5 + Math.random(),
-    s: Math.random(),
-    speed: 0.000012 + Math.random() * 0.00002,
+    fall: Math.random(),
+    ta: Math.random() * Math.PI * 2,
+    // Walls are built of rings at even steps down the tunnel, so the
+    // perspective reads as a tube rather than a cloud.
+    tz: Math.floor(Math.random() * 36) * (DEPTH / 36) + Math.random() * 8,
+    tr: 1 + gauss() * 0.03,
     u: Math.random(),
     v: Math.random(),
     size: Math.random() < 0.8 ? 1.4 : 2.2,
@@ -285,76 +300,28 @@ function startSpace() {
     oy: 0,
   }));
 
-  let w = 0, h = 0, diag = 0;
-  let introTop = 0, introH = 1, aboutTop = 1;
-  let path = { x: [], y: [], len: [], total: 1 };
-
-  // The stream's course: from just above the cases, through the centre of
-  // every cover, and on past the last one. A Catmull-Rom curve through
-  // those points, sampled densely with the running length at each sample.
-  const buildPath = () => {
-    if (!journey || !covers.length) return;
-    const top = journey.getBoundingClientRect().top + window.scrollY;
-    const bottom = top + journey.offsetHeight;
-    const pts2 = [{ x: w / 2, y: top - h * 1.8 }, { x: w / 2, y: top - h * 0.1 }];
-    covers.forEach((c) => {
-      const r = c.getBoundingClientRect();
-      pts2.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
-    });
-    pts2.push({ x: w / 2, y: bottom + h * 0.2 }, { x: w / 2, y: bottom + h * 0.8 });
-
-    const x = [], y = [], len = [];
-    let total = 0;
-    for (let i = 0; i < pts2.length - 1; i++) {
-      const p0 = pts2[Math.max(0, i - 1)], p1 = pts2[i], p2 = pts2[i + 1], p3 = pts2[Math.min(pts2.length - 1, i + 2)];
-      for (let j = 0; j < 80; j++) {
-        const t = j / 80, t2 = t * t, t3 = t2 * t;
-        const px = 0.5 * (2 * p1.x + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
-        const py = 0.5 * (2 * p1.y + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
-        if (x.length) total += Math.hypot(px - x[x.length - 1], py - y[y.length - 1]);
-        x.push(px); y.push(py); len.push(total);
-      }
-    }
-    path = { x, y, len, total: total || 1 };
-  };
-
-  // Point on the stream at a given distance along it, plus the unit normal
-  // there, so a particle can sit to one side of the centre line.
-  const onPath = (d) => {
-    const { x, y, len } = path;
-    let lo = 0, hi = len.length - 1;
-    while (lo < hi - 1) {
-      const mid = (lo + hi) >> 1;
-      if (len[mid] < d) lo = mid; else hi = mid;
-    }
-    const seg = len[hi] - len[lo] || 1;
-    const f = (d - len[lo]) / seg;
-    const dx = x[hi] - x[lo], dy = y[hi] - y[lo];
-    const n = Math.hypot(dx, dy) || 1;
-    return { x: x[lo] + dx * f, y: y[lo] + dy * f, nx: -dy / n, ny: dx / n };
-  };
+  let w = 0, h = 0;
+  let introTop = 0, introH = 1, tunnelTop = 0, tunnelH = 1, aboutTop = 1;
 
   const layout = () => {
     w = window.innerWidth;
     h = window.innerHeight;
-    diag = Math.hypot(w, h);
     // Safari gives up on canvases past ~16.7M pixels and draws nothing.
-    const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / (w * h)));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / Math.max(1, w * h)));
     particleCanvas.width = w * dpr;
     particleCanvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     introTop = intro.getBoundingClientRect().top + window.scrollY;
     introH = intro.offsetHeight;
+    tunnelTop = tunnelEl.getBoundingClientRect().top + window.scrollY;
+    tunnelH = tunnelEl.offsetHeight;
     aboutTop = about.getBoundingClientRect().top + window.scrollY;
-    buildPath();
   };
 
   const mouse = { x: -9999, y: -9999 };
   window.addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
   document.documentElement.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 
-  let last = 0;
-  let spin = 0;
   // While a topic is hovered the orbit eases to a stop, so the tag and its
   // preview hold still under the cursor.
   let hovering = false;
@@ -364,42 +331,57 @@ function startSpace() {
     tag.addEventListener('pointerleave', () => { hovering = false; });
   });
 
+  // Flight: scroll through the tunnel maps to camera depth. Each case gets one
+  // screen of scroll, and within it the camera slows almost to a stop at the
+  // point where the case is at full size, so there is time to read it.
+  const cameraAt = (p) => {
+    const seg = p * cards.length;
+    const i = Math.min(cards.length - 1, Math.floor(seg));
+    const u = seg - i;
+    return SPACING * (i + u + 0.15 * Math.sin(2 * Math.PI * u));
+  };
+  const caseDepth = (i) => SPACING * (i + 0.5) + FOCUS;
+
+  let last = 0;
+  let spin = 0;
+  let flow = 0;
+
   const draw = (time) => {
     const dt = still ? 0 : Math.min(50, time - last || 16);
     last = time;
     const sy = window.scrollY;
 
-    // k: how far into the fall, 0 at rest, 1 when the screen has gone black.
+    // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
-    // j: the stream taking over as the pinned hero lets go.
-    const j = ease(clamp01((sy - (introTop + introH - h * 1.45)) / (h * 0.75)));
-    const settle = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
+    // m: the point bursting into the tunnel walls.
+    const m = ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)));
+    // e: the tunnel letting go as "Обо мне" comes up.
+    const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
+    // Camera depth in the tunnel.
+    const tp = clamp01((sy - tunnelTop) / (tunnelH - h));
+    const cam = flight ? cameraAt(tp) : (sy - tunnelTop) * 1.4;
+    flow += still ? 0 : dt * 0.05;
 
     pace += ((hovering && k === 0 ? 0 : 1) - pace) * 0.12;
-    const spinSpeed = (0.00006 + k * k * 0.0016) * pace;
+    const spinSpeed = (0.00006 + k * k * 0.005) * pace;
     spin += dt * spinSpeed;
 
     const hb = head.getBoundingClientRect();
-    const cx = hb.left + hb.width / 2;
+    const cx = w / 2;
     const cy = hb.top + hb.height / 2;
-    // A circle at any window shape: one radius for both axes.
-    const rx = Math.min(w * 0.3, h * 0.42);
-    const ry = rx;
-    const grow = 1 + 2.4 * k * k;
-    const flat = 1;
-    const holeR = Math.pow(k, 2.2) * diag * 0.75;
+    const R = Math.min(w * 0.3, h * 0.42);
+    const pull = Math.pow(1 - k, 0.9);
 
-    // The name is pulled into the centre, turning as it goes.
-    head.style.transform = k > 0 ? `scale(${1 - 0.92 * k}) rotate(${-30 * k}deg)` : '';
-    head.style.opacity = String(1 - clamp01(k * 1.3));
+    // The name shrinks into the point and fades, without turning.
+    head.style.transform = k > 0 ? `scale(${Math.max(0.02, 1 - k)})` : '';
+    head.style.opacity = String(1 - clamp01(k * 1.25));
 
-    // Topics ride the ring, outside the name.
     if (tags.length) {
       const hr = hero.getBoundingClientRect();
       tags.forEach((tag, i) => {
         const a = (i / tags.length) * Math.PI * 2 + spin * 0.9 + 0.35;
-        const x = cx + Math.cos(a) * rx * 1.04 * grow;
-        const oy = Math.sin(a) * ry * 1.04 * grow * flat;
+        const x = cx + Math.cos(a) * R * 1.04 * pull;
+        const oy = Math.sin(a) * R * 1.04 * pull;
         tag.style.transform = `translate(${x - hr.left}px, ${cy + oy - hr.top}px) translate(-50%, -50%)`;
         const shown = 1 - clamp01(k * 1.6);
         tag.style.opacity = String(shown);
@@ -410,89 +392,158 @@ function startSpace() {
       });
     }
 
-    ctx.clearRect(0, 0, w, h);
+    // Short trails while things move fast (the fall, the tunnel), none at
+    // rest, so the ring stays crisp.
+    const trail = still ? 0 : Math.max(k * (1 - m), m * (1 - e)) * 0.55;
+    if (trail > 0.02) {
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = `rgba(${BG}, ${1 - trail})`;
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      ctx.clearRect(0, 0, w, h);
+    }
+
     const drift = still ? 0 : time * 0.001;
-    const stars = [];
-    const accent = [];
-    ctx.globalAlpha = 1 - settle * 0.6;
-    ctx.fillStyle = 'rgba(236, 233, 255, 0.78)';
+    const near = [], mid = [], far = [], accent = [], stars = [], streaks = [];
+    const tcx = w / 2, tcy = h / 2;
+    const wall = Math.max(w, h) * 0.55;
+    const twist = cam * 0.00025;
 
     for (const p of pts) {
       if (p.star) {
-        const y = (((p.v * h * 1.4 - sy * 0.06) % h) + h) % h;
-        stars.push(p.u * w, y, p.size * 0.8);
+        let x = p.u * w;
+        let y = (((p.v * h * 1.4 - sy * 0.06) % h) + h) % h;
+        // Even the stars lean into the pull.
+        x += (cx - x) * k * k * 0.35 * (1 - m);
+        y += (cy - y) * k * k * 0.35 * (1 - m);
+        stars.push(x, y, p.size * 0.8);
         continue;
       }
 
-      // Ring, spinning faster and falling inward as k grows.
-      p.a += dt * spinSpeed * (1 + p.fall * k * 2.5);
+      // Ring, spiralling in faster the closer it gets.
+      p.a += dt * spinSpeed * (1 + k * (2 + p.fall * 4));
       const r0 = p.inner ? Math.sqrt(p.u) * 0.85 : 1 + p.band * 0.09;
-      const r = r0 * grow * (1 - k * 0.35 * p.fall);
-      let x = cx + Math.cos(p.a) * rx * r;
-      let y = cy + Math.sin(p.a) * ry * r * flat;
+      const r = r0 * Math.pow(1 - k, 0.7 + p.fall * 0.7);
+      let x = cx + Math.cos(p.a) * R * r;
+      let y = cy + Math.sin(p.a) * R * r;
+      let size = p.size;
+      let bucket = 0;
+      let streak = 0, dirX = 0, dirY = 0;
 
-      // Stream through the cases.
-      if (j > 0) {
-        const d = (((p.s + (still ? 0 : time * p.speed)) % 1) * path.total);
-        const q = onPath(d);
-        const wobble = Math.sin(d * 0.01 + drift + p.phase) * 10;
-        const sx = q.x + q.nx * (p.band * STREAM_WIDTH + wobble);
-        const syy = q.y + q.ny * (p.band * STREAM_WIDTH + wobble) - sy;
-        x += (sx - x) * j;
-        y += (syy - y) * j;
+      // Tunnel walls: a cylinder seen from inside, drawn in perspective.
+      if (m > 0) {
+        const z = ((((p.tz - cam - flow) % DEPTH) + DEPTH) % DEPTH) + 40;
+        const s = FOCUS / z;
+        const a = p.ta + twist;
+        const txp = tcx + Math.cos(a) * wall * p.tr * s;
+        const typ = tcy + Math.sin(a) * wall * p.tr * s;
+        x += (txp - x) * m;
+        y += (typ - y) * m;
+        size = p.size * (1 - m) + Math.min(3.2, Math.max(0.7, 1.3 * s)) * m;
+        bucket = z < DEPTH * 0.25 ? 0 : z < DEPTH * 0.6 ? 1 : 2;
+        // Near the viewer the dust is drawn as short streaks pointing away
+        // from the centre, the way things smear past at speed.
+        streak = m * (1 - e) * Math.min(42, 10 * s);
+        dirX = Math.cos(a);
+        dirY = Math.sin(a);
       }
 
       // Faint scatter by "Обо мне".
-      if (settle > 0) {
-        x += (p.u * w - x) * settle;
-        y += (p.v * h - y) * settle;
+      if (e > 0) {
+        x += (p.u * w - x) * e;
+        y += (p.v * h - y) * e;
+        size += (p.size - size) * e;
       }
 
-      if (!still) {
-        x += Math.sin(drift + p.phase) * 1.5;
-        y += Math.cos(drift * 0.8 + p.phase) * 1.5;
+      if (!still && m < 1) {
+        x += Math.sin(drift + p.phase) * 1.5 * (1 - m);
+        y += Math.cos(drift * 0.8 + p.phase) * 1.5 * (1 - m);
       }
 
-      const dx = x - mouse.x, dy = y - mouse.y;
-      const dm = Math.hypot(dx, dy);
-      let tx = 0, ty = 0;
-      if (dm < REPEL && dm > 0.1 && !still) {
-        const f = (1 - dm / REPEL) * 40;
-        tx = (dx / dm) * f;
-        ty = (dy / dm) * f;
+      if (k < 0.2 && m === 0 && !still) {
+        const dx = x - mouse.x, dy = y - mouse.y;
+        const dm = Math.hypot(dx, dy);
+        let tx = 0, ty = 0;
+        if (dm < REPEL && dm > 0.1) {
+          const f = (1 - dm / REPEL) * 40;
+          tx = (dx / dm) * f;
+          ty = (dy / dm) * f;
+        }
+        p.ox += (tx - p.ox) * 0.12;
+        p.oy += (ty - p.oy) * 0.12;
+      } else {
+        p.ox *= 0.9;
+        p.oy *= 0.9;
       }
-      p.ox += (tx - p.ox) * 0.12;
-      p.oy += (ty - p.oy) * 0.12;
       x += p.ox;
       y += p.oy;
 
       if (x < -4 || x > w + 4 || y < -4 || y > h + 4) continue;
-      if (p.accent) accent.push(x, y, p.size + 0.6);
-      else ctx.fillRect(x, y, p.size, p.size);
+      if (streak > 3 && bucket === 0 && !still) {
+        streaks.push(x, y, x + dirX * streak, y + dirY * streak);
+        continue;
+      }
+      const list = p.accent ? accent : bucket === 0 ? near : bucket === 1 ? mid : far;
+      list.push(x, y, size);
     }
 
-    ctx.fillStyle = 'rgba(214, 107, 208, 0.95)';
-    for (let i = 0; i < accent.length; i += 3) ctx.fillRect(accent[i], accent[i + 1], accent[i + 2], accent[i + 2]);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    for (let i = 0; i < stars.length; i += 3) ctx.fillRect(stars[i], stars[i + 1], stars[i + 2], stars[i + 2]);
+    const paint = (list, colour, alpha) => {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = colour;
+      for (let i = 0; i < list.length; i += 3) ctx.fillRect(list[i], list[i + 1], list[i + 2], list[i + 2]);
+    };
+    const fade = 1 - e * 0.6;
+    paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
+    paint(far, 'rgb(236, 233, 255)', 0.45 * fade);
+    paint(mid, 'rgb(236, 233, 255)', 0.75 * fade);
+    paint(near, 'rgb(236, 233, 255)', 0.85 * fade);
+    paint(accent, 'rgb(214, 107, 208)', 0.95 * fade);
+    if (streaks.length) {
+      ctx.globalAlpha = 0.75;
+      ctx.strokeStyle = 'rgb(236, 233, 255)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let i = 0; i < streaks.length; i += 4) {
+        ctx.moveTo(streaks[i], streaks[i + 1]);
+        ctx.lineTo(streaks[i + 2], streaks[i + 3]);
+      }
+      ctx.stroke();
+    }
 
-    // The hole: a disc of night with a thin glowing rim, drawn over the dust
-    // it swallows. It fades once the stream has taken over.
-    const holeAlpha = 1 - j;
-    if (holeR > 2 && holeAlpha > 0) {
-      ctx.globalAlpha = holeAlpha;
-      const g = ctx.createRadialGradient(cx, cy, holeR * 0.7, cx, cy, holeR * 1.12);
-      g.addColorStop(0, 'rgba(7, 7, 11, 1)');
-      g.addColorStop(0.72, 'rgba(7, 7, 11, 1)');
-      g.addColorStop(0.8, 'rgba(214, 107, 208, 0.55)');
-      g.addColorStop(0.86, 'rgba(236, 233, 255, 0.25)');
-      g.addColorStop(1, 'rgba(7, 7, 11, 0)');
+    // The point everything falls into: a small hot core that swells as the
+    // dust piles in and is gone once the tunnel opens.
+    const core = k * (1 - m);
+    if (core > 0.01) {
+      const cr = 8 + 70 * core;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+      g.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+      g.addColorStop(0.25, 'rgba(236, 200, 255, 0.55)');
+      g.addColorStop(0.6, 'rgba(214, 107, 208, 0.25)');
+      g.addColorStop(1, 'rgba(214, 107, 208, 0)');
+      ctx.globalAlpha = core;
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(cx, cy, holeR * 1.12, 0, Math.PI * 2);
+      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+
+    // Flight: each case comes out of the depth, reads at full size, and
+    // flies past the viewer.
+    if (flight) {
+      cards.forEach((card, i) => {
+        const z = caseDepth(i) - cam;
+        let op = 0, sc = 0.1;
+        if (z > 40) {
+          sc = FOCUS / z;
+          op = clamp01((sc - 0.4) / 0.35) * (1 - clamp01((sc - 1.3) / 0.6)) * m;
+        }
+        card.style.opacity = String(op);
+        card.style.transform = `translate(-50%, -50%) scale(${Math.min(sc, 4)})`;
+        card.style.pointerEvents = op > 0.85 ? 'auto' : 'none';
+        card.style.zIndex = String(100 - i);
+      });
+    }
   };
 
   layout();

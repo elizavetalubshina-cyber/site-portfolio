@@ -325,11 +325,11 @@ if (heroStage) {
 //   scatter - sparse dust over the whole screen by "Обо мне"
 // Every point has a home in each shape; the scroll position picks the mix,
 // so scrolling down pours the ring into the stream and then lets it settle.
-// The cursor pushes points aside. Nothing runs on touch screens, narrow
-// windows or with reduced motion asked for.
+// The cursor pushes points aside. Drawn on any window wider than the phone
+// layout, touch or not; with reduced motion asked for it holds still.
 const particleCanvas = document.getElementById('particles');
 const heroMarks = document.getElementById('heroMarks');
-const wideScreen = window.matchMedia('(min-width: 901px) and (hover: hover) and (pointer: fine)');
+const wideScreen = window.matchMedia('(min-width: 901px)');
 
 if (particleCanvas && wideScreen.matches) {
   const ctx = particleCanvas.getContext('2d');

@@ -415,8 +415,7 @@ function startSpace() {
     const tcx = w / 2, tcy = h / 2;
     const halfDiag = Math.hypot(w, h) / 2 + 20;
     const wall = Math.max(w, h) * 0.55;
-    // Vortex: the walls wind into a spiral down the tunnel and keep turning.
-    const twist = cam * 0.0006 + (still ? 0 : time * 0.00035);
+    // The walls do not turn: a rotating tunnel made people motion-sick.
 
     for (const p of pts) {
       if (p.star) {
@@ -426,7 +425,7 @@ function startSpace() {
         const rn = p.sr;
         const swirl = k * k * (1.4 / (rn + 0.25));
         const rr = rn * halfDiag * (1 - 0.45 * k * k * (1 - rn));
-        const a = p.sa + swirl + (still ? 0 : time * 0.000004);
+        const a = p.sa + swirl;
         stars.push(w / 2 + Math.cos(a) * rr, h / 2 + Math.sin(a) * rr, p.size * 0.8);
         continue;
       }
@@ -445,7 +444,7 @@ function startSpace() {
       if (m > 0) {
         const z = ((((p.tz - cam - flow) % DEPTH) + DEPTH) % DEPTH) + 40;
         const s = FOCUS / z;
-        const a = p.ta + twist + z * 0.0011;
+        const a = p.ta;
         const txp = tcx + Math.cos(a) * wall * p.tr * s;
         const typ = tcy + Math.sin(a) * wall * p.tr * s;
         x += (txp - x) * m;
@@ -455,9 +454,8 @@ function startSpace() {
         // Near the viewer the dust is drawn as short streaks pointing away
         // from the centre, the way things smear past at speed.
         streak = m * (1 - e) * Math.min(42, 10 * s);
-        // Streaks follow the spiral: part outward, mostly round.
-        dirX = Math.cos(a + 1.1);
-        dirY = Math.sin(a + 1.1);
+        dirX = Math.cos(a);
+        dirY = Math.sin(a);
       }
 
       // Faint scatter by "Обо мне".

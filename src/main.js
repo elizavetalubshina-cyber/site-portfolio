@@ -213,40 +213,120 @@ if (caseToc) {
   window.addEventListener('resize', onScroll);
 }
 
-// Hero covers drift after the cursor, each by its own depth, and the name
-// shifts a touch the other way, so the stage reads as layered. Eased toward
-// the target every frame rather than snapped to it, which is what makes the
-// movement feel weighted. Only on a real pointer with motion allowed: on
-// touch the covers are a static strip (see the 900px rule in style.css).
+// Hero covers react to the cursor, each in its own way, so the stage reads
+// as five objects rather than one layer sliding about:
+//   follow  - leans toward the cursor and tilts to face it
+//   inverse - drifts the opposite way, as if further back
+//   spin    - turns with the cursor's horizontal position
+//   magnet  - pulled in when the cursor comes close
+//   repel   - pushed away when the cursor comes close
+// Every value eases toward its target each frame instead of snapping, which
+// is what makes the motion feel weighted. Only on a real pointer with motion
+// allowed: on touch the covers are a static strip (the 900px rule in style.css).
 const heroStage = document.getElementById('heroStage');
 const heroName = document.querySelector('.home-page .hero__head');
 const canDrift = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 901px)');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 if (heroStage && heroName) {
-  const depths = [1, 0.55, 0.8, 0.9, 0.65];
-  const tiles = [...heroStage.querySelectorAll('.hero__tile')].map((el, i) => ({ el, depth: depths[i % depths.length] }));
-  const target = { x: 0, y: 0 };
-  const current = { x: 0, y: 0 };
+  const behaviours = {
+    subtitles: 'follow',
+    satellite: 'inverse',
+    'design-system': 'spin',
+    tracktice: 'magnet',
+    ecosystem: 'repel',
+  };
+  const RADIUS = 340;
+  const keys = ['tx', 'ty', 'rx', 'ry', 'rz', 's'];
+  const rest = { tx: 0, ty: 0, rx: 0, ry: 0, rz: 0, s: 1 };
+
+  const tiles = [...heroStage.querySelectorAll('.hero__tile')].map((el) => {
+    const name = [...el.classList].find((c) => c.startsWith('hero__tile--')).slice('hero__tile--'.length);
+    return { el, mode: behaviours[name] || 'follow', cx: 0, cy: 0, cur: { ...rest }, target: { ...rest } };
+  });
+
+  // Centres are measured without the transforms applied, relative to the
+  // stage, so scrolling and the covers' own movement do not skew them.
+  const measure = () => {
+    tiles.forEach((t) => {
+      t.cx = t.el.offsetLeft + t.el.offsetWidth / 2;
+      t.cy = t.el.offsetTop + t.el.offsetHeight / 2;
+    });
+  };
+  measure();
+  window.addEventListener('resize', measure);
+
+  const name = { cur: { x: 0, y: 0 }, target: { x: 0, y: 0 } };
   let frame = 0;
 
-  const render = () => {
-    current.x += (target.x - current.x) * 0.08;
-    current.y += (target.y - current.y) * 0.08;
-    tiles.forEach(({ el, depth }) => {
-      el.style.transform = `translate3d(${current.x * depth * 48}px, ${current.y * depth * 36}px, 0)`;
+  const setTargets = (px, py, nx, ny) => {
+    tiles.forEach((t) => {
+      const g = t.target;
+      Object.assign(g, rest);
+      const dx = px - t.cx;
+      const dy = py - t.cy;
+      const dist = Math.hypot(dx, dy) || 1;
+      const near = Math.max(0, 1 - dist / RADIUS);
+      switch (t.mode) {
+        case 'follow':
+          g.tx = nx * 44; g.ty = ny * 32; g.ry = nx * 14; g.rx = -ny * 10;
+          break;
+        case 'inverse':
+          g.tx = -nx * 40; g.ty = -ny * 28;
+          break;
+        case 'spin':
+          g.rz = nx * 14; g.ty = ny * 10;
+          break;
+        case 'magnet':
+          g.tx = dx * 0.3 * near; g.ty = dy * 0.3 * near; g.s = 1 + 0.06 * near;
+          break;
+        case 'repel':
+          g.tx = (-dx / dist) * 70 * near; g.ty = (-dy / dist) * 70 * near; g.rz = (dx / dist) * -8 * near;
+          break;
+      }
     });
-    heroName.style.transform = `translate3d(${current.x * -10}px, ${current.y * -6}px, 0)`;
-    const settled = Math.abs(target.x - current.x) < 0.001 && Math.abs(target.y - current.y) < 0.001;
-    frame = settled ? 0 : requestAnimationFrame(render);
+    name.target.x = nx * -10;
+    name.target.y = ny * -6;
   };
 
-  const onPointerMove = (e) => {
+  const render = () => {
+    let moving = false;
+    tiles.forEach((t) => {
+      keys.forEach((k) => {
+        const d = t.target[k] - t.cur[k];
+        t.cur[k] += d * 0.08;
+        if (Math.abs(d) > 0.01) moving = true;
+      });
+      const c = t.cur;
+      t.el.style.transform = `perspective(900px) translate3d(${c.tx}px, ${c.ty}px, 0) rotateX(${c.rx}deg) rotateY(${c.ry}deg) rotate(${c.rz}deg) scale(${c.s})`;
+    });
+    ['x', 'y'].forEach((k) => {
+      const d = name.target[k] - name.cur[k];
+      name.cur[k] += d * 0.08;
+      if (Math.abs(d) > 0.01) moving = true;
+    });
+    heroName.style.transform = `translate3d(${name.cur.x}px, ${name.cur.y}px, 0)`;
+    frame = moving ? requestAnimationFrame(render) : 0;
+  };
+  const kick = () => { if (!frame) frame = requestAnimationFrame(render); };
+
+  window.addEventListener('pointermove', (e) => {
     if (!canDrift.matches || reducedMotion.matches) return;
-    target.x = (e.clientX / window.innerWidth) * 2 - 1;
-    target.y = (e.clientY / window.innerHeight) * 2 - 1;
-    if (!frame) frame = requestAnimationFrame(render);
-  };
+    const box = heroStage.getBoundingClientRect();
+    setTargets(
+      e.clientX - box.left,
+      e.clientY - box.top,
+      (e.clientX / window.innerWidth) * 2 - 1,
+      (e.clientY / window.innerHeight) * 2 - 1,
+    );
+    kick();
+  }, { passive: true });
 
-  window.addEventListener('pointermove', onPointerMove, { passive: true });
+  // Cursor left the window: everything settles back to where it started.
+  document.documentElement.addEventListener('mouseleave', () => {
+    tiles.forEach((t) => Object.assign(t.target, rest));
+    name.target.x = 0;
+    name.target.y = 0;
+    kick();
+  });
 }

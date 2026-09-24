@@ -714,9 +714,7 @@ h1, h2, h3 {
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-3);
+  justify-content: flex-end;
   pointer-events: none;
 }
 .hero__cta { pointer-events: auto; }
@@ -739,14 +737,6 @@ h1, h2, h3 {
   line-height: 1;
   white-space: nowrap;
   will-change: transform;
-}
-
-.hero__pitch {
-  margin: 0;
-  max-width: 560px;
-  font-size: 17px;
-  color: var(--text-secondary);
-  line-height: 1.5;
 }
 
 /* ---------- Hero stage: case covers ---------- */

@@ -1758,7 +1758,19 @@ h1, h2, h3 {
     transform: translateY(48px);
     transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 0.7, 0.3, 1);
   }
-  .tunnel--flow .tunnel__case .tunnel__text { transition-delay: 0.12s; }
+  .tunnel--flow .tunnel__case .tunnel__text {
+    position: relative;
+    transition-delay: 0.12s;
+  }
+  /* Same pool of night as in flight, behind the text only: the covers are
+     opaque already. */
+  .tunnel--flow .tunnel__text::before {
+    content: '';
+    position: absolute;
+    inset: -30% -20%;
+    z-index: -1;
+    background: radial-gradient(closest-side, rgba(7, 7, 11, 0.9), rgba(7, 7, 11, 0.6) 60%, rgba(7, 7, 11, 0));
+  }
   .tunnel--flow .tunnel__case.is-visible .tunnel__cover,
   .tunnel--flow .tunnel__case.is-visible .tunnel__text {
     opacity: 1;

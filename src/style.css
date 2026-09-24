@@ -1466,7 +1466,18 @@ h1, h2, h3 {
     --purple: #d66bd0;
     color-scheme: dark;
   }
+  /* The nav bar is an invisible strip across the top of the first screen,
+     right where the top of the ring runs, so it would swallow the hover of
+     a topic passing under it. Only the links themselves take the pointer;
+     the hidden logo takes nothing until it shows. */
+  .home-page .nav,
+  .home-page .nav__shell,
+  .home-page .nav__inner { pointer-events: none; }
+  .home-page .nav a { pointer-events: auto; }
+  .home-page .nav:not(.is-scrolled) .logo { pointer-events: none; }
+
   .home-page .nav.is-scrolled .nav__inner {
+    pointer-events: auto;
     background: rgba(12, 12, 18, 0.6);
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);

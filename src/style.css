@@ -665,418 +665,194 @@ h1, h2, h3 {
 
 /* ---------- Hero ---------- */
 
+/* The homepage runs edge to edge: hero, cases grid and about sit in a wide
+   container with a fluid side gutter instead of the 1200px column the case
+   pages keep for reading. Capped at 1920px so an ultrawide screen does not
+   stretch the cards into banners. */
+.container--wide {
+  max-width: 1920px;
+  padding: 0 var(--gutter);
+}
+.home-page {
+  --gutter: clamp(16px, 3vw, 56px);
+}
+.home-page .nav__inner {
+  max-width: 1920px;
+}
+/* Lines the nav links up with the gutter the content below uses: .nav adds
+   its own 16px around the bar, so the bar gives back the rest. */
+@media (min-width: 641px) {
+  .home-page .nav__inner {
+    padding-left: max(var(--space-2), calc(var(--gutter) - var(--space-2)));
+    padding-right: max(var(--space-2), calc(var(--gutter) - var(--space-2)));
+  }
+}
+
+/* One screen tall: the name, the role and the pitch frame a stage of case
+   covers. Rows are pinned top, middle and bottom, so the covers get the
+   bands in between regardless of window height. */
 .hero {
   position: relative;
-  text-align: center;
-  padding-top: var(--space-4);
-}
-
-/* Bounded so the centred title/role/pitch block can't drift into the
-   floating icons above and below it: on a short window (lots of browser
-   chrome eating into the viewport) 66vh would rise enough to run the
-   title into the figma icon; on a very tall one it would sink into the
-   air/dashboard icons. The floor and ceiling cap both ends while 66vh
-   still governs the common case in between. */
-.hero__intro {
-  min-height: clamp(560px, 66vh, 660px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  min-height: clamp(600px, calc(100svh - 104px), 980px);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-4);
 }
 
-/* Floating hero icons — hover near the centered text with clear air
-   around them, each gently levitating on its own out-of-sync rhythm. */
-.hero__float {
-  position: absolute;
-  z-index: 3;
-  display: block;
+.hero__top,
+.hero__bottom {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
   pointer-events: none;
-  will-change: transform;
-  /* The source PNGs already bake in their own drop shadow/glow (see
-     Figma export), so no CSS filter here — filter: drop-shadow() on 6
-     continuously-animating elements is expensive to recomposite every
-     frame and was the main cause of scroll/animation jank. */
-  /* Shared convergence factor: 0 at a 640px viewport (as narrow as these
-     get before hiding), 1 at 1440px+. Every icon reads the SAME value,
-     so as the window shrinks they all slide toward center in lockstep —
-     since each icon's offset is a linear function of one shared value,
-     two icons that don't collide at t=0 and don't collide at t=1 can't
-     collide at any point in between either, which independent per-icon
-     clamp() curves (different rates) could not guarantee. */
-  --t: clamp(0, calc((100vw - 640px) / 800px), 1);
 }
-
-.hero__float--figma {
-  width: 60px;
-  top: 75px;
-  left: calc(50% - (110px + 280px * var(--t)));
-  animation: hero-float-figma 5.5s ease-in-out infinite;
-}
-
-.hero__float--air {
-  width: 130px;
-  top: 380px;
-  left: calc(50% + (400px + 40px * var(--t)));
-  animation: hero-float-air 6.5s ease-in-out infinite;
-  animation-delay: -1.2s;
-}
-
-.hero__float--poppup {
-  width: 190px;
-  top: 340px;
-  left: calc(50% - (590px + 20px * var(--t)));
-  animation: hero-float-poppup 7s ease-in-out infinite;
-  animation-delay: -3s;
-}
-
-.hero__float--dashboard {
-  width: 150px;
-  top: 215px;
-  left: calc(50% + (260px + 210px * var(--t)));
-  animation: hero-float-dashboard 6s ease-in-out infinite;
-  animation-delay: -2s;
-}
-
-/* Pulled up into the top-right corner, past the dashboard icon — but kept
-   well clear of the nav row above it (nav has no background of its own
-   until .is-scrolled adds the pill, so at rest there's nothing to hide
-   behind). */
-.hero__float--earth {
-  width: 130px;
-  top: 65px;
-  left: calc(50% + (330px + 220px * var(--t)));
-  animation: hero-float-earth 7.5s ease-in-out infinite;
-  animation-delay: -4s;
-}
-
-.hero__float--status {
-  width: 150px;
-  top: 215px;
-  left: calc(50% - (360px + 270px * var(--t)));
-  animation: hero-float-status 6.2s ease-in-out infinite;
-  animation-delay: -5s;
-}
-
-@keyframes hero-float-figma {
-  0%, 100% { transform: rotate(-12deg) translateY(0); }
-  50% { transform: rotate(-12deg) translateY(-16px); }
-}
-@keyframes hero-float-air {
-  0%, 100% { transform: rotate(6deg) translateY(0); }
-  50% { transform: rotate(6deg) translateY(-14px); }
-}
-@keyframes hero-float-poppup {
-  0%, 100% { transform: rotate(-5deg) translateY(0); }
-  50% { transform: rotate(-5deg) translateY(-18px); }
-}
-@keyframes hero-float-dashboard {
-  0%, 100% { transform: rotate(8deg) translateY(0); }
-  50% { transform: rotate(8deg) translateY(-15px); }
-}
-@keyframes hero-float-earth {
-  0%, 100% { transform: rotate(-14deg) translateY(0); }
-  50% { transform: rotate(-14deg) translateY(-12px); }
-}
-@keyframes hero-float-status {
-  0%, 100% { transform: rotate(5deg) translateY(0); }
-  50% { transform: rotate(5deg) translateY(-13px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__float { animation: none; }
-}
-
-.hero__title {
-  font-size: 60px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.05;
-  white-space: nowrap;
-}
+.hero__top { align-items: baseline; }
+.hero__cta { pointer-events: auto; }
 
 .hero__role {
-  margin: var(--space-3) 0 var(--space-2);
-  font-size: 18px;
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text);
 }
 
+.hero__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.hero__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(31, 191, 117, 0.18);
+}
+
+/* Sized to the width, not to a fixed step: "Елизавета Любшина" in Unbounded
+   800 is 13.9 em wide, so this makes the name span the full column at any
+   window size between a laptop and a 1920px monitor. */
+.hero__title {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-size: min(calc((100vw - 2 * var(--gutter)) / 13.9), 132px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  will-change: transform;
+}
+
 .hero__pitch {
-  margin: 0 auto;
+  margin: 0;
   max-width: 560px;
   font-size: 17px;
   color: var(--text-secondary);
   line-height: 1.5;
 }
 
-/* ---------- Showcase / laptop ---------- */
+/* ---------- Hero stage: case covers ---------- */
 
-.showcase {
-  margin-top: var(--space-7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-}
-
-.laptop {
-  position: relative;
-  /* Wider than .hero__title on purpose: the screenshot is a dense 1920x1080
-     UI, and every extra pixel of render width helps the small in-image text
-     stay legible. 1000px is close to the ceiling — the tooltip card hangs
-     5.3% past the laptop's left edge, and beyond ~1040px that overhang
-     would clear the 1200px container's padding and clip/scroll sideways. */
-  width: 1000px;
-  max-width: 100%;
-}
-
-/* Same volumetric-badge feel as the original plashka.png: soft white
-   gradient card with a gentle shadow, instead of a flat pill. */
-.laptop__tooltip {
-  position: absolute;
-  top: -14.222%;
-  left: -5.333%;
-  z-index: 3;
-  width: max-content;
-  max-width: 40%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  /* No flex gap: it stacked with the button's own margin and the two on-scale
-     values compounded into 12px, the one spacing on the site that was not a
-     multiple of the 8px step. The two gaps are set on the children instead. */
-  padding: var(--space-2);
-  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-md);
-  box-shadow: 0 2px 4px rgba(18, 20, 26, 0.08), 0 24px 44px -14px rgba(18, 20, 26, 0.5);
-}
-.laptop__tooltip-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-}
-.laptop__tooltip-desc {
-  margin: var(--space-half) 0 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--text-secondary);
-}
-.laptop__tooltip-cta {
-  margin-top: var(--space-2);
-  white-space: nowrap;
-}
-
-.laptop__screen {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  border-radius: 14px;
-  border: 10px solid #1a1c22;
-  overflow: hidden;
-  background: #0e1116;
-  box-shadow: 0 20px 40px -12px rgba(20, 22, 30, 0.35);
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  text-align: left;
-  container-type: inline-size;
-}
-
-.tv__bg {
+.hero__stage {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  z-index: 1;
+}
+
+/* The outer link carries the cursor drift (a transform set from main.js);
+   the inner card carries the entrance and the hover, so the two never
+   fight over one transform. */
+.hero__tile {
+  position: absolute;
   display: block;
-  pointer-events: none;
+  width: var(--w);
+  left: var(--x);
+  top: var(--y);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Coordinates below are percentages measured from the real
-   vs-subtitles-screen.png (1920x1080) so overlays line up with
-   the actual interface underneath.
-
-   Everything in this .tv__ block is deliberately outside the --space
-   scale: these values reproduce the VS Subtitles interface itself, not
-   this site's layout, and they are driven by container queries against
-   the screenshot's own proportions. Putting layout tokens here would
-   break the alignment with the image underneath. */
-
-.tv__video-frame {
-  /* Figma layer: X 0, Y 112, W 959, H 662.04 on a 1920x1080 frame */
-  position: absolute;
-  left: 0%;
-  top: 10.37%;
-  width: 49.948%;
-  height: 61.3%;
-  overflow: hidden;
-  background: #000;
-}
-.tv__video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.tv__caption {
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  bottom: 5%;
-  margin: 0;
-  text-align: center;
-  font-size: clamp(9px, 2.1cqw, 13px);
-  font-weight: 600;
-  color: #cccccc;
-  background: #0a0c10;
-  padding: 4px 8px;
-  border-radius: 0;
-  min-height: 1em;
-  transition: opacity 0.15s ease;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.tv__caption.is-empty {
-  background: transparent;
-  padding: 0;
-  min-height: 0;
-}
-
-/* Masked over the real "00:21:35:01" readout only — the real
-   "☐ Остановить" button label to the left is left untouched. */
-.tv__stopbar {
-  position: absolute;
-  left: 7.8%;
-  top: 72.7%;
-  width: 5.1%;
-  height: 3.3%;
-  background: #333333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.tv__live-timecode {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 600;
-  color: #cccccc;
-  font-size: clamp(6.5px, 1cqw, 10px);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  transform: translateY(1px);
-}
-
-/* Masked over the real "Субтитры" toggle, forced to its ON state
-   (the real screenshot happened to capture it switched off). */
-.tv__subs-toggle {
-  position: absolute;
-  left: 39.3%;
-  top: 73.8%;
-  width: 2.03%;
-  height: 1.94%;
-  background: #0066aa;
-  border-radius: 999px;
-}
-.tv__subs-toggle-knob {
-  position: absolute;
-  top: 12%;
-  bottom: 12%;
-  right: 8%;
-  aspect-ratio: 1;
-  background: #cccccc;
-  border-radius: 50%;
-}
-
-.tv__cues-mask {
-  position: absolute;
-  left: 66.7%;
-  top: 11.1%;
-  width: 33.3%;
-  height: 88.9%;
-  background: #222222;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.tv__cue-counter {
-  flex-shrink: 0;
-  margin: 0;
-  padding: 2% 1.25% 2% 2.5%;
-  font-family: 'PT Root UI', -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-weight: 500;
-  font-size: clamp(6px, 0.85cqw, 8px);
-  background: #333333;
-  /* #999 on #333 is what the real editor uses, but it lands at 4.43:1 — just
-     under the 4.5 minimum, and this is 8px text. Four steps lighter clears it
-     at 4.66 without changing how the mock reads. */
-  color: #9d9d9d;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.tv__cues {
+.hero__tile-card {
   position: relative;
-  flex: 1;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.tv__cue {
-  font-size: clamp(9px, 1.5cqw, 13px);
-  line-height: 1.4;
-  background: #333333;
-  color: #cccccc;
-  padding: 4% 5%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.tv__cue-num {
   display: block;
-  font-family: 'Open Sans', sans-serif;
-  font-size: clamp(6px, 0.85cqw, 8px);
-  color: #9d9d9d;  /* 4.66:1 on the #333 panel; #999 was 4.43 */
-  font-weight: 600;
-  margin-bottom: 0.5em;
-}
-.tv__cue-text {
-  display: -webkit-box;
-  /* 3, not 2: at the bigger type scale the longest authored line (~44
-     chars) can itself wrap once inside the narrow cues column, so a
-     2-line cue needs up to 3 rendered rows to avoid clipping its second
-     authored line off with an ellipsis. */
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  border-radius: var(--radius-md);
   overflow: hidden;
+  background: var(--dark-card);
+  box-shadow: 0 2px 6px rgba(18, 20, 26, 0.08), 0 30px 60px -24px rgba(18, 20, 26, 0.45);
+  transform: rotate(var(--rot));
+  transition: transform 0.45s cubic-bezier(0.22, 0.7, 0.3, 1), box-shadow 0.45s ease;
+  animation: hero-tile-in 0.9s cubic-bezier(0.22, 0.7, 0.3, 1) backwards;
+  animation-delay: var(--delay);
 }
-.tv__cue-meta {
-  display: none;
-  font-family: 'Open Sans', sans-serif;
+.hero__tile-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top;
+}
+
+.hero__tile-label {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  padding: var(--space-half) var(--space-2);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
   font-weight: 600;
-  font-size: clamp(6px, 0.85cqw, 8px);
-  color: #666666;
-  margin-bottom: 0.5em;
-  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.tv__cue--released {
-  background: #222222;
-  color: #666666;
+@media (hover: hover) and (pointer: fine) {
+  .hero__tile:hover { z-index: 3; }
+  .hero__tile:hover .hero__tile-card {
+    transform: rotate(0deg) scale(1.08);
+    box-shadow: 0 2px 6px rgba(18, 20, 26, 0.1), 0 40px 80px -24px rgba(18, 20, 26, 0.55);
+  }
+  .hero__tile:hover .hero__tile-label {
+    opacity: 1;
+    transform: none;
+  }
 }
-.tv__cue--released .tv__cue-meta { display: block; }
-.tv__cue--released strong { display: none; }
 
-.tv__cue--active {
-  background: #1f5c37;
-  color: #d7f5e2;
+@keyframes hero-tile-in {
+  from {
+    opacity: 0;
+    transform: rotate(var(--rot)) translateY(40px) scale(0.92);
+  }
 }
-.tv__cue--active strong { color: #9fe8bb; }
+
+/* Positions are shares of the hero box, so the layout holds its shape
+   from a 1024px laptop to a 1920px monitor. Each tile sits in a band the
+   text rows leave free: two above the name, three below it. */
+/* --u is 1vw on a typical 16:10 or 16:9 window and shrinks with the height
+   on a short one, so the covers never grow into the name or the pitch when
+   browser chrome eats the viewport. */
+.hero__stage { --u: min(1vw, 1.55vh); }
+.hero__tile--subtitles     { --x: 3%;  --y: 14%; --w: calc(21 * var(--u)); --rot: -5deg; --delay: 0.05s; }
+.hero__tile--design-system { --x: 38%; --y: 9%;  --w: calc(13 * var(--u)); --rot: 3deg;  --delay: 0.2s; }
+.hero__tile--satellite     { --x: 72%; --y: 12%; --w: calc(19 * var(--u)); --rot: 5deg;  --delay: 0.12s; }
+.hero__tile--tracktice     { --x: 26%; --y: 60%; --w: calc(17 * var(--u)); --rot: -3deg; --delay: 0.28s; }
+.hero__tile--ecosystem     { --x: 58%; --y: 62%; --w: calc(15 * var(--u)); --rot: 6deg;  --delay: 0.35s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__tile-card { animation: none; transition: none; }
+}
 
 /* ---------- Cases ---------- */
 
@@ -1086,7 +862,7 @@ h1, h2, h3 {
 .cases__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(280px, auto);
+  grid-auto-rows: minmax(clamp(280px, 21vw, 400px), auto);
   gap: var(--space-2);
 }
 
@@ -1688,47 +1464,54 @@ h1, h2, h3 {
 
 /* ---------- Responsive ---------- */
 
-/* The icons sit at a distance from the page centre that shrinks with the
-   viewport, but not fast enough: solving the position of the outermost one
-   (earth, which also gains ~13px of bounding box from its rotation) against
-   the viewport edge gives a right edge of 473px + 220px x t past centre, so it
-   only clears the edge from about 1320px up. Below that the page could be
-   dragged sideways — 47px at 1101px wide, 7px at 1280px.
-
-   Clipping was the obvious fix and does not work here: overflow on body is not
-   propagated to the viewport, and on the root it still left the page
-   scrollable. So the icons simply stop at the width where their own geometry
-   stops fitting. Everything below that is the hero without its decorative
-   layer, which is what it already looked like on tablets. */
-@media (max-width: 1319px) {
-  .hero__float { display: none; }
-  /* The 66vh the intro reserves is room for those floating icons to hover in.
-     With the icons gone the reservation is just empty screen — on a 844px-tall
-     phone it centred 274px of text inside 557px, so the first thing below the
-     name was ~140px of nothing, then another ~140px before the laptop. The text
-     now sets its own height and --space-7 above the showcase does the spacing. */
-  .hero__intro { min-height: 0; }
+/* Below a laptop the covers stop floating: there is no room around the name,
+   and on touch there is no cursor for them to follow. They line up as a
+   swipeable strip under the name instead, so the first screen on a phone
+   still shows the work. */
+@media (max-width: 900px) {
+  .hero {
+    min-height: 0;
+    justify-content: flex-start;
+    gap: var(--space-4);
+    padding-top: var(--space-2);
+  }
+  .hero__top { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+  .hero__title {
+    order: 1;
+    font-size: calc((100vw - 2 * var(--gutter)) / 7.6);
+    white-space: normal;
+    text-align: left;
+  }
+  .hero__stage {
+    order: 2;
+    position: static;
+    display: flex;
+    gap: var(--space-2);
+    margin: 0 calc(var(--gutter) * -1);
+    padding: var(--space-1) var(--gutter) var(--space-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .hero__stage::-webkit-scrollbar { display: none; }
+  .hero__tile {
+    position: static;
+    flex: 0 0 72vw;
+    width: auto;
+    scroll-snap-align: center;
+    transform: none !important;
+  }
+  .hero__tile-card { --rot: 0deg; }
+  .hero__tile-label { opacity: 1; transform: none; }
+  .hero__bottom {
+    order: 3;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
 }
 
 @media (max-width: 1100px) {
-  .hero__title { font-size: 40px; white-space: normal; }
-  .showcase { flex-direction: column; gap: var(--space-3); }
-  .laptop { width: 100%; order: -1; }
-
-  /* The tooltip is a card floating over the corner of the laptop, sized at
-     40% of it. That reads on a wide screen; once the laptop itself drops to
-     full width here, 40% is still a cramped little card hanging off the
-     screenshot's corner. It stops floating and becomes a full-width block
-     instead — placed after .laptop__body in the markup, so in normal flow
-     it lands below the screenshot rather than above it. */
-  .laptop__tooltip {
-    position: static;
-    width: 100%;
-    max-width: none;
-    margin-top: var(--space-2);
-    align-items: flex-start;
-  }
-
   .cases__grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .case--broad, .case--hero, .case--wide { grid-column: auto; grid-row: auto; }
 

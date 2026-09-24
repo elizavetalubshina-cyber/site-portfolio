@@ -28,13 +28,9 @@
 
   <!-- Hint the browser at the resources the hero needs before it would
        otherwise discover them: the two fonts the hero title and pitch
-       render in, and the laptop screenshot — the largest element above
-       the fold. Without this the fonts wait for style.css to be parsed,
-       and the screenshot waits for the HTML parser to reach it in the
-       body, both later than necessary. -->
+       render in. Without this they wait for style.css to be parsed. -->
   <link rel="preload" href="/fonts/unbounded-800-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/manrope-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="/src/assets/vs-subtitles-onair.webp" as="image" />
 
   <link rel="stylesheet" href="/src/style.css" />
   <script type="module" src="/src/main.js"></script>
@@ -70,59 +66,58 @@
   </header>
 
   <main id="main" tabindex="-1">
-    <section class="hero container" id="top">
-      <img class="hero__float hero__float--figma" src="/src/assets/hero-icon-figma.webp" alt="" aria-hidden="true" width="120" height="176" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--air" src="/src/assets/hero-icon-air.webp" alt="" aria-hidden="true" width="260" height="181" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--poppup" src="/src/assets/hero-icon-poppup.webp" alt="" aria-hidden="true" width="380" height="312" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--dashboard" src="/src/assets/hero-icon-dashboard.webp" alt="" aria-hidden="true" width="300" height="253" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--earth" src="/src/assets/hero-icon-earth.webp" alt="" aria-hidden="true" width="260" height="251" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--status" src="/src/assets/hero-icon-status.webp" alt="" aria-hidden="true" width="300" height="192" loading="eager" decoding="async" />
-
-      <div class="hero__intro">
-        <h1 class="hero__title">Елизавета Любшина</h1>
-        <p class="hero__role">Product Designer&nbsp;·&nbsp;B2B&nbsp;·&nbsp;Web&nbsp;·&nbsp;5&nbsp;лет опыта</p>
-        <p class="hero__pitch">Сложные инженерные сценарии → понятные интерфейсы,<br>меньше ошибок и быстрее выполнение задач</p>
+    <section class="hero container container--wide" id="top">
+      <!-- Case covers scattered across the full width. They drift after the
+           cursor on a real pointer (main.js) and each one opens its case.
+           Hidden from screen readers and the tab order: the same five links
+           are in the cases grid right below, with their full descriptions. -->
+      <div class="hero__stage" id="heroStage">
+        <a class="hero__tile hero__tile--subtitles" href="/cases/vs-subtitles.html" tabindex="-1" aria-hidden="true">
+          <span class="hero__tile-card">
+            <img src="/src/assets/hero/subtitles.webp" alt="" width="800" height="544" decoding="async" />
+            <span class="hero__tile-label">VS Subtitles</span>
+          </span>
+        </a>
+        <a class="hero__tile hero__tile--satellite" href="/cases/satellite.html" tabindex="-1" aria-hidden="true">
+          <span class="hero__tile-card">
+            <img src="/src/assets/hero/satellite.webp" alt="" width="800" height="444" decoding="async" />
+            <span class="hero__tile-label">Satellite</span>
+          </span>
+        </a>
+        <a class="hero__tile hero__tile--tracktice" href="/cases/tracktice.html" tabindex="-1" aria-hidden="true">
+          <span class="hero__tile-card">
+            <img src="/src/assets/hero/tracktice.webp" alt="" width="800" height="450" decoding="async" />
+            <span class="hero__tile-label">Tracktice Flow</span>
+          </span>
+        </a>
+        <a class="hero__tile hero__tile--ecosystem" href="/cases/vs-ecosystem.html" tabindex="-1" aria-hidden="true">
+          <span class="hero__tile-card">
+            <img src="/src/assets/hero/ecosystem.webp" alt="" width="800" height="442" decoding="async" />
+            <span class="hero__tile-label">VS Ecosystem</span>
+          </span>
+        </a>
+        <a class="hero__tile hero__tile--design-system" href="/cases/design-system.html" tabindex="-1" aria-hidden="true">
+          <span class="hero__tile-card">
+            <img src="/src/assets/hero/design-system.webp" alt="" width="800" height="423" decoding="async" />
+            <span class="hero__tile-label">Дизайн-система</span>
+          </span>
+        </a>
       </div>
 
-      <div class="showcase">
-        <div class="laptop">
-          <div class="laptop__body">
-            <div class="laptop__screen">
-              <!-- Largest element above the fold on the homepage, so this is
-                   what Largest Contentful Paint is measured against. The
-                   explicit hint is kept by scripts/optimize-images.mjs, which
-                   only fills in loading attributes where there are none. -->
-              <img class="tv__bg" src="/src/assets/vs-subtitles-onair.webp" alt="Интерфейс VS Subtitles" width="1920" height="1080" fetchpriority="high" />
+      <div class="hero__top">
+        <p class="hero__role">Product Designer&nbsp;·&nbsp;B2B&nbsp;·&nbsp;Web&nbsp;·&nbsp;5&nbsp;лет опыта</p>
+        <p class="hero__status"><span class="hero__status-dot" aria-hidden="true"></span>Открыта к предложениям</p>
+      </div>
 
-              <div class="tv__video-frame">
-                <video class="tv__video" id="catVideo" autoplay muted loop playsinline>
-                  <source src="/src/assets/cat-video.mp4" type="video/mp4" />
-                </video>
-                <p class="tv__caption" id="catCaption"></p>
-              </div>
+      <h1 class="hero__title">Елизавета Любшина</h1>
 
-              <div class="tv__stopbar">
-                <span class="tv__live-timecode" id="catTimecode">00:00:00:00</span>
-              </div>
-
-              <span class="tv__subs-toggle" aria-hidden="true"><span class="tv__subs-toggle-knob"></span></span>
-
-              <div class="tv__cues-mask">
-                <ul class="tv__cues" id="catCues"></ul>
-                <p class="tv__cue-counter" id="catCueCounter"></p>
-              </div>
-            </div>
-          </div>
-          <div class="laptop__tooltip">
-            <p class="laptop__tooltip-title">VS Subtitles</p>
-            <p class="laptop__tooltip-desc">Субтитры и телетекст для прямого эфира</p>
-            <a class="btn laptop__tooltip-cta" href="/cases/vs-subtitles.html">Подробнее о кейсе</a>
-          </div>
-        </div>
+      <div class="hero__bottom">
+        <p class="hero__pitch">Сложные инженерные сценарии → понятные интерфейсы, меньше ошибок и быстрее выполнение задач</p>
+        <a class="btn hero__cta" href="#cases">Смотреть кейсы</a>
       </div>
     </section>
 
-    <section class="cases container" id="cases">
+    <section class="cases container container--wide" id="cases">
       <h2>Кейсы</h2>
       <div class="cases__grid">
 
@@ -193,7 +188,7 @@
       </div>
     </section>
 
-    <section class="about container" id="about">
+    <section class="about container container--wide" id="about">
       <h2>Обо мне</h2>
       <div class="about__grid">
         <div class="about__text">
@@ -224,7 +219,7 @@
   </main>
 
   <footer class="footer">
-    <div class="container">© 2026 Елизавета Любшина, Product Designer</div>
+    <div class="container container--wide">© 2026 Елизавета Любшина, Product Designer</div>
   </footer>
 </body>
 </html>

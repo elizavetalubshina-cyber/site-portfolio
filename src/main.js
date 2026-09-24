@@ -1,102 +1,3 @@
-// `lines` are fixed line breaks (not left to CSS wrap) so the caption
-// on the video and the row in the subtitles panel always match —
-// same two-line shape in both places, regardless of container width.
-const catCaptions = [
-  { start: 0, end: 2.5, lines: ['Знакомьтесь — самый милый рыжик на свете.'] },
-  { start: 2.5, end: 5.5, lines: ['Вот он просыпается... и потягивается — ну', 'разве не прелесть?'] },
-  { start: 5.5, end: 9, lines: ['Этот сладкий зевок способен растопить любое', 'сердце.'] },
-  { start: 9, end: 13, lines: ['Кажется, кто-то совсем не хочет вставать', 'сегодня.'] },
-  { start: 13, end: 17, lines: ['Ну как тут не влюбиться с первого зевка?'] },
-];
-
-const catVideo = document.getElementById('catVideo');
-const catCaption = document.getElementById('catCaption');
-const catCues = document.getElementById('catCues');
-const catTimecode = document.getElementById('catTimecode');
-const catCueCounter = document.getElementById('catCueCounter');
-
-const pad = (n) => String(n).padStart(2, '0');
-
-function formatTimecode(seconds) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const f = Math.floor((seconds % 1) * 25);
-  return `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
-}
-
-function formatDuration(seconds) {
-  const s = Math.floor(seconds % 60);
-  const f = Math.floor((seconds % 1) * 25);
-  return `${pad(s)}:${pad(f)}`;
-}
-
-if (catVideo && catCaption && catCues) {
-  catCues.innerHTML = catCaptions
-    .map((cue, i) => {
-      const meta = `${formatTimecode(cue.start)} ${formatTimecode(cue.end)} ${formatDuration(cue.end - cue.start)}`;
-      return `<li class="tv__cue" data-index="${i}">
-        <span class="tv__cue-meta">${String(i + 1).padStart(2, '0')} ${meta}</span>
-        <strong class="tv__cue-num">${String(i + 1).padStart(2, '0')}</strong>
-        <span class="tv__cue-text">${cue.lines.join(' ')}</span>
-      </li>`;
-    })
-    .join('');
-
-  const cueEls = [...catCues.children];
-  let activeIndex = -1;
-
-  function updateCuesPadding() {
-    catCues.style.paddingTop = 0;
-    catCues.style.paddingBottom = 0;
-    const half = catCues.clientHeight / 2 + 'px';
-    catCues.style.paddingTop = half;
-    catCues.style.paddingBottom = half;
-    if (activeIndex >= 0) scrollActiveIntoCenter(false);
-  }
-
-  function scrollActiveIntoCenter(smooth = true) {
-    const target = cueEls[activeIndex];
-    if (!target) return;
-    const centeredTop = target.offsetTop - catCues.clientHeight / 2 + target.offsetHeight / 2;
-    const maxScroll = catCues.scrollHeight - catCues.clientHeight;
-    catCues.scrollTo({
-      top: Math.max(0, Math.min(centeredTop, maxScroll)),
-      behavior: smooth ? 'smooth' : 'auto',
-    });
-  }
-
-  updateCuesPadding();
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(updateCuesPadding);
-  }
-  window.addEventListener('resize', updateCuesPadding);
-
-  if (catCueCounter) {
-    catCueCounter.textContent = `Субтитр 1 из ${catCaptions.length}`;
-  }
-
-  catVideo.addEventListener('timeupdate', () => {
-    const t = catVideo.currentTime;
-    if (catTimecode) catTimecode.textContent = formatTimecode(t);
-
-    const index = catCaptions.findIndex((c) => t >= c.start && t < c.end);
-    if (index === activeIndex) return;
-    activeIndex = index;
-
-    catCaption.innerHTML = index >= 0 ? catCaptions[index].lines.join('<br>') : '';
-    catCaption.classList.toggle('is-empty', index < 0);
-    if (catCueCounter) {
-      catCueCounter.textContent = `Субтитр ${index >= 0 ? index + 1 : 1} из ${catCaptions.length}`;
-    }
-    cueEls.forEach((el, i) => {
-      el.classList.toggle('tv__cue--active', i === index);
-      el.classList.toggle('tv__cue--released', index >= 0 && i < index);
-    });
-    if (index >= 0) scrollActiveIntoCenter(true);
-  });
-}
-
 const navHeader = document.querySelector('.nav');
 const navToggle = document.querySelector('.nav__toggle');
 const navMenu = document.querySelector('.nav__menu');
@@ -310,4 +211,42 @@ if (caseToc) {
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
+}
+
+// Hero covers drift after the cursor, each by its own depth, and the name
+// shifts a touch the other way, so the stage reads as layered. Eased toward
+// the target every frame rather than snapped to it, which is what makes the
+// movement feel weighted. Only on a real pointer with motion allowed: on
+// touch the covers are a static strip (see the 900px rule in style.css).
+const heroStage = document.getElementById('heroStage');
+const heroName = document.querySelector('.home-page .hero__title');
+const canDrift = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 901px)');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+if (heroStage && heroName) {
+  const depths = [1, 0.55, 0.8, 0.9, 0.65];
+  const tiles = [...heroStage.querySelectorAll('.hero__tile')].map((el, i) => ({ el, depth: depths[i % depths.length] }));
+  const target = { x: 0, y: 0 };
+  const current = { x: 0, y: 0 };
+  let frame = 0;
+
+  const render = () => {
+    current.x += (target.x - current.x) * 0.08;
+    current.y += (target.y - current.y) * 0.08;
+    tiles.forEach(({ el, depth }) => {
+      el.style.transform = `translate3d(${current.x * depth * 48}px, ${current.y * depth * 36}px, 0)`;
+    });
+    heroName.style.transform = `translate3d(${current.x * -10}px, ${current.y * -6}px, 0)`;
+    const settled = Math.abs(target.x - current.x) < 0.001 && Math.abs(target.y - current.y) < 0.001;
+    frame = settled ? 0 : requestAnimationFrame(render);
+  };
+
+  const onPointerMove = (e) => {
+    if (!canDrift.matches || reducedMotion.matches) return;
+    target.x = (e.clientX / window.innerWidth) * 2 - 1;
+    target.y = (e.clientY / window.innerHeight) * 2 - 1;
+    if (!frame) frame = requestAnimationFrame(render);
+  };
+
+  window.addEventListener('pointermove', onPointerMove, { passive: true });
 }

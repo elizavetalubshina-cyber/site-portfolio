@@ -399,12 +399,21 @@ function startSpace() {
 
   let last = 0;
   let spin = 0;
+  // Stream clock: runs slowly on its own and speeds up with scrolling, so
+  // the stream seems to pull the viewer along; it eases back when they stop.
+  let streamT = 0;
+  let rush = 0;
+  let lastSy = window.scrollY;
   let flow = 0;
 
   const draw = (time) => {
     const dt = still ? 0 : Math.min(50, time - last || 16);
     last = time;
     const sy = window.scrollY;
+    const v = dt > 0 ? Math.abs(sy - lastSy) / dt : 0;
+    lastSy = sy;
+    rush += (Math.min(1, v / 2.5) - rush) * 0.08;
+    streamT += dt * (1 + rush * 5);
 
     // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
@@ -463,7 +472,7 @@ function startSpace() {
 
     const drift = still ? 0 : time * 0.001;
     const near = [], mid = [], far = [], accent = [], stars = [], streaks = [];
-    const flowDust = [], flowAccent = [];
+    const flowDust = [], flowBack = [], flowAccent = [];
     const tcx = w / 2, tcy = h / 2;
     const halfDiag = Math.hypot(w, h) / 2 + 20;
     const wall = Math.max(w, h) * 0.55;
@@ -494,13 +503,17 @@ function startSpace() {
 
       // Flow: the stream does not grow out of the point. It fades in where it
       // belongs while the point fades out, its dust drawing in from wider to
-      // its line as it comes, the way it did in the first version.
+      // its line as it comes. Inside, the dust winds round the line as a
+      // helix: the near side of each turn is drawn larger, the far side
+      // smaller, so it reads as a twisting rope pulling downward.
       if (m > 0 && !flight) {
-        const d = ((p.s + (still ? 0 : time * p.speed)) % 1) * path.total;
+        const d = ((p.s + streamT * p.speed) % 1) * path.total;
         const q = onPath(d);
-        const wide = (70 + 260 * p.fall * p.fall) * (1 + 2.5 * (1 - m));
-        const wob = Math.sin(d * 0.008 + drift + p.phase) * 12;
-        const off = p.band * wide + wob;
+        const wide = (110 + 150 * p.fall * p.fall) * (0.8 + 0.4 * Math.abs(p.band)) * (1 + 2.5 * (1 - m));
+        // Two strands half a turn apart; a little jitter keeps them dusty.
+        const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.12;
+        const off = Math.cos(turn) * wide;
+        const depth = Math.sin(turn);
         let fx = q.x + q.nx * off;
         let fy = q.y + q.ny * off - sy;
         if (e > 0) {
@@ -508,7 +521,8 @@ function startSpace() {
           fy += (p.v * h - fy) * e;
         }
         if (fx > -4 && fx < w + 4 && fy > -4 && fy < h + 4) {
-          (p.accent ? flowAccent : flowDust).push(fx, fy, p.size);
+          const sz = p.size * (1 + 0.55 * depth) * (1 + rush * 0.35);
+          (p.accent ? flowAccent : depth > 0 ? flowDust : flowBack).push(fx, fy, sz);
         }
         if (m >= 1) continue;
       }
@@ -579,7 +593,8 @@ function startSpace() {
     paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
     // In flow mode the ring's last dust fades out as the stream fades in.
     const ringFade = flight ? 1 : 1 - m;
-    paint(flowDust, 'rgb(236, 233, 255)', 0.85 * m * fade);
+    paint(flowBack, 'rgb(236, 233, 255)', 0.45 * m * fade);
+    paint(flowDust, 'rgb(236, 233, 255)', 0.95 * m * fade);
     paint(flowAccent, 'rgb(214, 107, 208)', 0.95 * m * fade);
     paint(far, 'rgb(236, 233, 255)', 0.45 * fade * ringFade);
     paint(mid, 'rgb(236, 233, 255)', 0.75 * fade * ringFade);

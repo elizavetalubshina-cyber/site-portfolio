@@ -387,16 +387,15 @@ if (particleCanvas && wideScreen.matches) {
     head.style.transform = k > 0 ? `scale(${1 - 0.92 * k}) rotate(${-30 * k}deg)` : '';
     head.style.opacity = String(1 - clamp01(k * 1.3));
 
-    // Topics ride the ring, fading while they pass behind the name.
+    // Topics ride the ring, outside the name.
     if (tags.length) {
       const hr = hero.getBoundingClientRect();
       tags.forEach((tag, i) => {
         const a = (i / tags.length) * Math.PI * 2 + spin * 0.9 + 0.35;
         const x = cx + Math.cos(a) * rx * 1.04 * grow;
         const oy = Math.sin(a) * ry * 1.04 * grow * flat;
-        const nearName = clamp01((Math.abs(oy) - hb.height / 2) / 60);
         tag.style.transform = `translate(${x - hr.left}px, ${cy + oy - hr.top}px) translate(-50%, -50%)`;
-        const shown = nearName * (1 - clamp01(k * 1.6));
+        const shown = 1 - clamp01(k * 1.6);
         tag.style.opacity = String(shown);
         tag.style.pointerEvents = shown > 0.4 ? 'auto' : 'none';
         // Preview opens toward the room: down from tags in the upper half,

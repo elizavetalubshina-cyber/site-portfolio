@@ -1486,6 +1486,17 @@ h1, h2, h3 {
   .hero__stage { display: none; }
   .hero__head { will-change: transform, opacity; }
 
+  /* The name sits inside the ring, on two lines, so the topics orbiting it
+     never pass behind the letters. Sized off the same radius main.js draws
+     the ring with, min(30vw, 42vh), so the two always fit together. */
+  .hero__title {
+    width: min-content;
+    margin: 0 auto;
+    font-size: calc(min(30vw, 42vh) * 0.19);
+    line-height: 1;
+    white-space: normal;
+  }
+
   .hero__orbit {
     display: block;
     position: absolute;

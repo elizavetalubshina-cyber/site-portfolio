@@ -243,7 +243,13 @@ if (journeyCases.length && 'IntersectionObserver' in window) {
   journeyCases.forEach((el) => el.classList.add('is-visible'));
 }
 
-if (particleCanvas && wideScreen.matches) {
+// Started the first time the window is wide enough, not only at load: an
+// embedded preview can load while its panel is still narrow or hidden and
+// only widen afterwards, and the field has to come up when it does.
+let spaceStarted = false;
+function startSpace() {
+  if (spaceStarted || !particleCanvas) return;
+  spaceStarted = true;
   const ctx = particleCanvas.getContext('2d');
   const intro = document.getElementById('intro');
   const hero = document.querySelector('.home-page .hero');
@@ -504,4 +510,10 @@ if (particleCanvas && wideScreen.matches) {
     };
     requestAnimationFrame(loop);
   }
+}
+
+if (wideScreen.matches) {
+  startSpace();
+} else {
+  wideScreen.addEventListener('change', (e) => { if (e.matches) startSpace(); });
 }

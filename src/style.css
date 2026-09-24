@@ -700,8 +700,8 @@ h1, h2, h3 {
   padding-bottom: var(--space-4);
 }
 
-/* Name and role hold the middle of the screen; auto margins centre the pair
-   in whatever height is left above the pitch row. */
+/* Name and role hold the middle of the screen, centred by auto margins.
+   They stay put while the covers around them move. */
 .hero__head {
   position: relative;
   z-index: 2;
@@ -709,15 +709,6 @@ h1, h2, h3 {
   text-align: center;
   pointer-events: none;
 }
-
-.hero__bottom {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  justify-content: flex-end;
-  pointer-events: none;
-}
-.hero__cta { pointer-events: auto; }
 
 .hero__role {
   margin: var(--space-3) 0 0;
@@ -824,8 +815,8 @@ h1, h2, h3 {
 .hero__tile--subtitles     { --x: 3%;  --y: 7%;  --w: calc(21 * var(--u)); --rot: -5deg; --delay: 0.05s; }
 .hero__tile--design-system { --x: 38%; --y: 4%;  --w: calc(13 * var(--u)); --rot: 3deg;  --delay: 0.2s; }
 .hero__tile--satellite     { --x: 72%; --y: 6%;  --w: calc(19 * var(--u)); --rot: 5deg;  --delay: 0.12s; }
-.hero__tile--tracktice     { --x: 26%; --y: 64%; --w: calc(17 * var(--u)); --rot: -3deg; --delay: 0.28s; }
-.hero__tile--ecosystem     { --x: 58%; --y: 66%; --w: calc(15 * var(--u)); --rot: 6deg;  --delay: 0.35s; }
+.hero__tile--tracktice     { --x: 26%; --y: 69%; --w: calc(17 * var(--u)); --rot: -3deg; --delay: 0.28s; }
+.hero__tile--ecosystem     { --x: 58%; --y: 71%; --w: calc(15 * var(--u)); --rot: 6deg;  --delay: 0.35s; }
 
 @media (prefers-reduced-motion: reduce) {
   .hero__tile-card { animation: none; transition: none; }
@@ -1479,12 +1470,6 @@ h1, h2, h3 {
   }
   .hero__tile-card { --rot: 0deg; }
   .hero__tile-label { opacity: 1; transform: none; }
-  .hero__bottom {
-    order: 3;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3);
-  }
 }
 
 @media (max-width: 1100px) {

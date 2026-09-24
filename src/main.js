@@ -224,11 +224,10 @@ if (caseToc) {
 // is what makes the motion feel weighted. Only on a real pointer with motion
 // allowed: on touch the covers are a static strip (the 900px rule in style.css).
 const heroStage = document.getElementById('heroStage');
-const heroName = document.querySelector('.home-page .hero__head');
 const canDrift = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 901px)');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-if (heroStage && heroName) {
+if (heroStage) {
   const behaviours = {
     subtitles: 'follow',
     satellite: 'inverse',
@@ -256,7 +255,6 @@ if (heroStage && heroName) {
   measure();
   window.addEventListener('resize', measure);
 
-  const name = { cur: { x: 0, y: 0 }, target: { x: 0, y: 0 } };
   let frame = 0;
 
   const setTargets = (px, py, nx, ny) => {
@@ -285,8 +283,6 @@ if (heroStage && heroName) {
           break;
       }
     });
-    name.target.x = nx * -10;
-    name.target.y = ny * -6;
   };
 
   const render = () => {
@@ -300,12 +296,6 @@ if (heroStage && heroName) {
       const c = t.cur;
       t.el.style.transform = `perspective(900px) translate3d(${c.tx}px, ${c.ty}px, 0) rotateX(${c.rx}deg) rotateY(${c.ry}deg) rotate(${c.rz}deg) scale(${c.s})`;
     });
-    ['x', 'y'].forEach((k) => {
-      const d = name.target[k] - name.cur[k];
-      name.cur[k] += d * 0.08;
-      if (Math.abs(d) > 0.01) moving = true;
-    });
-    heroName.style.transform = `translate3d(${name.cur.x}px, ${name.cur.y}px, 0)`;
     frame = moving ? requestAnimationFrame(render) : 0;
   };
   const kick = () => { if (!frame) frame = requestAnimationFrame(render); };
@@ -325,8 +315,6 @@ if (heroStage && heroName) {
   // Cursor left the window: everything settles back to where it started.
   document.documentElement.addEventListener('mouseleave', () => {
     tiles.forEach((t) => Object.assign(t.target, rest));
-    name.target.x = 0;
-    name.target.y = 0;
     kick();
   });
 }

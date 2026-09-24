@@ -352,16 +352,17 @@ function startSpace() {
   };
   const caseDepth = (i) => SPACING * (i + 0.5) + FOCUS;
 
-  // Flow: the stream's course in page coordinates. It leaves the point the
-  // ring fell into (the middle of the screen at the moment the hero lets
-  // go), then runs down through the middle of every case cover and on past
+  // Flow: the stream's course in page coordinates. It comes in from above
+  // the screen, then runs down through the middle of every case cover and on past
   // the last one. A Catmull-Rom curve through those points, sampled with
   // the running length at each sample.
   let path = { x: [], y: [], len: [], total: 1 };
   const covers = cards.map((c) => c.querySelector('.tunnel__cover'));
   const buildPath = () => {
     if (flight || !covers.length) return;
-    const knots = [{ x: w / 2, y: introTop + introH - h / 2 }];
+    // Starts well above the screen, so the stream always comes in from
+    // over the top edge instead of beginning mid-screen.
+    const knots = [{ x: w / 2, y: tunnelTop - h * 1.8 }, { x: w / 2, y: tunnelTop - h * 0.1 }];
     covers.forEach((c) => {
       const r = c.getBoundingClientRect();
       knots.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
@@ -408,7 +409,7 @@ function startSpace() {
     // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
     // m: the point bursting into the tunnel walls.
-    const m = ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)));
+    const m = ease(clamp01((sy - (tunnelTop - h * (flight ? 0.9 : 1))) / (h * (flight ? 0.8 : 0.35))));
     // e: the tunnel letting go as "Обо мне" comes up.
     const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
     // Camera depth in the tunnel.
@@ -585,25 +586,6 @@ function startSpace() {
       ctx.stroke();
     }
 
-    // The point everything falls into: a small hot core that swells as the
-    // dust piles in and is gone once the tunnel opens.
-    const core = k * (1 - m);
-    if (core > 0.01) {
-      const cr = 8 + 70 * core;
-      // Once the hero lets go the point scrolls away with the page, staying at
-      // the head of the stream that pours out of it.
-      const ccy = flight ? cy : cy - Math.max(0, sy - (introTop + introH - h));
-      const g = ctx.createRadialGradient(cx, ccy, 0, cx, ccy, cr);
-      g.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-      g.addColorStop(0.25, 'rgba(236, 200, 255, 0.55)');
-      g.addColorStop(0.6, 'rgba(214, 107, 208, 0.25)');
-      g.addColorStop(1, 'rgba(214, 107, 208, 0)');
-      ctx.globalAlpha = core;
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(cx, ccy, cr, 0, Math.PI * 2);
-      ctx.fill();
-    }
     ctx.globalAlpha = 1;
 
     // Flight: each case comes out of the depth, reads at full size, and

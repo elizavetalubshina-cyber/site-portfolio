@@ -295,6 +295,8 @@ function startSpace() {
     // perspective reads as a tube rather than a cloud.
     tz: Math.floor(Math.random() * 44) * (DEPTH / 44) + Math.random() * 8,
     tr: 1 + gauss() * 0.03,
+    s: Math.random(),
+    speed: 0.000014 + Math.random() * 0.00002,
     u: Math.random(),
     v: Math.random(),
     size: Math.random() < 0.8 ? 1.4 : 2.2,
@@ -349,6 +351,50 @@ function startSpace() {
     return SPACING * (i + u + 0.15 * Math.sin(2 * Math.PI * u));
   };
   const caseDepth = (i) => SPACING * (i + 0.5) + FOCUS;
+
+  // Flow: the stream's course in page coordinates. It leaves the point the
+  // ring fell into (the middle of the screen at the moment the hero lets
+  // go), then runs down through the middle of every case cover and on past
+  // the last one. A Catmull-Rom curve through those points, sampled with
+  // the running length at each sample.
+  let path = { x: [], y: [], len: [], total: 1 };
+  const covers = cards.map((c) => c.querySelector('.tunnel__cover'));
+  const buildPath = () => {
+    if (flight || !covers.length) return;
+    const knots = [{ x: w / 2, y: introTop + introH - h / 2 }];
+    covers.forEach((c) => {
+      const r = c.getBoundingClientRect();
+      knots.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
+    });
+    const endY = tunnelTop + tunnelH;
+    knots.push({ x: w / 2, y: endY + h * 0.2 }, { x: w / 2, y: endY + h * 0.7 });
+    const x = [], y = [], len = [];
+    let total = 0;
+    for (let i = 0; i < knots.length - 1; i++) {
+      const p0 = knots[Math.max(0, i - 1)], p1 = knots[i], p2 = knots[i + 1], p3 = knots[Math.min(knots.length - 1, i + 2)];
+      for (let j = 0; j < 80; j++) {
+        const t = j / 80, t2 = t * t, t3 = t2 * t;
+        const px = 0.5 * (2 * p1.x + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
+        const py = 0.5 * (2 * p1.y + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
+        if (x.length) total += Math.hypot(px - x[x.length - 1], py - y[y.length - 1]);
+        x.push(px); y.push(py); len.push(total);
+      }
+    }
+    path = { x, y, len, total: total || 1 };
+  };
+  const onPath = (d) => {
+    const { x, y, len } = path;
+    let lo = 0, hi = len.length - 1;
+    while (lo < hi - 1) {
+      const mid = (lo + hi) >> 1;
+      if (len[mid] < d) lo = mid; else hi = mid;
+    }
+    const seg = len[hi] - len[lo] || 1;
+    const f = (d - len[lo]) / seg;
+    const dx = x[hi] - x[lo], dy = y[hi] - y[lo];
+    const n = Math.hypot(dx, dy) || 1;
+    return { x: x[lo] + dx * f, y: y[lo] + dy * f, nx: -dy / n, ny: dx / n };
+  };
 
   let last = 0;
   let spin = 0;
@@ -405,7 +451,7 @@ function startSpace() {
 
     // Short trails while things move fast (the fall, the tunnel), none at
     // rest, so the ring stays crisp.
-    const trail = still ? 0 : Math.max(k * (1 - m), m * (1 - e)) * 0.55;
+    const trail = still ? 0 : Math.max(k * (1 - m), flight ? m * (1 - e) * 0.55 : 0) * 0.55;
     if (trail > 0.02) {
       ctx.globalAlpha = 1;
       ctx.fillStyle = `rgba(${BG}, ${1 - trail})`;
@@ -444,8 +490,23 @@ function startSpace() {
       let bucket = 0;
       let streak = 0, dirX = 0, dirY = 0;
 
+      // Flow: the point pours out into a stream that runs down through the
+      // cases. Most of the dust keeps close to the line; a share drifts
+      // wider, so the cases sit among particles rather than beside a rope.
+      if (m > 0 && !flight) {
+        const d = ((p.s + (still ? 0 : time * p.speed)) % 1) * path.total;
+        const q = onPath(d);
+        const wide = 70 + 260 * p.fall * p.fall;
+        const wob = Math.sin(d * 0.008 + drift + p.phase) * 12;
+        const off = p.band * wide + wob;
+        const sx = q.x + q.nx * off;
+        const syy = q.y + q.ny * off - sy;
+        x += (sx - x) * m;
+        y += (syy - y) * m;
+      }
+
       // Tunnel walls: a cylinder seen from inside, drawn in perspective.
-      if (m > 0) {
+      if (m > 0 && flight) {
         const z = ((((p.tz - cam - flow) % DEPTH) + DEPTH) % DEPTH) + 40;
         const s = FOCUS / z;
         const a = p.ta;
@@ -529,7 +590,10 @@ function startSpace() {
     const core = k * (1 - m);
     if (core > 0.01) {
       const cr = 8 + 70 * core;
-      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+      // Once the hero lets go the point scrolls away with the page, staying at
+      // the head of the stream that pours out of it.
+      const ccy = flight ? cy : cy - Math.max(0, sy - (introTop + introH - h));
+      const g = ctx.createRadialGradient(cx, ccy, 0, cx, ccy, cr);
       g.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
       g.addColorStop(0.25, 'rgba(236, 200, 255, 0.55)');
       g.addColorStop(0.6, 'rgba(214, 107, 208, 0.25)');
@@ -537,7 +601,7 @@ function startSpace() {
       ctx.globalAlpha = core;
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+      ctx.arc(cx, ccy, cr, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
@@ -565,10 +629,11 @@ function startSpace() {
     }
   };
 
-  layout();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
-  window.addEventListener('load', layout);
-  window.addEventListener('resize', layout);
+  const relayout = () => { layout(); buildPath(); };
+  relayout();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  window.addEventListener('load', relayout);
+  window.addEventListener('resize', relayout);
 
   if (still) {
     draw(0);

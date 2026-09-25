@@ -578,6 +578,13 @@ function startSpace() {
     // the pointer at the same pace at 60 and at 120 frames a second.
     const soft = still ? 1 : 1 - Math.pow(0.91, dt / 16.7);
     mouse.force += (mouse.on - mouse.force) * (still ? 1 : 1 - Math.pow(0.93, dt / 16.7));
+    if (mouse.force < 0.002 && !mouse.on) mouse.force = 0;
+    // A finger is broad and the screen small: on a phone the hole is
+    // smaller and shallower, so a tap parts the dust without tearing the
+    // ring open.
+    const repel = narrowScreen.matches ? 80 : REPEL;
+    const push = narrowScreen.matches ? 26 : 40;
+    const pushing = !still && k < 0.2 && m === 0 && mouse.force > 0;
     const spinSpeed = (0.00006 + k * k * 0.005) * pace;
     spin += dt * spinSpeed;
 
@@ -629,8 +636,8 @@ function startSpace() {
         const mdx = px - mouse.x, mdy = py - mouse.y;
         const md = Math.hypot(mdx, mdy);
         let mtx = 0, mty = 0;
-        if (!still && k < 0.2 && md < REPEL * 1.3 && md > 0.1 && !tag.matches(':hover')) {
-          const q = 1 - md / (REPEL * 1.3);
+        if (!still && k < 0.2 && md < repel * 1.3 && md > 0.1 && !tag.matches(':hover')) {
+          const q = 1 - md / (repel * 1.3);
           const f = q * q * (3 - 2 * q) * 46 * mouse.force;
           mtx = (mdx / md) * f;
           mty = (mdy / md) * f;
@@ -725,23 +732,26 @@ function startSpace() {
         y += Math.cos(drift * 0.8 + p.phase) * 1.5 * (1 - m);
       }
 
-      if (k < 0.2 && m === 0 && !still) {
-        const dx = x - mouse.x, dy = y - mouse.y;
+      // Only grains near the pointer, or still settling back, cost anything:
+      // with no pointer about, the whole field skips this.
+      const dx = x - mouse.x, dy = y - mouse.y;
+      if (pushing && dx < repel && dx > -repel && dy < repel && dy > -repel) {
         const dm = Math.hypot(dx, dy);
         let tx = 0, ty = 0;
-        if (dm < REPEL && dm > 0.1 && mouse.force > 0.001) {
+        if (dm < repel && dm > 0.1) {
           // Smoothstep falloff: strongest at the pointer, fading to nothing
           // at the edge, so the hole has no hard rim.
-          const q = 1 - dm / REPEL;
-          const f = q * q * (3 - 2 * q) * 40 * mouse.force;
+          const q = 1 - dm / repel;
+          const f = q * q * (3 - 2 * q) * push * mouse.force;
           tx = (dx / dm) * f;
           ty = (dy / dm) * f;
         }
         p.ox += (tx - p.ox) * soft;
         p.oy += (ty - p.oy) * soft;
-      } else {
+      } else if (p.ox !== 0 || p.oy !== 0) {
         p.ox -= p.ox * soft;
         p.oy -= p.oy * soft;
+        if (p.ox * p.ox + p.oy * p.oy < 0.01) { p.ox = 0; p.oy = 0; }
       }
       x += p.ox;
       y += p.oy;

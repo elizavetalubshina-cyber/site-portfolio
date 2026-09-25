@@ -45,6 +45,14 @@ document.querySelectorAll('.nav__links a, .nav__menu a, .logo, .case-toc a').for
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
+    // "Обо мне" and its contacts only show once grown in; land past that.
+    const outro = document.getElementById('outro');
+    if (outro && (id === '#about' || id === '#contacts') && getComputedStyle(document.getElementById('about')).position === 'sticky') {
+      let top = 0;
+      for (let el = outro; el; el = el.offsetParent) top += el.offsetTop;
+      window.scrollTo({ top: top - 96 + window.innerHeight * 0.62, behavior: 'smooth' });
+      return;
+    }
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
@@ -333,8 +341,10 @@ function startSpace() {
     tunnelH = tunnelEl.offsetHeight;
     // Measured without the grow-in transform "Обо мне" carries, which would
     // otherwise shift its box and skew every position derived from it.
+    // The outro wrapper, not the section: the section is sticky, and its
+    // box moves while it is held.
     let top = 0;
-    for (let el = about; el; el = el.offsetParent) top += el.offsetTop;
+    for (let el = document.getElementById('outro') || about; el; el = el.offsetParent) top += el.offsetTop;
     aboutTop = top;
   };
 
@@ -589,21 +599,18 @@ function startSpace() {
     const e = flight
       ? ease(clamp01((sy - (tunnelEnd - h * 0.85)) / (h * 0.75)))
       : ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
-    // Then "Обо мне" appears in place, out of the open space ahead: held at
-    // its resting spot under the nav while it scrolls up (so it never slides
-    // in from the bottom edge), fading in and settling from slightly small.
+    // Then "Обо мне" comes out of the depth like the cases: held under the
+    // nav by CSS (sticky) while it grows from small at the screen's middle
+    // and fades in. Only scale and opacity are scripted, nothing positional.
     if (flight && about) {
-      const start = aboutTop - h * 0.95;
-      // It settles 96px under the top, or lower when the page ends first (a
-      // short about on a tall screen): its resting spot is then wherever the
-      // bottom of the page leaves it, so dropping the hold never jumps.
+      const pin = aboutTop - 96;
+      // Finished before the page can run out of scroll, however short "Обо
+      // мне" is next to the screen.
       const maxScroll = document.documentElement.scrollHeight - h;
-      const end = Math.min(aboutTop - 96, maxScroll - 4);
-      const rest = aboutTop - end;
-      const ap = ease(clamp01((sy - start) / Math.max(1, end - start)));
-      const hold = Math.min(0, rest - (aboutTop - sy));
-      about.style.transformOrigin = '50% 0';
-      about.style.transform = ap < 1 ? `translateY(${hold}px) scale(${0.9 + 0.1 * ap})` : '';
+      const span = Math.max(40, Math.min(h * 0.6, maxScroll - 2 - pin));
+      const ap = ease(clamp01((sy - pin) / span));
+      about.style.transformOrigin = `50% ${Math.round(h / 2 - 96)}px`;
+      about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';
       about.style.opacity = String(ap);
       if (footer) footer.style.opacity = String(ap);
     }

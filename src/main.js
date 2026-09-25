@@ -109,6 +109,11 @@ const deferredVideos = document.querySelectorAll('video[data-play-in-view]');
 
 if (deferredVideos.length) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+// Case links opened from script carry the same ?from=site mark as clicked
+// links (see the click listener at the end of this file).
+const withFrom = (href) => {
+  try { const u = new URL(href, location.href); u.searchParams.set('from', 'site'); return u.href; } catch (e) { return href; }
+};
 
   // `controls` is in the markup, not added here, so that with scripting off the
   // video is still watchable instead of a frozen poster. Once this code is
@@ -365,7 +370,7 @@ function startSpace() {
   const sheetCard = sheet ? sheet.querySelector('.case-sheet__card') : null;
   const sheetBackdrop = sheet ? sheet.querySelector('.case-sheet__backdrop') : null;
   const openSheet = (tag) => {
-    if (!sheet) { window.location.href = tag.href; return; }
+    if (!sheet) { window.location.href = withFrom(tag.href); return; }
     const img = tag.querySelector('img');
     sheet.querySelector('.case-sheet__img').src = img.currentSrc || img.src;
     sheet.querySelector('.case-sheet__title').textContent = tag.querySelector('.hero__orbit-title').textContent;
@@ -448,7 +453,7 @@ function startSpace() {
     const i = pointAt(ev.clientX, ev.clientY);
     if (i < 0) return;
     if (narrowScreen.matches) openSheet(tags[i]);
-    else window.location.href = lastMarks[i].href;
+    else window.location.href = withFrom(lastMarks[i].href);
   });
   window.addEventListener('pointermove', (ev) => {
     if (ev.pointerType !== 'mouse') return;
@@ -982,8 +987,16 @@ if (document.body.classList.contains('case-page')) {
   // the homepage at the case they were looking at, or the previous case.
   // Opened from outside (a shared link), it goes to the homepage's cases.
   const back = document.querySelector('.case-back');
-  let fromSite = false;
-  try { fromSite = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) { fromSite = false; }
+  // Links inside the site mark the case they open with ?from=site (below).
+  // The referrer cannot be relied on: embedded previews run the page in a
+  // sandbox where it is empty or of another origin.
+  const fromSite = new URLSearchParams(location.search).has('from');
+  if (fromSite) {
+    try {
+      const clean = location.pathname + location.hash;
+      history.replaceState(history.state, '', clean);
+    } catch (e) { /* the address bar just keeps the parameter */ }
+  }
   if (back && fromSite && history.length > 1) {
     back.addEventListener('click', (ev) => {
       ev.preventDefault();
@@ -991,3 +1004,15 @@ if (document.body.classList.contains('case-page')) {
     });
   }
 }
+
+// Every link from one page of the site to a case says so, which is how the
+// case's back arrow knows it can simply go back.
+document.addEventListener('click', (ev) => {
+  const a = ev.target.closest && ev.target.closest('a[href]');
+  if (!a || a.target === '_blank') return;
+  let url;
+  try { url = new URL(a.getAttribute('href'), location.href); } catch (e) { return; }
+  if (!/\/cases\/[^/]+\.html$/.test(url.pathname) || url.searchParams.has('from')) return;
+  url.searchParams.set('from', 'site');
+  a.href = url.href;
+}, true);

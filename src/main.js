@@ -362,24 +362,72 @@ function startSpace() {
   // button into the case, instead of leaving the page at once.
   const sheet = document.getElementById('caseSheet');
   let sheetOpen = false;
+  const sheetCard = sheet ? sheet.querySelector('.case-sheet__card') : null;
+  const sheetBackdrop = sheet ? sheet.querySelector('.case-sheet__backdrop') : null;
   const openSheet = (tag) => {
     if (!sheet) { window.location.href = tag.href; return; }
-    sheet.querySelector('.case-sheet__img').src = tag.querySelector('img').currentSrc || tag.querySelector('img').src;
+    const img = tag.querySelector('img');
+    sheet.querySelector('.case-sheet__img').src = img.currentSrc || img.src;
     sheet.querySelector('.case-sheet__title').textContent = tag.querySelector('.hero__orbit-title').textContent;
     sheet.querySelector('.case-sheet__desc').textContent = tag.querySelector('.hero__orbit-desc').textContent;
     sheet.querySelector('.case-sheet__go').href = tag.href;
     sheet.hidden = false;
+    document.documentElement.classList.add('sheet-lock');
     sheetOpen = true;
-    sheet.querySelector('.case-sheet__go').focus({ preventScroll: true });
+    // Next frame, so the slide up from the bottom edge actually plays.
+    requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('is-open')));
   };
   const closeSheet = () => {
-    if (!sheet) return;
-    sheet.hidden = true;
+    if (!sheet || !sheetOpen) return;
     sheetOpen = false;
+    sheet.classList.remove('is-open', 'is-dragging');
+    sheetCard.style.transform = '';
+    sheetBackdrop.style.opacity = '';
+    document.documentElement.classList.remove('sheet-lock');
+    const done = () => { if (!sheetOpen) sheet.hidden = true; };
+    if (reducedMotion.matches) done();
+    else sheetCard.addEventListener('transitionend', done, { once: true });
   };
   if (sheet) {
     sheet.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeSheet));
     document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && sheetOpen) closeSheet(); });
+
+    // Swipe down to dismiss: the card follows the finger, and past a third of
+    // its height or on a quick flick it closes, otherwise it springs back.
+    let startY = 0, lastY = 0, lastT = 0, speed = 0, dragging = false;
+    sheetCard.addEventListener('touchstart', (ev) => {
+      if (sheetCard.scrollTop > 0) return;
+      dragging = true;
+      startY = lastY = ev.touches[0].clientY;
+      lastT = performance.now();
+      speed = 0;
+      sheet.classList.add('is-dragging');
+    }, { passive: true });
+    sheetCard.addEventListener('touchmove', (ev) => {
+      if (!dragging) return;
+      const y = ev.touches[0].clientY;
+      const now = performance.now();
+      speed = (y - lastY) / Math.max(1, now - lastT);
+      lastY = y;
+      lastT = now;
+      const dy = Math.max(0, y - startY);
+      sheetCard.style.transform = `translateY(${dy}px)`;
+      sheetBackdrop.style.opacity = String(1 - Math.min(1, dy / sheetCard.offsetHeight));
+    }, { passive: true });
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      const dy = Math.max(0, lastY - startY);
+      sheet.classList.remove('is-dragging');
+      if (dy > sheetCard.offsetHeight / 3 || speed > 0.6) {
+        closeSheet();
+      } else {
+        sheetCard.style.transform = '';
+        sheetBackdrop.style.opacity = '';
+      }
+    };
+    sheetCard.addEventListener('touchend', endDrag);
+    sheetCard.addEventListener('touchcancel', endDrag);
   }
   tags.forEach((tag) => {
     tag.addEventListener('click', (ev) => {

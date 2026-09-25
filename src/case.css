@@ -730,6 +730,17 @@ kbd {
   gap: var(--space-2);
 }
 
+/* Cards in a row line up: the description and the one-line note keep the
+   same height in every card (the longest one's), so the titles start on
+   one line, and the company sits level with the middle of the note. */
+.related .case__desc { min-height: calc(2 * 1.35em); }
+.related .case__meta { align-items: center; }
+.related .case__stats {
+  display: flex;
+  align-items: center;
+  min-height: calc(3 * 1.35em);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 1100px) {
@@ -739,6 +750,7 @@ kbd {
   .short-ref { flex: 1 1 240px; }
   .case-stats-row { grid-template-columns: 1fr; }
   .related__grid { grid-template-columns: 1fr 1fr; }
+  .related .case__stats { min-height: calc(2 * 1.35em); }
   /* No room for a sidebar once the text column itself has to shrink below
      --measure; the TOC drops out and the content retakes the full width. */
   .case-detail__layout { grid-template-columns: 1fr; }
@@ -754,6 +766,9 @@ kbd {
      scroll sideways. In a column these want full width and natural height. */
   .short-ref { flex: none; width: 100%; }
   .related__grid { grid-template-columns: 1fr; }
+  /* One card per row: nothing to line up with. */
+  .related .case__desc,
+  .related .case__stats { min-height: 0; }
   .short__stats { grid-template-columns: 1fr; }
   .case-side-by-side { grid-template-columns: 1fr; }
 }

@@ -1783,11 +1783,13 @@ main,
     min-height: 90vh;
     padding: var(--space-6) 0;
   }
+  /* Each case comes toward the camera out of the stream: from smaller and
+     further off to its place, rather than sliding up. */
   .tunnel--flow .tunnel__case .tunnel__cover,
   .tunnel--flow .tunnel__case .tunnel__text {
     opacity: 0;
-    transform: translateY(48px);
-    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 0.7, 0.3, 1);
+    transform: scale(0.82);
+    transition: opacity 0.9s ease, transform 1.1s cubic-bezier(0.16, 0.8, 0.3, 1);
   }
   .tunnel--flow .tunnel__case .tunnel__text {
     position: relative;

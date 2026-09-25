@@ -426,6 +426,11 @@ function startSpace() {
 
     // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
+    // Camera: how far it has flown in toward the point, how fast it is going
+    // (for the warp streaks) and how much closer the point looks.
+    const cameraIn = k * k * 1.6;
+    const warp = Math.max(0, k - 0.15) * 1.2 * (1 - burst);
+    const zoom = 1 + 3.5 * k * k * k;
     // m: the point bursting into the tunnel walls.
     const m = flight
       ? ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)))
@@ -536,21 +541,30 @@ function startSpace() {
 
     for (const p of pts) {
       if (p.star) {
-        // A whirlpool rather than a squeeze: stars turn round the centre,
-        // those near it turning and sinking more, those at the rim barely,
-        // so the edges of the screen stay full.
-        const rn = p.sr;
-        const swirl = k * k * (1.4 / (rn + 0.25));
-        const rr = rn * halfDiag * (1 - 0.45 * k * k * (1 - rn));
-        const a = p.sa + swirl;
-        stars.push(w / 2 + Math.cos(a) * rr, h / 2 + Math.sin(a) * rr, p.size * 0.8);
+        // The camera flies toward the point: every star sits at a depth and
+        // rushes outward as the camera closes in, wrapping back to the far
+        // distance once it passes, so the sky stays full and turns to warp
+        // streaks at speed.
+        const z0 = 0.2 + p.v * 0.8;
+        const zc = (((z0 - cameraIn) % 1) + 1) % 1 + 0.06;
+        const rr = p.sr * halfDiag * z0 / zc * 0.9;
+        const sx = w / 2 + Math.cos(p.sa) * rr;
+        const sy2 = h / 2 + Math.sin(p.sa) * rr;
+        const st = Math.min(90, (rr / halfDiag) * warp * 160);
+        if (st > 3 && rr > halfDiag * 0.2 && !still) {
+          streaks.push(sx, sy2, sx - Math.cos(p.sa) * st, sy2 - Math.sin(p.sa) * st);
+        } else {
+          stars.push(sx, sy2, p.size * 0.8 * Math.min(2, z0 / zc));
+        }
         continue;
       }
 
       // Ring, spiralling in faster the closer it gets.
       p.a += dt * spinSpeed * (1 + k * (2 + p.fall * 4));
       const r0 = p.inner ? Math.sqrt(p.u) * 0.85 : 1 + p.band * 0.09;
-      const r = r0 * Math.pow(1 - k, 0.7 + p.fall * 0.7);
+      // The ring shrinks toward the point while the camera closes in on it,
+      // so at the end the point is a dense ball filling the middle.
+      const r = r0 * Math.max(0.05, Math.pow(1 - k, 0.7 + p.fall * 0.7)) * zoom;
       let x = cx + Math.cos(p.a) * R * r;
       let y = cy + Math.sin(p.a) * R * r;
       let size = p.size;
@@ -693,9 +707,9 @@ function startSpace() {
     });
     ctx.globalAlpha = 1;
     if (streaks.length) {
-      ctx.globalAlpha = 0.75;
+      ctx.globalAlpha = flight ? 0.75 : 0.45;
       ctx.strokeStyle = 'rgb(236, 233, 255)';
-      ctx.lineWidth = 1.2;
+      ctx.lineWidth = flight ? 1.2 : 1;
       ctx.beginPath();
       for (let i = 0; i < streaks.length; i += 4) {
         ctx.moveTo(streaks[i], streaks[i + 1]);

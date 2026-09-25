@@ -164,6 +164,19 @@
         </a>
       </div>
 
+      <!-- Phone: a tap on a project opens this card first instead of leaving
+           the page straight away. Filled from the tapped project by main.js. -->
+      <div class="case-sheet" id="caseSheet" role="dialog" aria-modal="true" aria-labelledby="caseSheetTitle" hidden>
+        <button class="case-sheet__backdrop" type="button" aria-label="Закрыть" data-close></button>
+        <div class="case-sheet__card">
+          <button class="case-sheet__close" type="button" aria-label="Закрыть" data-close></button>
+          <img class="case-sheet__img" src="" alt="" width="800" height="500" />
+          <p class="case-sheet__title" id="caseSheetTitle"></p>
+          <p class="case-sheet__desc"></p>
+          <a class="btn btn--fill case-sheet__go" href="#">Перейти к кейсу</a>
+        </div>
+      </div>
+
       <div class="hero__head">
         <h1 class="hero__title">Елизавета Любшина</h1>
         <p class="hero__role"><span>Product Designer</span><span>B2B</span><span>Web</span><span>5&nbsp;лет опыта</span></p>

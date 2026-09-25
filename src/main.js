@@ -358,10 +358,42 @@ function startSpace() {
     });
     return best;
   };
+  // Phone: a tap on a project, name or point, opens a preview card with a
+  // button into the case, instead of leaving the page at once.
+  const sheet = document.getElementById('caseSheet');
+  let sheetOpen = false;
+  const openSheet = (tag) => {
+    if (!sheet) { window.location.href = tag.href; return; }
+    sheet.querySelector('.case-sheet__img').src = tag.querySelector('img').currentSrc || tag.querySelector('img').src;
+    sheet.querySelector('.case-sheet__title').textContent = tag.querySelector('.hero__orbit-title').textContent;
+    sheet.querySelector('.case-sheet__desc').textContent = tag.querySelector('.hero__orbit-desc').textContent;
+    sheet.querySelector('.case-sheet__go').href = tag.href;
+    sheet.hidden = false;
+    sheetOpen = true;
+    sheet.querySelector('.case-sheet__go').focus({ preventScroll: true });
+  };
+  const closeSheet = () => {
+    if (!sheet) return;
+    sheet.hidden = true;
+    sheetOpen = false;
+  };
+  if (sheet) {
+    sheet.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeSheet));
+    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && sheetOpen) closeSheet(); });
+  }
+  tags.forEach((tag) => {
+    tag.addEventListener('click', (ev) => {
+      if (!narrowScreen.matches) return;
+      ev.preventDefault();
+      openSheet(tag);
+    });
+  });
   document.addEventListener('click', (ev) => {
     if (ev.target.closest('a, button')) return;
     const i = pointAt(ev.clientX, ev.clientY);
-    if (i >= 0) window.location.href = lastMarks[i].href;
+    if (i < 0) return;
+    if (narrowScreen.matches) openSheet(tags[i]);
+    else window.location.href = lastMarks[i].href;
   });
   window.addEventListener('pointermove', (ev) => {
     if (ev.pointerType !== 'mouse') return;
@@ -513,7 +545,7 @@ function startSpace() {
     const cam = flight ? cameraAt(tp) : (sy - tunnelTop) * 1.4;
     flow += still ? 0 : dt * 0.05;
 
-    pace += ((hovering && k === 0 ? 0 : 1) - pace) * 0.12;
+    pace += (((hovering || sheetOpen) && k === 0 ? 0 : 1) - pace) * 0.12;
     const spinSpeed = (0.00006 + k * k * 0.005) * pace;
     spin += dt * spinSpeed;
 

@@ -2030,3 +2030,88 @@ main,
   .logo { font-size: 13px; }
 }
 
+
+/* ---------- Phone case preview ---------- */
+
+.case-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.case-sheet[hidden] { display: none; }
+.case-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(3, 3, 6, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: sheet-fade 0.25s ease;
+}
+.case-sheet__card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 var(--space-1) var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: 0 -20px 60px -20px rgba(214, 107, 208, 0.45);
+  text-align: center;
+  animation: sheet-up 0.35s cubic-bezier(0.22, 0.7, 0.3, 1);
+}
+.case-sheet__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top;
+  border-radius: var(--radius-md);
+}
+.case-sheet__title {
+  margin: var(--space-2) var(--space-2) var(--space-half);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+}
+.case-sheet__desc {
+  margin: 0 var(--space-2) var(--space-3);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+.case-sheet__go { justify-content: center; font-size: 15px; padding: var(--space-2) var(--space-4); }
+.case-sheet__close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(7, 7, 11, 0.7);
+  cursor: pointer;
+}
+.case-sheet__close::before,
+.case-sheet__close::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 2px;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.case-sheet__close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+@keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } }
+@keyframes sheet-fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .case-sheet__card, .case-sheet__backdrop { animation: none; }
+}

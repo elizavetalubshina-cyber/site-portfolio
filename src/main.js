@@ -1,101 +1,6 @@
-// `lines` are fixed line breaks (not left to CSS wrap) so the caption
-// on the video and the row in the subtitles panel always match —
-// same two-line shape in both places, regardless of container width.
-const catCaptions = [
-  { start: 0, end: 2.5, lines: ['Знакомьтесь — самый милый рыжик на свете.'] },
-  { start: 2.5, end: 5.5, lines: ['Вот он просыпается... и потягивается — ну', 'разве не прелесть?'] },
-  { start: 5.5, end: 9, lines: ['Этот сладкий зевок способен растопить любое', 'сердце.'] },
-  { start: 9, end: 13, lines: ['Кажется, кто-то совсем не хочет вставать', 'сегодня.'] },
-  { start: 13, end: 17, lines: ['Ну как тут не влюбиться с первого зевка?'] },
-];
-
-const catVideo = document.getElementById('catVideo');
-const catCaption = document.getElementById('catCaption');
-const catCues = document.getElementById('catCues');
-const catTimecode = document.getElementById('catTimecode');
-const catCueCounter = document.getElementById('catCueCounter');
-
-const pad = (n) => String(n).padStart(2, '0');
-
-function formatTimecode(seconds) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const f = Math.floor((seconds % 1) * 25);
-  return `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
-}
-
-function formatDuration(seconds) {
-  const s = Math.floor(seconds % 60);
-  const f = Math.floor((seconds % 1) * 25);
-  return `${pad(s)}:${pad(f)}`;
-}
-
-if (catVideo && catCaption && catCues) {
-  catCues.innerHTML = catCaptions
-    .map((cue, i) => {
-      const meta = `${formatTimecode(cue.start)} ${formatTimecode(cue.end)} ${formatDuration(cue.end - cue.start)}`;
-      return `<li class="tv__cue" data-index="${i}">
-        <span class="tv__cue-meta">${String(i + 1).padStart(2, '0')} ${meta}</span>
-        <strong class="tv__cue-num">${String(i + 1).padStart(2, '0')}</strong>
-        <span class="tv__cue-text">${cue.lines.join(' ')}</span>
-      </li>`;
-    })
-    .join('');
-
-  const cueEls = [...catCues.children];
-  let activeIndex = -1;
-
-  function updateCuesPadding() {
-    catCues.style.paddingTop = 0;
-    catCues.style.paddingBottom = 0;
-    const half = catCues.clientHeight / 2 + 'px';
-    catCues.style.paddingTop = half;
-    catCues.style.paddingBottom = half;
-    if (activeIndex >= 0) scrollActiveIntoCenter(false);
-  }
-
-  function scrollActiveIntoCenter(smooth = true) {
-    const target = cueEls[activeIndex];
-    if (!target) return;
-    const centeredTop = target.offsetTop - catCues.clientHeight / 2 + target.offsetHeight / 2;
-    const maxScroll = catCues.scrollHeight - catCues.clientHeight;
-    catCues.scrollTo({
-      top: Math.max(0, Math.min(centeredTop, maxScroll)),
-      behavior: smooth ? 'smooth' : 'auto',
-    });
-  }
-
-  updateCuesPadding();
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(updateCuesPadding);
-  }
-  window.addEventListener('resize', updateCuesPadding);
-
-  if (catCueCounter) {
-    catCueCounter.textContent = `Субтитр 1 из ${catCaptions.length}`;
-  }
-
-  catVideo.addEventListener('timeupdate', () => {
-    const t = catVideo.currentTime;
-    if (catTimecode) catTimecode.textContent = formatTimecode(t);
-
-    const index = catCaptions.findIndex((c) => t >= c.start && t < c.end);
-    if (index === activeIndex) return;
-    activeIndex = index;
-
-    catCaption.innerHTML = index >= 0 ? catCaptions[index].lines.join('<br>') : '';
-    catCaption.classList.toggle('is-empty', index < 0);
-    if (catCueCounter) {
-      catCueCounter.textContent = `Субтитр ${index >= 0 ? index + 1 : 1} из ${catCaptions.length}`;
-    }
-    cueEls.forEach((el, i) => {
-      el.classList.toggle('tv__cue--active', i === index);
-      el.classList.toggle('tv__cue--released', index >= 0 && i < index);
-    });
-    if (index >= 0) scrollActiveIntoCenter(true);
-  });
-}
+// Case links opened from script carry the same origin mark as clicked
+// links (see markCaseUrl at the end of this file).
+const withFrom = (href) => markCaseUrl(href);
 
 const navHeader = document.querySelector('.nav');
 const navToggle = document.querySelector('.nav__toggle');
@@ -135,9 +40,26 @@ document.querySelectorAll('.nav__links a, .nav__menu a, .logo, .case-toc a').for
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href');
     if (!id || id === '#' || !id.startsWith('#')) return;
+    // On the homepage the cases are handled by the tunnel (startSpace).
+    if (id === '#cases' && window.spaceFlight) return;
     const target = document.querySelector(id);
     if (!target) return;
     e.preventDefault();
+    // The homepage hero is pinned inside the fall animation, so its own
+    // position is wherever the fall has got to; the top means the page top.
+    if (id === '#top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    // "Обо мне" and its contacts only show once grown in; land past that.
+    const outro = document.getElementById('outro');
+    if (outro && (id === '#about' || id === '#contacts') && getComputedStyle(document.getElementById('about')).position === 'sticky') {
+      let top = 0;
+      for (let el = outro; el; el = el.offsetParent) top += el.offsetTop;
+      const held = parseFloat(getComputedStyle(document.getElementById('about')).top) || 96;
+      window.scrollTo({ top: top - held + window.innerHeight * 0.22, behavior: 'smooth' });
+      return;
+    }
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
@@ -164,6 +86,48 @@ if (navHeader && heroTitle) {
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
+}
+
+// Email: a click copies the address and says so in a notice at the bottom,
+// rather than opening a mail app the visitor may not use. If copying is
+// not possible, the link works as an ordinary mailto.
+const toast = document.getElementById('toast');
+let toastTimer = 0;
+const showToast = (text) => {
+  if (!toast) return;
+  toast.textContent = text;
+  toast.classList.add('is-shown');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('is-shown'), 2200);
+};
+const copyText = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    // Older browsers and some embedded views: the pre-Clipboard-API way.
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+    area.remove();
+    return ok;
+  }
+};
+if (toast) {
+  document.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
+    link.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const address = link.getAttribute('href').slice(7).split('?')[0];
+      if (await copyText(address)) showToast('Почта скопирована');
+      else window.location.href = link.href;
+    });
+  });
 }
 
 const galleryPhotos = document.querySelectorAll('#aboutPhotoGallery img');
@@ -202,7 +166,6 @@ const deferredVideos = document.querySelectorAll('video[data-play-in-view]');
 
 if (deferredVideos.length) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
   // `controls` is in the markup, not added here, so that with scripting off the
   // video is still watchable instead of a frozen poster. Once this code is
   // running it takes over starting and stopping, and the bar goes away — the
@@ -310,4 +273,927 @@ if (caseToc) {
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
+}
+
+// Space homepage (desktop). One field of particles tells the whole story:
+//   1. a ring of dust turning round the name, with the topics of the work
+//      orbiting it;
+//   2. scrolling while the hero is pinned sucks the ring in: the dust
+//      spirals ever faster into one point and the name shrinks into it;
+//   3. out of that point the dust opens into the walls of a tunnel; the
+//      stage is pinned and the scroll flies down it, each case coming up
+//      out of its depth, pausing to be read, then passing by;
+//   4. out of the tunnel's mouth "Обо мне" grows in the same way.
+// Stars sit behind it all; the cursor pushes the ring's dust aside. On
+// every screen size; with reduced motion it holds still.
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const particleCanvas = document.getElementById('particles');
+const narrowScreen = window.matchMedia('(max-width: 900px)');
+const tunnelEl = document.getElementById('tunnel');
+const flight = !!tunnelEl && tunnelEl.classList.contains('tunnel--flight');
+let spaceStarted = false;
+function startSpace() {
+  if (spaceStarted || !particleCanvas || !flight) return;
+  spaceStarted = true;
+  // Tells the fallback in index.html the animated layout is running.
+  window.spaceStarted = true;
+  window.spaceFlight = flight;
+
+  const ctx = particleCanvas.getContext('2d');
+  const intro = document.getElementById('intro');
+  const hero = document.querySelector('.home-page .hero');
+  const head = document.querySelector('.home-page .hero__head');
+  const orbit = document.getElementById('heroOrbit');
+  const tags = orbit ? [...orbit.children] : [];
+  const cards = tunnelEl ? [...tunnelEl.querySelectorAll('.tunnel__case')] : [];
+  const about = document.getElementById('about');
+  const footer = document.querySelector('.home-page .footer');
+  const still = reducedMotion.matches;
+
+  // Fewer particles on a phone: the screen is smaller and so is the budget.
+  // Fewer particles on a phone: the screen is smaller and so is the budget.
+  const COUNT = narrowScreen.matches ? 5000 : 9000;
+  const REPEL = 110;
+  // Tunnel world: depth of the visible stretch, the distance at which
+  // something is drawn at its real size, and the gap between cases.
+  const DEPTH = 6000;
+  const FOCUS = 600;
+  const SPACING = 1600;
+  const BG = '7, 7, 11';
+
+  const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+  const clamp01 = (n) => Math.min(1, Math.max(0, n));
+  const ease = (n) => n * n * (3 - 2 * n);
+
+  const pts = Array.from({ length: COUNT }, () => ({
+    a: Math.random() * Math.PI * 2,
+    band: gauss(),
+    inner: Math.random() < 0.16,
+    star: Math.random() < 0.13,
+    // Stars fill a disc a little larger than the screen's diagonal, so they
+    // can swirl round the centre without ever leaving a corner bare.
+    sa: Math.random() * Math.PI * 2,
+    sr: Math.sqrt(Math.random()),
+    fall: Math.random(),
+    ta: Math.random() * Math.PI * 2,
+    // Walls are built of rings at even steps down the tunnel, so the
+    // perspective reads as a tube rather than a cloud.
+    tz: Math.floor(Math.random() * 44) * (DEPTH / 44) + Math.random() * 8,
+    tr: 1 + gauss() * 0.03,
+    s: Math.random(),
+    speed: 0.000014 + Math.random() * 0.00002,
+    u: Math.random(),
+    v: Math.random(),
+    size: Math.random() < 0.8 ? 1.4 : 2.2,
+    accent: Math.random() < 0.07,
+    phase: Math.random() * Math.PI * 2,
+    ox: 0,
+    oy: 0,
+  }));
+
+  let w = 0, h = 0;
+  let introTop = 0, introH = 1, tunnelTop = 0, tunnelH = 1, aboutTop = 1, aboutHeld = 96;
+
+  const layout = () => {
+    // clientWidth, not innerWidth: on a phone anything poking past the edge
+    // widens innerWidth and would push the ring off centre.
+    w = document.documentElement.clientWidth;
+    h = window.innerHeight;
+    // "Обо мне" is held in the middle of the room between the nav and the
+    // bottom of the screen while it grows in, and stays there to the end of the page. If
+    // it is taller than that room it is held just under the nav instead.
+    // The empty room after it is exactly what the end of the page needs to
+    // keep it there, plus the scroll the grow-in takes (0.2 of a screen).
+    // When it is too tall to be held whole, only a small margin follows
+    // it, so the page ends just under the contacts.
+    const outroRoom = document.querySelector('.outro__room');
+    if (flight && about && outroRoom) {
+      const navB = document.querySelector('.nav__shell').getBoundingClientRect().bottom;
+      // Room kept under it at the bottom of the screen (and under the
+      // footer, where a page shows one).
+      const footH = (footer ? footer.offsetHeight : 0) + 32;
+      const aboutH = about.offsetHeight;
+      const held = Math.round(Math.max(navB + 16, navB + (h - footH - navB - aboutH) / 2));
+      document.body.style.setProperty('--about-top', `${held}px`);
+      const fits = h - footH - held - aboutH >= 0;
+      outroRoom.style.height = `${Math.round(fits ? h - footH - held - aboutH + h * 0.2 : 32)}px`;
+    }
+    // Safari gives up on canvases past ~16.7M pixels and draws nothing.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / Math.max(1, w * h)));
+    particleCanvas.width = w * dpr;
+    particleCanvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    introTop = intro.getBoundingClientRect().top + window.scrollY;
+    introH = intro.offsetHeight;
+    tunnelTop = tunnelEl.getBoundingClientRect().top + window.scrollY;
+    tunnelH = tunnelEl.offsetHeight;
+    // Measured without the grow-in transform "Обо мне" carries, which would
+    // otherwise shift its box and skew every position derived from it.
+    // The outro wrapper, not the section: the section is sticky, and its
+    // box moves while it is held.
+    let top = 0;
+    for (let el = document.getElementById('outro') || about; el; el = el.offsetParent) top += el.offsetTop;
+    aboutTop = top;
+    // How far below the screen's top "Обо мне" is held (sticky, style.css).
+    aboutHeld = about ? parseFloat(getComputedStyle(about).top) || 96 : 96;
+  };
+
+  // The cursor, or a finger while it is on the glass, pushes the dust aside.
+  // `on` is what the pointer asks for and `force` eases after it, so the
+  // dust parts and closes again softly instead of snapping. The position is
+  // kept after a finger lifts, so the dent heals in place rather than
+  // sliding off.
+  const mouse = { x: -9999, y: -9999, on: 0, force: 0 };
+  const aim = (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.on = 1; };
+  window.addEventListener('pointermove', aim, { passive: true });
+  window.addEventListener('pointerdown', aim, { passive: true });
+  const release = (e) => { if (e.pointerType !== 'mouse') mouse.on = 0; };
+  window.addEventListener('pointerup', release, { passive: true });
+  window.addEventListener('pointercancel', release, { passive: true });
+  document.documentElement.addEventListener('mouseleave', () => { mouse.on = 0; });
+
+  // While a topic is hovered the orbit eases to a stop, so the tag and its
+  // preview hold still under the cursor.
+  let hovering = false;
+  let pace = 1;
+
+  // The project points on the ring are links too: a tap or click near one
+  // opens its case. On a phone its name fades out while it passes the name,
+  // so the point is then the only way in.
+  let lastMarks = [];
+  let hotPoint = -1;
+  const HIT = 24;
+  // The point under the cursor keeps a wider catch than the others: the
+  // orbit takes a moment to stop once one is hovered, and the point must not
+  // slip out from under a cursor that already shows it as clickable.
+  const pointAt = (x, y) => {
+    let best = -1, bestD = HIT * 1.6;
+    lastMarks.forEach((mk, i) => {
+      if (mk.alpha < 0.4) return;
+      const d = Math.hypot(mk.x - x, mk.y - y) * (i === hotPoint ? 1 : 1.6);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  };
+  // Phone: a tap on a project, name or point, opens a preview card with a
+  // button into the case, instead of leaving the page at once.
+  const sheet = document.getElementById('caseSheet');
+  let sheetOpen = false;
+  const sheetCard = sheet ? sheet.querySelector('.case-sheet__card') : null;
+  const sheetBackdrop = sheet ? sheet.querySelector('.case-sheet__backdrop') : null;
+  const openSheet = (tag) => {
+    if (!sheet) { window.location.href = withFrom(tag.href); return; }
+    const img = tag.querySelector('img');
+    sheet.querySelector('.case-sheet__img').src = img.currentSrc || img.src;
+    sheet.querySelector('.case-sheet__title').textContent = tag.querySelector('.hero__orbit-title').textContent;
+    sheet.querySelector('.case-sheet__desc').textContent = tag.querySelector('.hero__orbit-desc').textContent;
+    sheet.querySelector('.case-sheet__go').href = tag.href;
+    // Tag chips and company, taken from the same case in the tunnel below.
+    const same = [...document.querySelectorAll('.tunnel__case')]
+      .find((c) => c.querySelector('.tunnel__title a').href === tag.href);
+    const tagsEl = same && same.querySelector('.tunnel__tags');
+    const companyEl = same && same.querySelector('.tunnel__company');
+    sheet.querySelector('.case-sheet__tags').innerHTML = tagsEl ? tagsEl.innerHTML : '';
+    sheet.querySelector('.case-sheet__company').textContent = companyEl ? companyEl.textContent : '';
+    sheet.hidden = false;
+    document.documentElement.classList.add('sheet-lock');
+    sheetOpen = true;
+    // Next frame, so the slide up from the bottom edge actually plays.
+    requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('is-open')));
+  };
+  const closeSheet = () => {
+    if (!sheet || !sheetOpen) return;
+    sheetOpen = false;
+    sheet.classList.remove('is-open', 'is-dragging');
+    sheetCard.style.transform = '';
+    sheetBackdrop.style.opacity = '';
+    document.documentElement.classList.remove('sheet-lock');
+    const done = () => { if (!sheetOpen) sheet.hidden = true; };
+    if (reducedMotion.matches) done();
+    else sheetCard.addEventListener('transitionend', done, { once: true });
+  };
+  if (sheet) {
+    sheet.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeSheet));
+    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && sheetOpen) closeSheet(); });
+
+    // Swipe down to dismiss: the card follows the finger, and past a third of
+    // its height or on a quick flick it closes, otherwise it springs back.
+    let startY = 0, lastY = 0, lastT = 0, speed = 0, dragging = false;
+    sheetCard.addEventListener('touchstart', (ev) => {
+      if (sheetCard.scrollTop > 0) return;
+      dragging = true;
+      startY = lastY = ev.touches[0].clientY;
+      lastT = performance.now();
+      speed = 0;
+      sheet.classList.add('is-dragging');
+    }, { passive: true });
+    sheetCard.addEventListener('touchmove', (ev) => {
+      if (!dragging) return;
+      const y = ev.touches[0].clientY;
+      const now = performance.now();
+      speed = (y - lastY) / Math.max(1, now - lastT);
+      lastY = y;
+      lastT = now;
+      const dy = Math.max(0, y - startY);
+      sheetCard.style.transform = `translateY(${dy}px)`;
+      sheetBackdrop.style.opacity = String(1 - Math.min(1, dy / sheetCard.offsetHeight));
+    }, { passive: true });
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      const dy = Math.max(0, lastY - startY);
+      sheet.classList.remove('is-dragging');
+      if (dy > sheetCard.offsetHeight / 3 || speed > 0.6) {
+        closeSheet();
+      } else {
+        sheetCard.style.transform = '';
+        sheetBackdrop.style.opacity = '';
+      }
+    };
+    sheetCard.addEventListener('touchend', endDrag);
+    sheetCard.addEventListener('touchcancel', endDrag);
+  }
+  tags.forEach((tag) => {
+    tag.addEventListener('click', (ev) => {
+      if (!narrowScreen.matches) return;
+      ev.preventDefault();
+      openSheet(tag);
+    });
+  });
+  document.addEventListener('click', (ev) => {
+    if (ev.target.closest('a, button')) return;
+    // With a mouse, the point the cursor shows as clickable is the one.
+    const i = hotPoint >= 0 && ev.pointerType === 'mouse' ? hotPoint : pointAt(ev.clientX, ev.clientY);
+    if (i < 0) return;
+    if (narrowScreen.matches) openSheet(tags[i]);
+    else window.location.href = withFrom(lastMarks[i].href);
+  });
+  window.addEventListener('pointermove', (ev) => {
+    if (ev.pointerType !== 'mouse') return;
+    const i = pointAt(ev.clientX, ev.clientY);
+    if (i !== hotPoint) {
+      hotPoint = i;
+      document.body.style.cursor = i >= 0 ? 'pointer' : '';
+      hovering = i >= 0;
+    }
+  }, { passive: true });
+  tags.forEach((tag) => {
+    tag.addEventListener('pointerenter', () => { hovering = true; });
+    tag.addEventListener('pointerleave', () => { hovering = false; });
+  });
+
+  // Flight: scroll through the tunnel maps to camera depth. Each case gets one
+  // screen of scroll, and within it the camera slows almost to a stop at the
+  // point where the case is at full size, so there is time to read it.
+  // A short run-up before the first case, so it starts far down the
+  // tunnel, a speck inside the ring, rather than already half grown.
+  const LEAD = 0.7;
+  const cameraAt = (p) => {
+    const seg = p * (cards.length + LEAD) - LEAD;
+    if (seg < 0) return SPACING * seg;
+    const i = Math.min(cards.length - 1, Math.floor(seg));
+    const u = seg - i;
+    return SPACING * (i + u + 0.15 * Math.sin(2 * Math.PI * u));
+  };
+  const caseDepth = (i) => SPACING * (i + 0.5) + FOCUS;
+
+  // Where on the page the tunnel opens, where it ends, and the stretch of
+  // scroll that flies down it.
+  const marks0 = () => {
+    const mStart = introTop + (introH - h) * 0.5;
+    const tunnelEnd = tunnelTop + tunnelH;
+    const from = mStart + h * 0.25;
+    return { mStart, tunnelEnd, from, span: tunnelEnd - h * 0.8 - from };
+  };
+  const depthAt = (sy) => {
+    const { from, span } = marks0();
+    return clamp01((sy - from) / span);
+  };
+  // The scroll position at which case i is at full size, in the middle of
+  // its pause (cameraAt's slow point).
+  const scrollForCase = (i) => {
+    const { from, span } = marks0();
+    return Math.round(from + span * ((i + 0.5 + LEAD) / (cards.length + LEAD)));
+  };
+  // Step by step through the tunnel: one flick of the wheel, one swipe or
+  // one key press moves to the next stop and no further, so no case can be
+  // flown past unseen. The stops are the top of the page, each case at full
+  // size, "Обо мне" fully grown and the end of the page. Scrollbar drags and
+  // links still move freely; the next step starts from the nearest stop.
+  let stops = [0];
+  const placeStops = () => {
+    const maxScroll = document.documentElement.scrollHeight - h;
+    const at = [0, ...cards.map((c, i) => scrollForCase(i))];
+    if (about) {
+      const pin = aboutTop - aboutHeld;
+      const after = Math.max(0, maxScroll - 2 - pin);
+      const grown = pin - Math.max(0, h * 0.2 - after) + h * 0.2;
+      if (maxScroll - grown > 40) at.push(Math.round(grown));
+    }
+    at.push(maxScroll);
+    stops = at.map((y) => Math.max(0, Math.min(maxScroll, Math.round(y))));
+  };
+  const nearestStop = () => {
+    const y = window.scrollY;
+    let best = 0;
+    stops.forEach((s, i) => { if (Math.abs(s - y) < Math.abs(stops[best] - y)) best = i; });
+    return best;
+  };
+  // One step is one smooth move to a stop. It starts the moment the wheel
+  // or finger moves, runs fast at first and settles slowly into the case,
+  // so the scroll answers at once and the arrival takes its time. A new
+  // gesture during a move is never lost: it re-aims at the stop after the
+  // one being approached.
+  let target = -1;
+  let anim = 0;
+  const moveTo = (i) => {
+    i = Math.max(0, Math.min(stops.length - 1, i));
+    target = i;
+    const to = stops[i];
+    const from = window.scrollY;
+    cancelAnimationFrame(anim);
+    if (Math.abs(to - from) < 2) { target = -1; return; }
+    if (still) { window.scrollTo({ top: to, behavior: 'instant' }); target = -1; return; }
+    // About 1.6 s from case to case; the way down from the ring (or back
+    // up to it) keeps its own 1.4 s.
+    const ring = i === 0 || from < stops[1] - 2;
+    const dur = ring ? Math.min(1500, Math.max(900, 700 + Math.abs(to - from) * 0.5)) : 1600;
+    const t0 = performance.now();
+    const tick = (t) => {
+      const u = Math.min(1, (t - t0) / dur);
+      const q = 1 - Math.pow(1 - u, 4);
+      window.scrollTo({ top: from + (to - from) * q, behavior: 'instant' });
+      if (u < 1) anim = requestAnimationFrame(tick);
+      else target = -1;
+    };
+    anim = requestAnimationFrame(tick);
+  };
+  const step = (dir) => {
+    // Already moving: the next stop after the one being approached.
+    if (target >= 0) { moveTo(target + dir); return; }
+    const here = nearestStop();
+    const y = window.scrollY;
+    // Between two stops (after a scrollbar drag), the first step settles on
+    // the next one in that direction.
+    let i = here + dir;
+    if (dir > 0 && stops[here] > y + 2) i = here;
+    if (dir < 0 && stops[here] < y - 2) i = here;
+    moveTo(i);
+  };
+  const blocked = (target) => sheetOpen
+    || document.documentElement.classList.contains('sheet-lock')
+    || (target && target.closest && target.closest('.nav.is-open, .case-sheet'));
+  if (flight) {
+    // Wheel and trackpad: one gesture, one step, taken on its first event.
+    // A trackpad keeps sending ever smaller events for a second after the
+    // fingers lift; those belong to the same gesture. A new gesture shows
+    // as a pause, a turn, or a sudden rise in the deltas.
+    let lastWheel = 0, lastDelta = 0, lastDir = 0, gestureAt = 0;
+    window.addEventListener('wheel', (ev) => {
+      if (ev.ctrlKey || blocked(ev.target)) return;
+      ev.preventDefault();
+      const now = performance.now();
+      const d = ev.deltaY;
+      if (Math.abs(d) < 1) return;
+      const dir = d > 0 ? 1 : -1;
+      // Soon after a step, small deltas are the tail of its inertia even
+      // across a short gap; only a clear push counts as a new gesture.
+      // Inertia only ever dies down, so a delta smaller than the last one
+      // shortly after a step is its tail even after a gap; a wheel's
+      // clicks come in equal sizes and still count one by one.
+      const tail = now - gestureAt < 1200
+        && ((Math.abs(d) < Math.abs(lastDelta) && now - lastWheel < 400) || Math.abs(d) < 15);
+      const fresh = !tail && (now - lastWheel > 150
+        || dir !== lastDir
+        || (now - gestureAt > 300 && Math.abs(d) > Math.abs(lastDelta) * 1.8 + 6));
+      lastWheel = now;
+      lastDelta = d;
+      lastDir = dir;
+      if (!fresh) return;
+      gestureAt = now;
+      step(dir);
+    }, { passive: false });
+    // Touch: the step starts as soon as the finger has clearly moved, not
+    // when it lifts. A tap stays a tap.
+    let touchY = null, touched = false;
+    window.addEventListener('touchstart', (ev) => {
+      touchY = ev.touches.length === 1 && !blocked(ev.target) ? ev.touches[0].clientY : null;
+      touched = false;
+    }, { passive: true });
+    window.addEventListener('touchmove', (ev) => {
+      if (touchY === null) return;
+      ev.preventDefault();
+      const dy = touchY - ev.touches[0].clientY;
+      if (!touched && Math.abs(dy) > 24) {
+        touched = true;
+        step(dy > 0 ? 1 : -1);
+      }
+    }, { passive: false });
+    window.addEventListener('touchend', () => { touchY = null; });
+    document.addEventListener('keydown', (ev) => {
+      if (blocked(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      if (ev.target.closest && ev.target.closest('input, textarea, select, [contenteditable]')) return;
+      if (ev.key === ' ' && ev.target.closest && ev.target.closest('button')) return;
+      const down = ev.key === 'ArrowDown' || ev.key === 'PageDown' || (ev.key === ' ' && !ev.shiftKey);
+      const up = ev.key === 'ArrowUp' || ev.key === 'PageUp' || (ev.key === ' ' && ev.shiftKey);
+      if (!down && !up) return;
+      ev.preventDefault();
+      if (!ev.repeat) step(down ? 1 : -1);
+    });
+  }
+
+  // Keyboard: the cases are only visible while the camera is at them, so a
+  // link inside one that takes focus flies the camera there first.
+  if (flight) cards.forEach((card, i) => {
+    card.addEventListener('focusin', () => {
+      window.scrollTo({ top: scrollForCase(i), left: 0, behavior: 'instant' });
+    });
+  });
+  // "Кейсы" in the menu and the hint under the name go to the first case
+  // at full size, not to the top of the tunnel block, where nothing is
+  // on screen yet.
+  if (flight) document.querySelectorAll('a[href="#cases"]').forEach((link) => {
+    link.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      window.scrollTo({ top: scrollForCase(0), behavior: 'smooth' });
+    });
+  });
+
+  let last = 0;
+  let spin = 0;
+  let flow = 0;
+
+  const draw = (time) => {
+    const dt = still ? 0 : Math.min(50, time - last || 16);
+    last = time;
+    const sy = window.scrollY;
+
+    // k: the suction, 0 at rest, 1 when everything has gone into the point.
+    const k = ease(clamp01((sy - introTop) / (introH - h)));
+    // Camera: how far it has flown in toward the point, how fast it is going
+    // (for the warp streaks) and how much closer the point looks.
+    const cameraIn = k * k * 1.6;
+    // At the very end the camera flies into the ball itself: it swells past
+    // the edges of the screen and its dust streams by on every side.
+    const dive = Math.pow(clamp01((k - 0.82) / 0.18), 3);
+    const zoom = 1 + 3.5 * k * k * k + 45 * dive;
+    // m: the ring giving way to the tunnel walls. The tunnel opens halfway
+    // through the fall, straight out of the shrinking ring, and the flight
+    // down it starts right after.
+    const { mStart, tunnelEnd } = marks0();
+    const m = ease(clamp01((sy - mStart) / (h * 0.5)));
+    // e: leaving the tunnel. The camera flies out of its mouth, the walls
+    // rushing past the screen edges and fading, before "Обо мне". Tied to
+    // the end of the tunnel block rather than to "Обо мне", whose height
+    // differs a lot between desktop and phone.
+    const e = ease(clamp01((sy - (tunnelEnd - h * 0.92)) / (h * 0.27)));
+    // Then "Обо мне" comes out of the depth like the cases: held under the
+    // nav by CSS (sticky) while it grows from small at the screen's middle
+    // and fades in. Only scale and opacity are scripted, nothing positional.
+    if (about) {
+      const pin = aboutTop - aboutHeld;
+      // Grows over 0.2 of a screen of scroll, all of it while held when the
+      // page has that much left after the hold starts. On a phone, where it
+      // is taller than the screen and no empty room follows it, the page
+      // runs out sooner: then it starts growing a little earlier, on its way
+      // up, and finishes as the page ends.
+      const maxScroll = document.documentElement.scrollHeight - h;
+      const span = h * 0.2;
+      const after = Math.max(0, maxScroll - 2 - pin);
+      const start = pin - Math.max(0, span - after);
+      const ap = ease(clamp01((sy - start) / span));
+      // Grows out of its own middle, where it is held.
+      about.style.transformOrigin = '50% 50%';
+      about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';
+      about.style.opacity = String(ap);
+      if (footer) footer.style.opacity = String(ap);
+    }
+    // Camera depth in the tunnel.
+    const cam = cameraAt(depthAt(sy));
+    flow += still ? 0 : dt * 0.05;
+
+    pace += (((hovering || sheetOpen) && k === 0 ? 0 : 1) - pace) * 0.12;
+    // Easing per frame, scaled by the frame's length, so the dust follows
+    // the pointer at the same pace at 60 and at 120 frames a second.
+    const soft = still ? 1 : 1 - Math.pow(0.91, dt / 16.7);
+    // Quick to part under a finger, slower to close again.
+    const rate = mouse.on > mouse.force ? 0.82 : 0.93;
+    mouse.force += (mouse.on - mouse.force) * (still ? 1 : 1 - Math.pow(rate, dt / 16.7));
+    if (mouse.force < 0.002 && !mouse.on) mouse.force = 0;
+    // A finger covers far more than a cursor tip, so on a phone the dust
+    // parts wider and further, or the effect hides under the finger.
+    const repel = narrowScreen.matches ? 130 : REPEL;
+    const push = narrowScreen.matches ? 60 : 40;
+    const pushing = !still && k < 0.2 && m === 0 && mouse.force > 0;
+    const spinSpeed = (0.00006 + k * k * 0.005) * pace;
+    spin += dt * spinSpeed;
+
+    const hb = head.getBoundingClientRect();
+    // The centre of everything is the middle of the screen, where the pinned
+    // name sits. Tying it to the name made the core ride up with the page
+    // once the hero let go.
+    const cx = w / 2;
+    const cy = h / 2;
+    // Same radius as --ring in style.css.
+    const R = narrowScreen.matches ? Math.min(w * 0.42, h * 0.36) : Math.min(w * 0.3, h * 0.42);
+    const pull = Math.pow(1 - k, 0.9);
+
+    // The name shrinks into the point and fades, without turning.
+    head.style.transform = k > 0 ? `scale(${Math.max(0.02, 1 - k)})` : '';
+    head.style.opacity = String(1 - clamp01(k * 1.25));
+
+    // Each project is a point flying in the ring's dust; its name sits
+    // outside, on clear sky, joined to the point by a thin line.
+    const marks = [];
+    if (tags.length) {
+      const hr = hero.getBoundingClientRect();
+      tags.forEach((tag, i) => {
+        const a = (i / tags.length) * Math.PI * 2 + spin * 0.9 + 0.35;
+        // Just outside the ring, and anchored on the side facing it, so the
+        // label reads against clear sky instead of over the dust: on the
+        // right of the ring it starts at the point, on the left it ends there.
+        const ca = Math.cos(a), sa = Math.sin(a);
+        const r = R * pull * 1.04 + 10;
+        const x = cx + ca * r;
+        // Kept clear of the nav at the top and on screen at the bottom.
+        // A phone has no room beside the ring but plenty above and below it,
+        // so there the names ride a taller oval that clears the dust.
+        const narrow = w - 2 * r < 300;
+        const ry = narrow ? R * pull + 70 : r;
+        let oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * ry));
+        // On a narrow screen there is no room beside the ring, so a label
+        // would cross the name. It keeps moving smoothly and fades out while
+        // it passes the name's band, rather than hopping over it.
+        const band = hb.height / 2 + 14;
+        const clear = narrow ? clamp01((Math.abs(oy) - band) / 36) : 1;
+        const tw = tag.offsetWidth;
+        const th = tag.offsetHeight;
+        const left = Math.min(w - tw - 8, Math.max(8, x - tw * (1 - ca) / 2));
+        const ly = cy + oy - th * (1 - sa) / 2 + th / 2;
+        const lx = Math.abs(left - (cx + ca * R * pull)) < Math.abs(left + tw - (cx + ca * R * pull)) ? left : left + tw;
+        // The point keeps its place on the orbit: only the dust round it
+        // parts for the cursor, so a project stays where the eye found it.
+        const px = cx + ca * R * pull, py = cy + sa * R * pull;
+        tag._ox = 0;
+        tag._oy = 0;
+        marks.push({
+          x: px + tag._ox, y: py + tag._oy, lx: lx + tag._ox, ly: ly + tag._oy,
+          on: tag.matches(':hover') || hotPoint === i, alpha: 1 - clamp01(k * 1.6), line: clear, href: tag.href,
+        });
+        tag.style.transform = `translate(${left - hr.left + (tag._ox || 0)}px, ${cy + oy - hr.top + (tag._oy || 0)}px) translate(0, ${-50 * (1 - sa)}%)`;
+        const shown = (1 - clamp01(k * 1.6)) * clear;
+        tag.style.opacity = String(shown);
+        tag.style.pointerEvents = shown > 0.4 ? 'auto' : 'none';
+        // Preview opens toward the room: down from tags in the upper half,
+        // up from tags in the lower half, so it never leaves the screen.
+        tag.classList.toggle('is-below', cy + oy < h / 2);
+        tag.classList.toggle('is-hot', hotPoint === i && shown > 0.4);
+      });
+    }
+
+    // Short trails while things move fast (the fall, the tunnel), none at
+    // rest, so the ring stays crisp.
+    const trail = still ? 0 : Math.max(k, m * (1 - e) * 0.55) * 0.55;
+    if (trail > 0.02) {
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = `rgba(${BG}, ${1 - trail})`;
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      ctx.clearRect(0, 0, w, h);
+    }
+
+    const drift = still ? 0 : time * 0.001;
+    const near = [], mid = [], far = [], accent = [], stars = [], streaks = [];
+    const ringOut = [];
+    const tcx = w / 2, tcy = h / 2;
+    const halfDiag = Math.hypot(w, h) / 2 + 20;
+    // Out of the tunnel's mouth: the walls open wide past the screen edges.
+    const wall = Math.max(w, h) * 0.55 * (1 + 3.5 * e * e);
+    // The walls do not turn: a rotating tunnel made people motion-sick.
+
+    for (const p of pts) {
+      if (p.star) {
+        // The camera flies toward the point: every star sits at a depth and
+        // rushes outward as the camera closes in, wrapping back to the far
+        // distance once it passes, so the sky stays full and turns to warp
+        // streaks at speed.
+        const z0 = 0.2 + p.v * 0.8;
+        const zc = (((z0 - cameraIn) % 1) + 1) % 1 + 0.06;
+        const rr = p.sr * halfDiag * z0 / zc * 0.9;
+        const sx = w / 2 + Math.cos(p.sa) * rr;
+        const sy2 = h / 2 + Math.sin(p.sa) * rr;
+        stars.push(sx, sy2, p.size * 0.8 * Math.min(2, z0 / zc));
+        continue;
+      }
+
+      // Ring, spiralling in faster the closer it gets.
+      p.a += dt * spinSpeed * (1 + k * (2 + p.fall * 4));
+      const r0 = p.inner ? Math.sqrt(p.u) * 0.85 : 1 + p.band * 0.09;
+      // The ring shrinks toward the point while the camera closes in on it,
+      // so at the end the point is a dense ball filling the middle.
+      const r = r0 * Math.max(0.05, Math.pow(1 - k, 0.7 + p.fall * 0.7)) * zoom;
+      let x = cx + Math.cos(p.a) * R * r;
+      let y = cy + Math.sin(p.a) * R * r;
+      let size = p.size;
+      let bucket = 0;
+      let streak = 0, dirX = 0, dirY = 0;
+
+      // Tunnel walls: a cylinder seen from inside, drawn in perspective.
+      if (m > 0) {
+        const z = ((((p.tz - cam - flow) % DEPTH) + DEPTH) % DEPTH) + 40;
+        const s = FOCUS / z;
+        const a = p.ta;
+        const txp = tcx + Math.cos(a) * wall * p.tr * s;
+        const typ = tcy + Math.sin(a) * wall * p.tr * s;
+        // Crossfade rather than morph: the ring's dust fades where it is while
+        // the tunnel fades in at its own place, so the change never passes
+        // through a muddy in-between cloud.
+        if (m < 1 && x > -4 && x < w + 4 && y > -4 && y < h + 4) ringOut.push(x, y, size);
+        x = txp;
+        y = typ;
+        size = Math.min(3.2, Math.max(0.7, 1.3 * s));
+        bucket = z < DEPTH * 0.25 ? 0 : z < DEPTH * 0.6 ? 1 : 2;
+        // Near the viewer the dust is drawn as short streaks pointing away
+        // from the centre, the way things smear past at speed.
+        streak = m * (1 - e) * Math.min(22, 5 * s);
+        dirX = Math.cos(a);
+        dirY = Math.sin(a);
+      }
+
+      if (!still && m < 1) {
+        x += Math.sin(drift + p.phase) * 1.5 * (1 - m);
+        y += Math.cos(drift * 0.8 + p.phase) * 1.5 * (1 - m);
+      }
+
+      // Only grains near the pointer, or still settling back, cost anything:
+      // with no pointer about, the whole field skips this.
+      const dx = x - mouse.x, dy = y - mouse.y;
+      if (pushing && dx < repel && dx > -repel && dy < repel && dy > -repel) {
+        const dm = Math.hypot(dx, dy);
+        let tx = 0, ty = 0;
+        if (dm < repel && dm > 0.1) {
+          // Smoothstep falloff: strongest at the pointer, fading to nothing
+          // at the edge, so the hole has no hard rim.
+          const q = 1 - dm / repel;
+          const f = q * q * (3 - 2 * q) * push * mouse.force;
+          tx = (dx / dm) * f;
+          ty = (dy / dm) * f;
+        }
+        p.ox += (tx - p.ox) * soft;
+        p.oy += (ty - p.oy) * soft;
+      } else if (p.ox !== 0 || p.oy !== 0) {
+        p.ox -= p.ox * soft;
+        p.oy -= p.oy * soft;
+        if (p.ox * p.ox + p.oy * p.oy < 0.01) { p.ox = 0; p.oy = 0; }
+      }
+      x += p.ox;
+      y += p.oy;
+
+      if (x < -4 || x > w + 4 || y < -4 || y > h + 4) continue;
+      if (streak > 3 && bucket === 0 && !still) {
+        streaks.push(x, y, x + dirX * streak, y + dirY * streak);
+        continue;
+      }
+      const list = p.accent ? accent : bucket === 0 ? near : bucket === 1 ? mid : far;
+      list.push(x, y, size);
+    }
+
+    const paint = (list, colour, alpha) => {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = colour;
+      for (let i = 0; i < list.length; i += 3) ctx.fillRect(list[i], list[i + 1], list[i + 2], list[i + 2]);
+    };
+    // The tunnel ends at "Обо мне": its dust fades out so nothing moves
+    // behind the text.
+    const fade = 1 - e;
+    paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
+    const ringFade = m > 0 ? m : 1;
+    paint(ringOut, 'rgb(236, 233, 255)', 0.85 * (1 - m));
+    paint(far, 'rgb(236, 233, 255)', 0.45 * fade * ringFade);
+    paint(mid, 'rgb(236, 233, 255)', 0.75 * fade * ringFade);
+    paint(near, 'rgb(236, 233, 255)', 0.85 * fade * ringFade);
+    paint(accent, 'rgb(214, 107, 208)', 0.95 * fade * ringFade);
+
+    lastMarks = marks;
+    marks.forEach((mk) => {
+      if (mk.alpha <= 0.01) return;
+      ctx.globalAlpha = mk.alpha * mk.line * (mk.on ? 0.9 : 0.35);
+      ctx.strokeStyle = 'rgb(214, 107, 208)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(mk.x, mk.y);
+      ctx.lineTo(mk.lx, mk.ly);
+      ctx.stroke();
+      const r = mk.on ? 9 : 6;
+      const g = ctx.createRadialGradient(mk.x, mk.y, 0, mk.x, mk.y, r * 2.4);
+      g.addColorStop(0, 'rgba(214, 107, 208, 0.55)');
+      g.addColorStop(1, 'rgba(214, 107, 208, 0)');
+      ctx.globalAlpha = mk.alpha;
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(mk.x, mk.y, r * 2.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#f7d9f5';
+      ctx.beginPath();
+      ctx.arc(mk.x, mk.y, r / 2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    if (streaks.length) {
+      ctx.globalAlpha = 0.45;
+      ctx.strokeStyle = 'rgb(236, 233, 255)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let i = 0; i < streaks.length; i += 4) {
+        ctx.moveTo(streaks[i], streaks[i + 1]);
+        ctx.lineTo(streaks[i + 2], streaks[i + 3]);
+      }
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+
+    // Each case comes out of the depth, reads at full size, and flies past
+    // the viewer.
+    if (flight) {
+      // One case at a time. A case comes up out of the depth, and once it
+      // has been read it does not fly on into the viewer: it slides up off
+      // the screen at its full size and fades, while the next one rises
+      // out of the depth behind it.
+      let ahead = 0;
+      cards.forEach((card, i) => {
+        const z = caseDepth(i) - cam;
+        let op = 0, sc = 0.1, lift = 0, gone = 0;
+        if (z >= FOCUS) {
+          sc = FOCUS / z;
+          // Hidden until the tunnel has fully formed, then grows from a speck.
+          op = clamp01((sc - 0.1) / 0.55) * clamp01((m - 0.85) / 0.15);
+        } else {
+          // Past its stop: held at full size, it moves up and fades.
+          gone = ease(clamp01((FOCUS - z) / (SPACING * 0.45)));
+          sc = 1;
+          lift = gone * h * 0.7;
+          op = (1 - gone) * clamp01((m - 0.85) / 0.15);
+        }
+        const own = op;
+        op *= (1 - ahead) * (1 - e);
+        // A case on its way in, or at its stop, keeps the ones behind it
+        // hidden; one on its way out lets the next come up as it goes.
+        ahead = Math.max(ahead, z >= FOCUS ? Math.min(1, own * 3) : (1 - gone) * (own > 0 ? 1 : 0));
+        card.style.opacity = String(op);
+        card.style.transform = `translate(-50%, calc(-50% - ${Math.round(lift)}px)) scale(${Math.min(sc, 4)})`;
+        card.style.pointerEvents = op > 0.85 ? 'auto' : 'none';
+        card.style.zIndex = String(100 - i);
+      });
+    }
+  };
+
+  const relayout = () => { layout(); placeStops(); land(); };
+  // Landing from another page's header link (index.html took the anchor
+  // off): straight to the first case, or to "Обо мне", without scrolling
+  // through everything above it. Repeated on each relayout until the page
+  // has settled, so late fonts and images cannot leave it off its mark.
+  let landing = window.landOn || '';
+  const land = () => {
+    if (!landing) return;
+    const i = landing === 'cases' ? 1 : landing === 'top' ? 0 : stops.length - 1;
+    window.scrollTo({ top: stops[i], left: 0, behavior: 'instant' });
+  };
+  window.addEventListener('load', () => setTimeout(() => { landing = ''; }, 300), { once: true });
+  relayout();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  window.addEventListener('load', relayout);
+  window.addEventListener('resize', relayout);
+
+  if (still) {
+    draw(0);
+    window.addEventListener('scroll', () => requestAnimationFrame(() => draw(0)), { passive: true });
+  } else {
+    // A slow phone gets fewer particles: if the first couple of seconds
+    // run well under 40 frames a second, the field is thinned out once.
+    let frames = 0, spent = 0, prev = 0;
+    const loop = (time) => {
+      draw(time);
+      if (frames < 150 && prev) {
+        frames++;
+        if (frames > 30) spent += time - prev;
+        if (frames === 150 && spent / 120 > 25) pts.length = Math.floor(pts.length * 0.55);
+      }
+      prev = time;
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
+}
+
+startSpace();
+
+// Case pages and the 404 share the homepage's night sky: a still field of
+// stars behind the text, drawn once (and again on resize), nothing moving
+// while the case is being read.
+if (!particleCanvas) {
+  const sky = document.createElement('canvas');
+  sky.className = 'sky';
+  sky.setAttribute('aria-hidden', 'true');
+  document.body.prepend(sky);
+  const stars = Array.from({ length: 420 }, () => ({
+    x: Math.random(), y: Math.random(), s: Math.random() < 0.85 ? 1 : 1.8, a: 0.2 + Math.random() * 0.5,
+  }));
+  const paintSky = () => {
+    // clientWidth, not innerWidth: on a phone innerWidth can report more than
+    // the screen, and a canvas that wide lets the page slide sideways.
+    const w = document.documentElement.clientWidth, h = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    sky.width = w * dpr;
+    sky.height = h * dpr;
+    const c = sky.getContext('2d');
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.fillStyle = '#ece9ff';
+    stars.forEach((st) => {
+      c.globalAlpha = st.a;
+      c.fillRect(st.x * w, st.y * h, st.s, st.s);
+    });
+  };
+  paintSky();
+  window.addEventListener('resize', paintSky);
+}
+
+// Where a case was opened from travels in its URL as ?back=<address>: the
+// homepage with its scroll position, or the previous case with its own
+// back address inside, so a chain of cases unwinds step by step. The back
+// arrow is then an ordinary link. Neither the referrer nor the history
+// stack can be trusted here: embedded previews run the site in a sandbox
+// where the referrer is blank and history entries go missing.
+const siteRoot = (() => {
+  const bare = location.href.split(/[?#]/)[0];
+  const i = bare.indexOf('/cases/');
+  return i >= 0 ? bare.slice(0, i + 1) : bare.replace(/[^/]*$/, '');
+})();
+const onSite = (href) => typeof href === 'string' && href.startsWith(siteRoot);
+const currentBack = () => {
+  const back = document.querySelector('.case-back');
+  return back ? back.href : null;
+};
+const hereAsBack = () => {
+  const url = new URL(location.href);
+  url.hash = '';
+  url.search = '';
+  if (document.body.classList.contains('case-page')) {
+    const b = currentBack();
+    if (onSite(b)) url.searchParams.set('back', b);
+  } else {
+    url.searchParams.set('y', String(Math.round(window.scrollY)));
+  }
+  return url.href;
+};
+const markCaseUrl = (href) => {
+  let url;
+  try { url = new URL(href, location.href); } catch (e) { return href; }
+  if (!/\/cases\/[^/]+\.html$/.test(url.pathname)) return href;
+  url.searchParams.set('back', hereAsBack());
+  return url.href;
+};
+document.addEventListener('click', (ev) => {
+  const a = ev.target.closest && ev.target.closest('a[href]');
+  if (!a || a.target === '_blank' || a.classList.contains('case-back')) return;
+  const marked = markCaseUrl(a.getAttribute('href'));
+  if (marked !== a.getAttribute('href')) a.href = marked;
+}, true);
+
+const dropParams = (...names) => {
+  try {
+    const url = new URL(location.href);
+    names.forEach((n) => url.searchParams.delete(n));
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+  } catch (e) { /* the address bar just keeps them */ }
+};
+
+if (document.body.classList.contains('case-page')) {
+  const target = new URLSearchParams(location.search).get('back');
+  const back = document.querySelector('.case-back');
+  if (back && onSite(target)) back.href = target;
+  dropParams('back');
+
+  // Opened by a link, a case starts at its top, whatever scroll position the
+  // browser or the preview carries over. Instant, not smooth: the page's
+  // smooth scrolling would otherwise animate it, and late restores win.
+  const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  if (!location.hash && (!nav || nav.type !== 'back_forward')) {
+    const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    toTop();
+    requestAnimationFrame(toTop);
+    window.addEventListener('load', () => { toTop(); requestAnimationFrame(toTop); }, { once: true });
+  }
+}
+
+// Back on the homepage from a case: return to the scroll position the case
+// was opened at, so the same case is on screen in the tunnel.
+if (document.body.classList.contains('home-page')) {
+  const y = Number(new URLSearchParams(location.search).get('y'));
+  if (y > 0) {
+    const go = () => window.scrollTo({ top: y, left: 0, behavior: 'instant' });
+    go();
+    window.addEventListener('load', () => { go(); requestAnimationFrame(go); }, { once: true });
+  }
+  if (new URLSearchParams(location.search).has('y')) dropParams('y');
 }

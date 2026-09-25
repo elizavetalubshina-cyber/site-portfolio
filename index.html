@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Елизавета Любшина — Product Designer</title>
-  <meta name="description" content="Product Designer в B2B и Web. Сложные инженерные сценарии → понятные интерфейсы." />
+  <title>Елизавета Любшина, Product Designer</title>
+  <meta name="description" content="Елизавета Любшина, продуктовый дизайнер с 5-летним опытом. Сложные B2B и веб-продукты: субтитры для эфира, спутниковый мониторинг, видеоаналитика, лицензирование ПО, дизайн-система." />
 
   <link rel="canonical" href="https://dizlik.ru/" />
 
   <!-- Link preview: what Telegram, LinkedIn, Slack and search results show.
-       The image lives in public/og/ and is a plain file — replace it with
-       your own 1200x630 to change the preview, no code change needed. -->
+       public/og/home.jpg is a 1200x630 shot of the first screen (ring, name,
+       topics); retake it if the hero changes. -->
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Елизавета Любшина — Product Designer" />
+  <meta property="og:site_name" content="Елизавета Любшина, Product Designer" />
   <meta property="og:locale" content="ru_RU" />
   <meta property="og:url" content="https://dizlik.ru/" />
-  <meta property="og:title" content="Елизавета Любшина — Product Designer" />
-  <meta property="og:description" content="Product Designer в B2B и Web. Сложные инженерные сценарии → понятные интерфейсы." />
+  <meta property="og:title" content="Елизавета Любшина, Product Designer" />
+  <meta property="og:description" content="Елизавета Любшина, продуктовый дизайнер с 5-летним опытом. Сложные B2B и веб-продукты: субтитры для эфира, спутниковый мониторинг, видеоаналитика, лицензирование ПО, дизайн-система." />
   <meta property="og:image" content="https://dizlik.ru/og/home.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Елизавета Любшина — Product Designer" />
+  <meta property="og:image:alt" content="Елизавета Любшина, Product Designer" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
@@ -28,19 +28,39 @@
 
   <!-- Hint the browser at the resources the hero needs before it would
        otherwise discover them: the two fonts the hero title and pitch
-       render in, and the laptop screenshot — the largest element above
-       the fold. Without this the fonts wait for style.css to be parsed,
-       and the screenshot waits for the HTML parser to reach it in the
-       body, both later than necessary. -->
+       render in. Without this they wait for style.css to be parsed. -->
   <link rel="preload" href="/fonts/unbounded-800-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/manrope-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="/src/assets/vs-subtitles-onair.webp" as="image" />
 
+  <!-- The animated layout is only switched on with scripting; if main.js
+       never starts, the page falls back to a plain one (see style.css). -->
+  <script>
+    document.documentElement.classList.add('js');
+    // Arriving from a case page's header (/#cases, /#about, /#contacts):
+    // the browser would scroll smoothly down to the anchor and play the
+    // whole fall and flight on the way, flashing the cases past. The anchor
+    // is taken off before the page renders and main.js lands on the right
+    // place at once instead.
+    if (/^#(cases|about|contacts|top)$/.test(location.hash)) {
+      window.landOn = location.hash.slice(1);
+      history.replaceState(history.state, '', location.pathname + location.search);
+    }
+    window.addEventListener('load', function () {
+      if (window.spaceStarted) return;
+      document.documentElement.classList.remove('js');
+      var t = document.getElementById('tunnel');
+      if (t) t.classList.remove('tunnel--flight');
+    });
+  </script>
   <link rel="stylesheet" href="/src/style.css" />
   <script type="module" src="/src/main.js"></script>
 </head>
 <body class="home-page">
   <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <!-- Particle field behind the whole homepage: a ring around the name that
+       falls into a point, opens into a tunnel with the cases and fades out
+       by "Обо мне" (main.js). Decorative. -->
+  <canvas class="particles" id="particles" aria-hidden="true"></canvas>
 
   <header class="nav">
     <div class="nav__shell">
@@ -70,137 +90,180 @@
   </header>
 
   <main id="main" tabindex="-1">
-    <section class="hero container" id="top">
-      <img class="hero__float hero__float--figma" src="/src/assets/hero-icon-figma.webp" alt="" aria-hidden="true" width="120" height="176" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--air" src="/src/assets/hero-icon-air.webp" alt="" aria-hidden="true" width="260" height="181" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--poppup" src="/src/assets/hero-icon-poppup.webp" alt="" aria-hidden="true" width="380" height="312" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--dashboard" src="/src/assets/hero-icon-dashboard.webp" alt="" aria-hidden="true" width="300" height="253" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--earth" src="/src/assets/hero-icon-earth.webp" alt="" aria-hidden="true" width="260" height="251" loading="eager" decoding="async" />
-      <img class="hero__float hero__float--status" src="/src/assets/hero-icon-status.webp" alt="" aria-hidden="true" width="300" height="192" loading="eager" decoding="async" />
-
-      <div class="hero__intro">
-        <h1 class="hero__title">Елизавета Любшина</h1>
-        <p class="hero__role">Product Designer&nbsp;·&nbsp;B2B&nbsp;·&nbsp;Web&nbsp;·&nbsp;5&nbsp;лет опыта</p>
-        <p class="hero__pitch">Сложные инженерные сценарии → понятные интерфейсы,<br>меньше ошибок и быстрее выполнение задач</p>
+    <!-- The hero stays pinned while this wrapper scrolls past, and that
+         scroll drives the ring into a point that pulls the name in (main.js). -->
+    <div class="intro" id="intro">
+    <section class="hero container container--wide" id="top">
+      <!-- What the work is about, flying round the ring with the particles.
+           Each topic opens its case and shows a preview on hover; the orbit
+           stops while one is hovered. Out of the tab order and the
+           accessibility tree: the same cases are linked in the tunnel below. -->
+      <div class="hero__orbit" id="heroOrbit" aria-hidden="true">
+        <a class="hero__orbit-tag" href="/cases/vs-subtitles.html" tabindex="-1">
+          <span class="hero__orbit-label">Телесубтитры</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/subtitles.webp" alt="" width="800" height="544" decoding="async" />
+            <span class="hero__orbit-title">VS Subtitles</span>
+            <span class="hero__orbit-desc">Субтитры и телетекст для прямого эфира</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/satellite.html" tabindex="-1">
+          <span class="hero__orbit-label">Спутниковый мониторинг</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/satellite.webp" alt="" width="800" height="444" decoding="async" />
+            <span class="hero__orbit-title">Satellite</span>
+            <span class="hero__orbit-desc">Демо мониторинга группировок КА для выставки</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/tracktice.html" tabindex="-1">
+          <span class="hero__orbit-label">Видеоаналитика</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/tracktice.webp" alt="" width="800" height="450" decoding="async" />
+            <span class="hero__orbit-title">Tracktice Flow</span>
+            <span class="hero__orbit-desc">Админка настройки пассажиропотока</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/vs-ecosystem.html" tabindex="-1">
+          <span class="hero__orbit-label">Лицензирование ПО</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/ecosystem.webp" alt="" width="800" height="442" decoding="async" />
+            <span class="hero__orbit-title">VS Ecosystem</span>
+            <span class="hero__orbit-desc">Лицензирование ПО в закрытом контуре</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
+        <a class="hero__orbit-tag" href="/cases/design-system.html" tabindex="-1">
+          <span class="hero__orbit-label">Дизайн-система</span>
+          <span class="hero__orbit-preview">
+            <img src="/src/assets/hero/design-system.webp" alt="" width="800" height="423" decoding="async" />
+            <span class="hero__orbit-title">Дизайн-система</span>
+            <span class="hero__orbit-desc">UI-kit, компоненты и правила консистентности</span>
+            <span class="hero__orbit-more">Смотреть кейс →</span>
+          </span>
+        </a>
       </div>
 
-      <div class="showcase">
-        <div class="laptop">
-          <div class="laptop__body">
-            <div class="laptop__screen">
-              <!-- Largest element above the fold on the homepage, so this is
-                   what Largest Contentful Paint is measured against. The
-                   explicit hint is kept by scripts/optimize-images.mjs, which
-                   only fills in loading attributes where there are none. -->
-              <img class="tv__bg" src="/src/assets/vs-subtitles-onair.webp" alt="Интерфейс VS Subtitles" width="1920" height="1080" fetchpriority="high" />
-
-              <div class="tv__video-frame">
-                <video class="tv__video" id="catVideo" autoplay muted loop playsinline>
-                  <source src="/src/assets/cat-video.mp4" type="video/mp4" />
-                </video>
-                <p class="tv__caption" id="catCaption"></p>
-              </div>
-
-              <div class="tv__stopbar">
-                <span class="tv__live-timecode" id="catTimecode">00:00:00:00</span>
-              </div>
-
-              <span class="tv__subs-toggle" aria-hidden="true"><span class="tv__subs-toggle-knob"></span></span>
-
-              <div class="tv__cues-mask">
-                <ul class="tv__cues" id="catCues"></ul>
-                <p class="tv__cue-counter" id="catCueCounter"></p>
-              </div>
-            </div>
+      <!-- Phone: a tap on a project opens this card first instead of leaving
+           the page straight away. Filled from the tapped project by main.js. -->
+      <div class="case-sheet" id="caseSheet" role="dialog" aria-modal="true" aria-labelledby="caseSheetTitle" hidden>
+        <button class="case-sheet__backdrop" type="button" aria-label="Закрыть" data-close></button>
+        <div class="case-sheet__card">
+          <span class="case-sheet__handle" aria-hidden="true"></span>
+          <div class="case-sheet__media">
+            <img class="case-sheet__img" src="" alt="" width="800" height="500" />
+            <span class="case-sheet__tags case-chips"></span>
           </div>
-          <div class="laptop__tooltip">
-            <p class="laptop__tooltip-title">VS Subtitles</p>
-            <p class="laptop__tooltip-desc">Субтитры и телетекст для прямого эфира</p>
-            <a class="btn laptop__tooltip-cta" href="/cases/vs-subtitles.html">Подробнее о кейсе</a>
+          <p class="case-sheet__title" id="caseSheetTitle"></p>
+          <p class="case-sheet__desc"></p>
+          <p class="case-sheet__company"></p>
+          <a class="btn btn--fill case-sheet__go" href="#">Перейти к кейсу</a>
+        </div>
+      </div>
+
+      <div class="hero__head">
+        <h1 class="hero__title">Елизавета Любшина</h1>
+        <p class="hero__role"><span>Product Designer</span><span>B2B</span><span>Web</span><span>5&nbsp;лет опыта</span></p>
+      </div>
+    </section>
+    </div>
+
+    <section class="cases container container--wide" id="cases">
+      <h2>Кейсы</h2>
+
+      <!-- A tunnel of particles past the point. The stage stays pinned while
+           this block scrolls by, and the scroll flies through the tunnel,
+           bringing the cases up out of its depth one at a time (main.js).
+           The flight is switched on right here, before the first paint;
+           without scripting the cases are an ordinary list. -->
+      <div class="tunnel" id="tunnel">
+        <script>document.getElementById('tunnel').classList.add('tunnel--flight');</script>
+        <div class="tunnel__stage">
+          <article class="tunnel__case tunnel__case--left">
+          <a class="tunnel__cover" href="/cases/vs-subtitles.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/vs-subtitles/cover.webp" alt="" width="2304" height="1567" loading="lazy" decoding="async" />
+            <span class="tunnel__tags case-chips"><span class="tunnel__tag">B2B</span><span class="tunnel__tag">Web</span></span>
+          </a>
+          <div class="tunnel__text">
+            <p class="tunnel__index">01 / 05</p>
+            <h3 class="tunnel__title"><a href="/cases/vs-subtitles.html">VS Subtitles</a></h3>
+            <p class="tunnel__desc">Субтитры и телетекст для прямого эфира</p>
+            <p class="tunnel__stats">−35% времени подготовки, −25% на сравнение версий</p>
+            <p class="tunnel__company">Vidau Systems</p>
+            <a class="btn tunnel__more" href="/cases/vs-subtitles.html">Подробнее о кейсе</a>
           </div>
+          </article>
+          <article class="tunnel__case tunnel__case--right">
+          <a class="tunnel__cover" href="/cases/satellite.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/satellite/cover.webp" alt="" width="1600" height="889" loading="lazy" decoding="async" />
+            <span class="tunnel__tags case-chips"><span class="tunnel__tag">B2B</span><span class="tunnel__tag">Web</span></span>
+          </a>
+          <div class="tunnel__text">
+            <p class="tunnel__index">02 / 05</p>
+            <h3 class="tunnel__title"><a href="/cases/satellite.html">Satellite</a></h3>
+            <p class="tunnel__desc">Демо мониторинга группировок КА для выставки</p>
+            <p class="tunnel__stats">работало на стенде выставки</p>
+            <p class="tunnel__company">Sofikom</p>
+            <a class="btn tunnel__more" href="/cases/satellite.html">Подробнее о кейсе</a>
+          </div>
+          </article>
+          <article class="tunnel__case tunnel__case--left">
+          <a class="tunnel__cover" href="/cases/tracktice.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/tracktice/cover.webp" alt="" width="2304" height="1296" loading="lazy" decoding="async" />
+            <span class="tunnel__tags case-chips"><span class="tunnel__tag">B2B</span><span class="tunnel__tag">Web</span></span>
+          </a>
+          <div class="tunnel__text">
+            <p class="tunnel__index">03 / 05</p>
+            <h3 class="tunnel__title"><a href="/cases/tracktice.html">Tracktice Flow</a></h3>
+            <p class="tunnel__desc">Админка настройки пассажиропотока</p>
+            <p class="tunnel__stats">внедрён и работает в эксплуатации</p>
+            <p class="tunnel__company">Tracktice</p>
+            <a class="btn tunnel__more" href="/cases/tracktice.html">Подробнее о кейсе</a>
+          </div>
+          </article>
+          <article class="tunnel__case tunnel__case--right">
+          <a class="tunnel__cover" href="/cases/vs-ecosystem.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/vs-ecosystem/Cover.webp" alt="" width="2304" height="1274" loading="lazy" decoding="async" />
+            <span class="tunnel__tags case-chips"><span class="tunnel__tag">B2B</span><span class="tunnel__tag">Web</span></span>
+          </a>
+          <div class="tunnel__text">
+            <p class="tunnel__index">04 / 05</p>
+            <h3 class="tunnel__title"><a href="/cases/vs-ecosystem.html">VS Ecosystem</a></h3>
+            <p class="tunnel__desc">Лицензирование ПО в закрытом контуре</p>
+            <p class="tunnel__stats">дизайн согласован и готов к разработке</p>
+            <p class="tunnel__company">Vidau Systems</p>
+            <a class="btn tunnel__more" href="/cases/vs-ecosystem.html">Подробнее о кейсе</a>
+          </div>
+          </article>
+          <article class="tunnel__case tunnel__case--left">
+          <a class="tunnel__cover" href="/cases/design-system.html" tabindex="-1" aria-hidden="true">
+            <img src="/src/assets/cases/design-system/Cover.webp" alt="" width="2304" height="1218" loading="lazy" decoding="async" />
+            <span class="tunnel__tags case-chips"><span class="tunnel__tag">Дизайн-система</span><span class="tunnel__tag">Enterprise</span></span>
+          </a>
+          <div class="tunnel__text">
+            <p class="tunnel__index">05 / 05</p>
+            <h3 class="tunnel__title"><a href="/cases/design-system.html">Дизайн-система</a></h3>
+            <p class="tunnel__desc">UI-kit, компоненты и правила консистентности</p>
+            <p class="tunnel__stats">≈30 компонентов, общая основа для всей линейки</p>
+            <p class="tunnel__company">Vidau Systems</p>
+            <a class="btn tunnel__more" href="/cases/design-system.html">Подробнее о кейсе</a>
+          </div>
+          </article>
         </div>
       </div>
     </section>
 
-    <section class="cases container" id="cases">
-      <h2>Кейсы</h2>
-      <div class="cases__grid">
-
-        <a class="case case--hero case--media-subtitles" href="/cases/vs-subtitles.html">
-          <div class="case__media"><img src="/src/assets/cases/vs-subtitles/cover.webp" alt="Интерфейс VS Subtitles" width="2304" height="1567" loading="lazy" decoding="async" /></div>
-          <div class="case__body">
-            <h3>VS Subtitles</h3>
-            <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
-            <div class="case__meta">
-              <p class="case__stats">−35% времени подготовки, −25% на сравнение версий</p>
-              <p class="case__company">Vidau Systems</p>
-            </div>
-          </div>
-          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
-        </a>
-
-        <a class="case case--wide case--media-satellite" href="/cases/satellite.html">
-          <div class="case__media"><img src="/src/assets/cases/satellite/cover.webp" alt="Интерфейс Satellite" width="1600" height="889" loading="lazy" decoding="async" /></div>
-          <div class="case__body case__body--bottom">
-            <h3>Satellite</h3>
-            <p class="case__desc">Демо мониторинга группировок КА для выставки</p>
-            <div class="case__meta">
-              <p class="case__stats">работало на стенде выставки</p>
-              <p class="case__company">Sofikom</p>
-            </div>
-          </div>
-          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
-        </a>
-
-        <a class="case case--wide case--media-tracktice" href="/cases/tracktice.html">
-          <div class="case__media"><img src="/src/assets/cases/tracktice/cover.webp" alt="Интерфейс Tracktice Flow" width="2304" height="1296" loading="lazy" decoding="async" /></div>
-          <div class="case__body case__body--bottom">
-            <h3>Tracktice Flow</h3>
-            <p class="case__desc">Админка настройки пассажиропотока</p>
-            <div class="case__meta">
-              <p class="case__stats">внедрён и работает в эксплуатации</p>
-              <p class="case__company">Tracktice</p>
-            </div>
-          </div>
-          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
-        </a>
-
-        <a class="case case--media-ecosystem" href="/cases/vs-ecosystem.html">
-          <div class="case__media"><img src="/src/assets/vs-ecosystem-keys.webp" alt="Интерфейс VS Ecosystem" width="1920" height="1888" loading="lazy" decoding="async" /></div>
-          <div class="case__body">
-            <h3>VS Ecosystem</h3>
-            <p class="case__desc">Лицензирование ПО в закрытом контуре</p>
-            <div class="case__meta">
-              <p class="case__company">Vidau Systems</p>
-            </div>
-          </div>
-          <div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div>
-        </a>
-
-        <a class="case case--broad case--media-design-system" href="/cases/design-system.html">
-          <div class="case__media"><img src="/src/assets/cases/design-system/Cover.webp" alt="Обложка дизайн-системы Vidau" width="2304" height="1218" loading="lazy" decoding="async" /></div>
-          <div class="case__body case__body--bottom">
-            <h3>Дизайн-система</h3>
-            <p class="case__desc">UI-kit, компоненты и правила консистентности</p>
-            <div class="case__meta">
-              <p class="case__stats">≈30 компонентов, общая основа для всей линейки</p>
-              <p class="case__company">Vidau Systems</p>
-            </div>
-          </div>
-          <div class="tags"><span class="tag">Дизайн-система</span><span class="tag">Enterprise</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <section class="about container" id="about">
+    <!-- "Обо мне" holds under the nav (sticky) while it comes out of the
+         tunnel's depth; the empty room after it is the scroll that takes. -->
+    <div class="outro" id="outro">
+    <section class="about container container--wide" id="about">
       <h2>Обо мне</h2>
       <div class="about__grid">
         <div class="about__text">
-          <p class="about__intro">Проектирую интерфейсы для продуктов с высокой технической сложностью: там, где пользователь профессионал, а ошибка стоит дорого.</p>
-          <p class="about__intro">Мои пользователи: редакторы субтитров, выпускающие текст в прямой эфир, инженеры спутникового мониторинга, операторы видеоаналитики. Они работают под таймингом и уже эксперты в своём деле, поэтому я начинаю не с макета, а с того, как устроена их работа.</p>
-          <p class="about__intro">Субтитровую систему подхватила на ранней стадии и довела до релиза за шесть месяцев. Телеканал работает в ней ежедневно, подготовка сюжета ускорилась примерно на треть. Дизайн-система на 30 компонентов стала общей основой для линейки продуктов компании.</p>
-          <p class="about__intro">AI встроен в мою ежедневную работу. Этот сайт я спроектировала и собрала сама, в связке с AI: от макета до деплоя.</p>
+          <p class="about__intro">Я продуктовый дизайнер с 5-летним опытом. Больше всего люблю сложные продукты, в которых нужно много думать, разбираться в логике и собирать всё в понятную систему.</p>
+          <p class="about__intro">AI стал частью моего обычного рабочего процесса. Этот сайт я тоже спроектировала и собрала сама.</p>
 
           <p class="about__meta">Москва. Предпочитаю удалёнку, рассматриваю гибрид. Открыта к предложениям.</p>
 
@@ -221,10 +284,16 @@
         </div>
       </div>
     </section>
+      <div class="outro__room" aria-hidden="true"></div>
+    </div>
   </main>
 
+  <!-- Short notice at the bottom of the screen, e.g. after the email is
+       copied (main.js). -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <footer class="footer">
-    <div class="container">© 2026 Елизавета Любшина, Product Designer</div>
+    <div class="container container--wide">© 2026 Елизавета Любшина, Product Designer</div>
   </footer>
 </body>
 </html>

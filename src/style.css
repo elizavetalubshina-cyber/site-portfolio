@@ -301,18 +301,24 @@
 }
 
 :root {
-  --bg: #ffffff;
-  --text: #12141a;
-  --text-secondary: #5b6472;
-  /* 4.5:1 on the light backgrounds this is used on (was #9aa1ac — 2.42:1,
-     barely half the minimum). Every use is on --paper or white: captions,
-     dates, table headers, the footer, the 404 list label. */
-  --text-muted: #6b7280;
-  --border: #e7e9ee;
-  --blue: #2f6bff;
+  /* Night sky across the whole site. Every colour on the pages is drawn
+     from these, so this block is the theme. --text-muted clears 4.5:1 on
+     --bg; --purple is lifted from the old #ac21a2 so it reads on the dark. */
+  --bg: #07070b;
+  --surface: #111118;
+  --surface-2: #181822;
+  --text: #f1f0f6;
+  --text-secondary: #a9a7b8;
+  --text-muted: #8a889a;
+  --border: rgba(255, 255, 255, 0.12);
+  --blue: #5b8cff;
   --green: #1fbf75;
   --red: #e6394a;
-  --purple: #ac21a2;
+  --purple: #d66bd0;
+  /* Filled buttons keep the brand purple: white on the lighter accent above
+     is only 3.1:1, on this it is 6:1. */
+  --purple-fill: #ac21a2;
+  color-scheme: dark;
   --dark-card: #16181d;
   --dark-card-2: #1d2027;
   --radius-lg: 24px;
@@ -424,10 +430,10 @@ h1, h2, h3 {
 .nav__links--right { grid-column: 3; justify-self: end; }
 
 .nav.is-scrolled .nav__inner {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(12, 12, 18, 0.6);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 30px rgba(18, 20, 26, 0.08), 0 2px 10px rgba(18, 20, 26, 0.04);
 }
 
@@ -665,430 +671,94 @@ h1, h2, h3 {
 
 /* ---------- Hero ---------- */
 
+/* The homepage runs edge to edge: hero, cases grid and about sit in a wide
+   container with a fluid side gutter instead of the 1200px column the case
+   pages keep for reading. Capped at 1920px so an ultrawide screen does not
+   stretch the cards into banners. */
+.container--wide {
+  max-width: 1920px;
+  padding: 0 var(--gutter);
+}
+.home-page {
+  --gutter: clamp(16px, 3vw, 56px);
+}
+.home-page .nav__inner {
+  max-width: 1920px;
+}
+/* Lines the nav links up with the gutter the content below uses: .nav adds
+   its own 16px around the bar, so the bar gives back the rest. */
+@media (min-width: 641px) {
+  .home-page .nav__inner {
+    padding-left: max(var(--space-2), calc(var(--gutter) - var(--space-2)));
+    padding-right: max(var(--space-2), calc(var(--gutter) - var(--space-2)));
+  }
+}
+
+/* One screen tall: the name, the role and the pitch frame a stage of case
+   covers. Rows are pinned top, middle and bottom, so the covers get the
+   bands in between regardless of window height. */
 .hero {
   position: relative;
-  text-align: center;
-  padding-top: var(--space-4);
-}
-
-/* Bounded so the centred title/role/pitch block can't drift into the
-   floating icons above and below it: on a short window (lots of browser
-   chrome eating into the viewport) 66vh would rise enough to run the
-   title into the figma icon; on a very tall one it would sink into the
-   air/dashboard icons. The floor and ceiling cap both ends while 66vh
-   still governs the common case in between. */
-.hero__intro {
-  min-height: clamp(560px, 66vh, 660px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  min-height: clamp(600px, calc(100svh - 104px), 980px);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-4);
 }
 
-/* Floating hero icons — hover near the centered text with clear air
-   around them, each gently levitating on its own out-of-sync rhythm. */
-.hero__float {
-  position: absolute;
-  z-index: 3;
-  display: block;
+/* Name and role hold the middle of the screen, centred by auto margins.
+   They stay put while the covers around them move. */
+.hero__head {
+  position: relative;
+  z-index: 2;
+  margin: auto 0;
+  text-align: center;
   pointer-events: none;
-  will-change: transform;
-  /* The source PNGs already bake in their own drop shadow/glow (see
-     Figma export), so no CSS filter here — filter: drop-shadow() on 6
-     continuously-animating elements is expensive to recomposite every
-     frame and was the main cause of scroll/animation jank. */
-  /* Shared convergence factor: 0 at a 640px viewport (as narrow as these
-     get before hiding), 1 at 1440px+. Every icon reads the SAME value,
-     so as the window shrinks they all slide toward center in lockstep —
-     since each icon's offset is a linear function of one shared value,
-     two icons that don't collide at t=0 and don't collide at t=1 can't
-     collide at any point in between either, which independent per-icon
-     clamp() curves (different rates) could not guarantee. */
-  --t: clamp(0, calc((100vw - 640px) / 800px), 1);
 }
 
-.hero__float--figma {
-  width: 60px;
-  top: 75px;
-  left: calc(50% - (110px + 280px * var(--t)));
-  animation: hero-float-figma 5.5s ease-in-out infinite;
-}
-
-.hero__float--air {
-  width: 130px;
-  top: 380px;
-  left: calc(50% + (400px + 40px * var(--t)));
-  animation: hero-float-air 6.5s ease-in-out infinite;
-  animation-delay: -1.2s;
-}
-
-.hero__float--poppup {
-  width: 190px;
-  top: 340px;
-  left: calc(50% - (590px + 20px * var(--t)));
-  animation: hero-float-poppup 7s ease-in-out infinite;
-  animation-delay: -3s;
-}
-
-.hero__float--dashboard {
-  width: 150px;
-  top: 215px;
-  left: calc(50% + (260px + 210px * var(--t)));
-  animation: hero-float-dashboard 6s ease-in-out infinite;
-  animation-delay: -2s;
-}
-
-/* Pulled up into the top-right corner, past the dashboard icon — but kept
-   well clear of the nav row above it (nav has no background of its own
-   until .is-scrolled adds the pill, so at rest there's nothing to hide
-   behind). */
-.hero__float--earth {
-  width: 130px;
-  top: 65px;
-  left: calc(50% + (330px + 220px * var(--t)));
-  animation: hero-float-earth 7.5s ease-in-out infinite;
-  animation-delay: -4s;
-}
-
-.hero__float--status {
-  width: 150px;
-  top: 215px;
-  left: calc(50% - (360px + 270px * var(--t)));
-  animation: hero-float-status 6.2s ease-in-out infinite;
-  animation-delay: -5s;
-}
-
-@keyframes hero-float-figma {
-  0%, 100% { transform: rotate(-12deg) translateY(0); }
-  50% { transform: rotate(-12deg) translateY(-16px); }
-}
-@keyframes hero-float-air {
-  0%, 100% { transform: rotate(6deg) translateY(0); }
-  50% { transform: rotate(6deg) translateY(-14px); }
-}
-@keyframes hero-float-poppup {
-  0%, 100% { transform: rotate(-5deg) translateY(0); }
-  50% { transform: rotate(-5deg) translateY(-18px); }
-}
-@keyframes hero-float-dashboard {
-  0%, 100% { transform: rotate(8deg) translateY(0); }
-  50% { transform: rotate(8deg) translateY(-15px); }
-}
-@keyframes hero-float-earth {
-  0%, 100% { transform: rotate(-14deg) translateY(0); }
-  50% { transform: rotate(-14deg) translateY(-12px); }
-}
-@keyframes hero-float-status {
-  0%, 100% { transform: rotate(5deg) translateY(0); }
-  50% { transform: rotate(5deg) translateY(-13px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__float { animation: none; }
-}
-
-.hero__title {
-  font-size: 60px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.05;
-  white-space: nowrap;
-}
-
+/* The parts of the role are set apart by short upright rules instead of
+   middle dots. */
 .hero__role {
-  margin: var(--space-3) 0 var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: var(--space-2);
+  row-gap: var(--space-half);
+  margin: var(--space-3) 0 0;
   font-size: 18px;
   font-weight: 600;
   color: var(--text);
 }
 
-.hero__pitch {
-  margin: 0 auto;
-  max-width: 560px;
-  font-size: 17px;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-/* ---------- Showcase / laptop ---------- */
-
-.showcase {
-  margin-top: var(--space-7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-}
-
-.laptop {
-  position: relative;
-  /* Wider than .hero__title on purpose: the screenshot is a dense 1920x1080
-     UI, and every extra pixel of render width helps the small in-image text
-     stay legible. 1000px is close to the ceiling — the tooltip card hangs
-     5.3% past the laptop's left edge, and beyond ~1040px that overhang
-     would clear the 1200px container's padding and clip/scroll sideways. */
-  width: 1000px;
-  max-width: 100%;
-}
-
-/* Same volumetric-badge feel as the original plashka.png: soft white
-   gradient card with a gentle shadow, instead of a flat pill. */
-.laptop__tooltip {
-  position: absolute;
-  top: -14.222%;
-  left: -5.333%;
-  z-index: 3;
-  width: max-content;
-  max-width: 40%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  /* No flex gap: it stacked with the button's own margin and the two on-scale
-     values compounded into 12px, the one spacing on the site that was not a
-     multiple of the 8px step. The two gaps are set on the children instead. */
-  padding: var(--space-2);
-  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-md);
-  box-shadow: 0 2px 4px rgba(18, 20, 26, 0.08), 0 24px 44px -14px rgba(18, 20, 26, 0.5);
-}
-.laptop__tooltip-title {
+/* Sized to the width, not to a fixed step: "Елизавета Любшина" in Unbounded
+   800 is 13.9 em wide, so this makes the name span the full column at any
+   window size between a laptop and a 1920px monitor. */
+.hero__title {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-}
-.laptop__tooltip-desc {
-  margin: var(--space-half) 0 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--text-secondary);
-}
-.laptop__tooltip-cta {
-  margin-top: var(--space-2);
+  font-size: min(calc((100vw - 2 * var(--gutter)) / 13.9), 132px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
   white-space: nowrap;
+  will-change: transform;
 }
 
-.laptop__screen {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  border-radius: 14px;
-  border: 10px solid #1a1c22;
-  overflow: hidden;
-  background: #0e1116;
-  box-shadow: 0 20px 40px -12px rgba(20, 22, 30, 0.35);
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-  text-align: left;
-  container-type: inline-size;
+.hero__role span + span::before {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 0.9em;
+  margin-right: var(--space-2);
+  vertical-align: -0.1em;
+  background: var(--purple);
+  opacity: 0.8;
 }
-
-.tv__bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-}
-
-/* Coordinates below are percentages measured from the real
-   vs-subtitles-screen.png (1920x1080) so overlays line up with
-   the actual interface underneath.
-
-   Everything in this .tv__ block is deliberately outside the --space
-   scale: these values reproduce the VS Subtitles interface itself, not
-   this site's layout, and they are driven by container queries against
-   the screenshot's own proportions. Putting layout tokens here would
-   break the alignment with the image underneath. */
-
-.tv__video-frame {
-  /* Figma layer: X 0, Y 112, W 959, H 662.04 on a 1920x1080 frame */
-  position: absolute;
-  left: 0%;
-  top: 10.37%;
-  width: 49.948%;
-  height: 61.3%;
-  overflow: hidden;
-  background: #000;
-}
-.tv__video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.tv__caption {
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  bottom: 5%;
-  margin: 0;
-  text-align: center;
-  font-size: clamp(9px, 2.1cqw, 13px);
-  font-weight: 600;
-  color: #cccccc;
-  background: #0a0c10;
-  padding: 4px 8px;
-  border-radius: 0;
-  min-height: 1em;
-  transition: opacity 0.15s ease;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.tv__caption.is-empty {
-  background: transparent;
-  padding: 0;
-  min-height: 0;
-}
-
-/* Masked over the real "00:21:35:01" readout only — the real
-   "☐ Остановить" button label to the left is left untouched. */
-.tv__stopbar {
-  position: absolute;
-  left: 7.8%;
-  top: 72.7%;
-  width: 5.1%;
-  height: 3.3%;
-  background: #333333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.tv__live-timecode {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 600;
-  color: #cccccc;
-  font-size: clamp(6.5px, 1cqw, 10px);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  transform: translateY(1px);
-}
-
-/* Masked over the real "Субтитры" toggle, forced to its ON state
-   (the real screenshot happened to capture it switched off). */
-.tv__subs-toggle {
-  position: absolute;
-  left: 39.3%;
-  top: 73.8%;
-  width: 2.03%;
-  height: 1.94%;
-  background: #0066aa;
-  border-radius: 999px;
-}
-.tv__subs-toggle-knob {
-  position: absolute;
-  top: 12%;
-  bottom: 12%;
-  right: 8%;
-  aspect-ratio: 1;
-  background: #cccccc;
-  border-radius: 50%;
-}
-
-.tv__cues-mask {
-  position: absolute;
-  left: 66.7%;
-  top: 11.1%;
-  width: 33.3%;
-  height: 88.9%;
-  background: #222222;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.tv__cue-counter {
-  flex-shrink: 0;
-  margin: 0;
-  padding: 2% 1.25% 2% 2.5%;
-  font-family: 'PT Root UI', -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-weight: 500;
-  font-size: clamp(6px, 0.85cqw, 8px);
-  background: #333333;
-  /* #999 on #333 is what the real editor uses, but it lands at 4.43:1 — just
-     under the 4.5 minimum, and this is 8px text. Four steps lighter clears it
-     at 4.66 without changing how the mock reads. */
-  color: #9d9d9d;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.tv__cues {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.tv__cue {
-  font-size: clamp(9px, 1.5cqw, 13px);
-  line-height: 1.4;
-  background: #333333;
-  color: #cccccc;
-  padding: 4% 5%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.tv__cue-num {
-  display: block;
-  font-family: 'Open Sans', sans-serif;
-  font-size: clamp(6px, 0.85cqw, 8px);
-  color: #9d9d9d;  /* 4.66:1 on the #333 panel; #999 was 4.43 */
-  font-weight: 600;
-  margin-bottom: 0.5em;
-}
-.tv__cue-text {
-  display: -webkit-box;
-  /* 3, not 2: at the bigger type scale the longest authored line (~44
-     chars) can itself wrap once inside the narrow cues column, so a
-     2-line cue needs up to 3 rendered rows to avoid clipping its second
-     authored line off with an ellipsis. */
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.tv__cue-meta {
-  display: none;
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 600;
-  font-size: clamp(6px, 0.85cqw, 8px);
-  color: #666666;
-  margin-bottom: 0.5em;
-  font-variant-numeric: tabular-nums;
-}
-
-.tv__cue--released {
-  background: #222222;
-  color: #666666;
-}
-.tv__cue--released .tv__cue-meta { display: block; }
-.tv__cue--released strong { display: none; }
-
-.tv__cue--active {
-  background: #1f5c37;
-  color: #d7f5e2;
-}
-.tv__cue--active strong { color: #9fe8bb; }
 
 /* ---------- Cases ---------- */
 
 .cases { margin-top: var(--space-12); }
 .cases h2 { font-size: 32px; margin-bottom: var(--space-3); }
-
-.cases__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(280px, auto);
-  gap: var(--space-2);
-}
 
 .case {
   position: relative;
@@ -1275,14 +945,15 @@ h1, h2, h3 {
    ever been applied to one case, so the same badge was two different colours
    depending on which page you had opened. */
 .tag {
-  background: linear-gradient(180deg, #fef4fd 0%, #f3c9ec 100%);
-  color: var(--text);
-  font-size: 11px;
+  /* One chip across the site: the same as the chips on the homepage covers. */
+  background: rgba(10, 10, 16, 0.72);
+  color: #f1f0f6;
+  font-size: 13px;
   font-weight: 500;
+  line-height: 1.4;
   padding: var(--space-half) var(--space-2);
-  border-radius: 14px;
-  border: 1px solid rgba(172, 33, 162, 0.25);
-  box-shadow: 0 1px 2px rgba(172, 33, 162, 0.08), 0 10px 20px -8px rgba(172, 33, 162, 0.35);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 /* On the bento cards the badge stays white. It sits on top of a product
    screenshot there rather than on the page, and the pink would start competing
@@ -1290,9 +961,10 @@ h1, h2, h3 {
    be doing the talking. Both the grid on the homepage and the "другие кейсы"
    strip at the foot of each case use .tags, so this covers every card. */
 .tags .tag {
-  background: linear-gradient(180deg, #ffffff 0%, #f2f3f6 100%);
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 2px rgba(18, 20, 26, 0.05), 0 10px 20px -8px rgba(18, 20, 26, 0.35);
+  background: rgba(10, 10, 16, 0.7);
+  border-color: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* ---------- About ---------- */
@@ -1372,7 +1044,7 @@ h1, h2, h3 {
 }
 
 .btn--fill {
-  background: var(--purple);
+  background: var(--purple-fill);
   color: #fff;
   border-color: transparent;
   box-shadow: 0 12px 24px -8px rgba(172, 33, 162, 0.35);
@@ -1428,8 +1100,10 @@ h1, h2, h3 {
 .about__photo {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3.4;
-  background: #f1f2f5;
+  /* Wide enough that the photo ends about where the short text column does,
+     so neither side leaves a tall empty gap. */
+  aspect-ratio: 16 / 10;
+  background: var(--surface);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -1688,48 +1362,428 @@ h1, h2, h3 {
 
 /* ---------- Responsive ---------- */
 
-/* The icons sit at a distance from the page centre that shrinks with the
-   viewport, but not fast enough: solving the position of the outermost one
-   (earth, which also gains ~13px of bounding box from its rotation) against
-   the viewport edge gives a right edge of 473px + 220px x t past centre, so it
-   only clears the edge from about 1320px up. Below that the page could be
-   dragged sideways — 47px at 1101px wide, 7px at 1280px.
+/* ---------- Space homepage ---------- */
 
-   Clipping was the obvious fix and does not work here: overflow on body is not
-   propagated to the viewport, and on the root it still left the page
-   scrollable. So the icons simply stop at the width where their own geometry
-   stops fitting. Everything below that is the hero without its decorative
-   layer, which is what it already looked like on tablets. */
-@media (max-width: 1319px) {
-  .hero__float { display: none; }
-  /* The 66vh the intro reserves is room for those floating icons to hover in.
-     With the icons gone the reservation is just empty screen — on a 844px-tall
-     phone it centred 274px of text inside 557px, so the first thing below the
-     name was ~140px of nothing, then another ~140px before the laptop. The text
-     now sets its own height and --space-7 above the showcase does the spacing. */
-  .hero__intro { min-height: 0; }
+/* Fixed behind everything on the homepage; the page content stacks above it.
+   Drawn by main.js. */
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.sky {
+  position: fixed;
+  inset: 0;
+  display: block;
+  max-width: 100%;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+main,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* The ring's radius, shared with main.js (keep the two in step): a third of
+   the width on a wide screen, a larger share on a phone where the ring has
+   to hold the name on its own. */
+.home-page { --ring: min(30vw, 42vh); }
+@media (max-width: 900px) {
+  .home-page { --ring: min(42vw, 36vh); }
+}
+
+@media all {
+  /* The nav bar is an invisible strip across the top of the first screen,
+     right where the top of the ring runs, so it would swallow the hover of
+     a topic passing under it. Only the links themselves take the pointer;
+     the hidden logo takes nothing until it shows. */
+  /* The nav floats over the page instead of taking room above it. In flow
+     it pushed the pinned hero ~70px down, so the first bit of scroll only
+     slid the ring up to the centre before the fall could start. */
+  .home-page .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+
+  .home-page .nav,
+  .home-page .nav__shell,
+  .home-page .nav__inner { pointer-events: none; }
+  .home-page .nav a,
+  .home-page .nav button,
+  .home-page .nav.is-open .nav__shell { pointer-events: auto; }
+  .home-page .nav:not(.is-scrolled) .logo { pointer-events: none; }
+
+  .home-page .nav.is-scrolled .nav__inner { pointer-events: auto; }
+
+  /* The pinned hero: this wrapper is taller than the screen, the hero sticks
+     while it scrolls past, and that distance is the fall into the hole. */
+  /* clip, not hidden: it keeps orbit labels and the glow behind case text
+     from widening the page on a phone without turning main into a scroll
+     box, which would break the sticky hero inside it. */
+  .intro { height: 210vh; }
+  .home-page main { overflow-x: clip; }
+  .intro .hero {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .hero__head { will-change: transform, opacity; }
+
+  /* The name sits inside the ring on one line, so the topics orbiting it
+     never pass behind the letters. Sized off the same radius main.js draws
+     the ring with, min(30vw, 42vh): the name is 13.9em wide, so 0.125 of
+     the radius keeps it to ~1.75 radii, inside the circle with air to spare. */
+  .hero__title {
+    font-size: calc(var(--ring) * 0.125);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .hero__orbit {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  /* Small caps in a monospace face, square bullet in the accent: reads as an
+     annotation drifting with the dust. Positioned every frame from main.js. */
+  .hero__orbit-tag {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: var(--space-half) var(--space-1);
+    border-radius: 6px;
+    /* A patch of night behind the name, for the spots on a phone where it
+       has to cross the ring's dust. */
+    background: rgba(7, 7, 11, 0.72);
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0;
+    pointer-events: auto;
+    will-change: transform, opacity;
+    transition: background-color 0.2s ease;
+  }
+  .hero__orbit-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  /* The point for each project is drawn on the ring by main.js. */
+
+  /* Preview card: cover, name, one line on what it is, and the way in.
+     Opens above the tag, or below it for tags in the upper half of the
+     screen, so it always has room. */
+  .hero__orbit-preview {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + var(--space-1));
+    width: 280px;
+    padding: var(--space-1) var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    background: rgba(18, 18, 26, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 30px 80px -30px rgba(214, 107, 208, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 8px) scale(0.96);
+    transform-origin: bottom center;
+    transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 0.7, 0.3, 1), visibility 0s linear 0.35s;
+  }
+  .hero__orbit-tag.is-below .hero__orbit-preview {
+    bottom: auto;
+    top: calc(100% + var(--space-1));
+    transform-origin: top center;
+  }
+  .hero__orbit-preview img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+    border-radius: var(--radius-sm);
+  }
+  .hero__orbit-title {
+    display: block;
+    margin: var(--space-2) var(--space-1) var(--space-half);
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .hero__orbit-desc {
+    display: block;
+    margin: 0 var(--space-1);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+  }
+  .hero__orbit-more {
+    display: block;
+    margin: var(--space-1) var(--space-1) 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--purple);
+  }
+  /* .is-hot: the cursor is on the project's point on the ring (main.js),
+     which opens the same preview as its name. */
+  .hero__orbit-tag:hover,
+  .hero__orbit-tag.is-hot { background: rgba(214, 107, 208, 0.14); z-index: 2; }
+  .hero__orbit-tag:hover .hero__orbit-preview,
+  .hero__orbit-tag.is-hot .hero__orbit-preview {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0) scale(1);
+    transition-delay: 0s;
+  }
+
+  /* ---------- Cases in the tunnel ---------- */
+
+  /* The heading stays for the anchor and for screen readers; on screen the
+     tunnel itself says what this is. */
+  .cases { margin-top: 0; }
+  .cases > h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .tunnel { display: block; }
+
+  /* Shared card look: cover and text side by side. */
+  .tunnel__case {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: clamp(32px, 4vw, 72px);
+    align-items: center;
+  }
+  .tunnel__case--right { grid-template-columns: 5fr 7fr; }
+  .tunnel__case--right .tunnel__cover { order: 2; }
+
+  .tunnel__cover {
+    position: relative;
+    display: block;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: #111118;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 40px 120px -40px rgba(214, 107, 208, 0.45);
+    transition: box-shadow 0.4s ease;
+  }
+  .tunnel__cover img {
+    display: block;
+    width: 100%;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tunnel__cover:hover {
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.16),
+        0 50px 140px -40px rgba(214, 107, 208, 0.65);
+    }
+  }
+
+  .tunnel__index {
+    margin: 0 0 var(--space-2);
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--purple);
+  }
+  .tunnel__title {
+    margin: 0 0 var(--space-2);
+    font-size: clamp(32px, 3.4vw, 56px);
+    line-height: 1.05;
+  }
+  .tunnel__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .tunnel__title a::after {
+    content: ' →';
+    color: var(--purple);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tunnel__title a:hover::after { opacity: 1; }
+  }
+  .tunnel__desc {
+    margin: 0 0 var(--space-2);
+    max-width: 440px;
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  .tunnel__stats {
+    margin: 0 0 var(--space-3);
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+  .tunnel__company {
+    margin: var(--space-2) 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .tunnel__tag {
+    padding: var(--space-half) var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Flight: the stage is pinned for as long as the tunnel block scrolls by
+     (one screen per case plus the entry), and main.js moves each case from
+     the depth of the tunnel toward the viewer by scaling it. */
+  .tunnel--flight { height: 300vh; }
+  /* Fixed, not sticky: a sticky stage still slides with the page until it
+     pins, and holding the cases still against that from script lags a frame
+     behind the scroll, which made them jump. The tunnel block only supplies
+     the scroll length. */
+  .tunnel--flight .tunnel__stage {
+    position: fixed;
+    inset: 0;
+    height: 100vh;
+    pointer-events: none;
+  }
+  .tunnel--flight .tunnel__case {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(1120px, 80vw);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.2);
+    will-change: transform, opacity;
+  }
+  /* In the tunnel a case is just a large picture, its name and one line
+     on what it is, stacked and centred. */
+  .tunnel--flight .tunnel__case,
+  .tunnel--flight .tunnel__case--right {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    justify-items: center;
+    text-align: center;
+    width: min(1320px, 88vw, calc(72vh * 1.6));
+  }
+  .tunnel--flight .tunnel__case--right .tunnel__cover { order: 0; }
+  .tunnel--flight .tunnel__cover {
+    width: 100%;
+  }
+  .tunnel--flight .tunnel__cover img {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+  }
+  .tunnel--flight .tunnel__index,
+  .tunnel--flight .tunnel__stats { display: none; }
+  /* Name with its tag chips to the right, then the description, then the
+     company. */
+  .tunnel--flight .tunnel__company { text-align: center; }
+  /* Secondary, in the same frosted glass as the nav's burger: the case's
+     cover and name lead, the button only confirms the way in. */
+  .tunnel__more {
+    margin-top: var(--space-3);
+    font-size: 15px;
+    padding: 12px var(--space-4);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tunnel__more:hover { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.24); }
+  }
+
+  .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
+  /* Room after the last case for the flight out of the tunnel, then the
+     about section held in place (sticky, so no scripted repositioning that
+     lags the scroll) while it grows in, then scrolled on as usual. */
+  /* Pulled up into the tunnel's last stretch: "Обо мне" starts to grow
+     as the walls clear, with no empty scroll in between. */
+  /* Where "Обо мне" is held. main.js sets the exact value (the middle of
+     the room between the nav and the footer) and the room's height after
+     it; these are the fallbacks until it runs. */
+  .home-page { --about-top: 112px; }
+  @media (min-width: 901px) {
+    .home-page { --about-top: clamp(128px, calc(50vh - 230px), 40vh); }
+  }
+  .home-page .cases:has(.tunnel--flight) + .outro { margin-top: calc(var(--about-top) - 65vh); }
+  .home-page .cases:has(.tunnel--flight) + .outro .about {
+    position: sticky;
+    top: var(--about-top);
+    margin-top: 0;
+  }
+  .home-page .cases:has(.tunnel--flight) + .outro .outro__room { height: 25vh; }
+  /* The contacts are the last thing on the homepage: no footer line under
+     them, "Обо мне" is the page's closing screen. */
+  .home-page .footer { display: none; }
+  .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
+  .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
+
+  /* A soft pool of night behind the case, so the streaks flying past do not
+     run through the text. */
+  .tunnel--flight .tunnel__case::before {
+    content: '';
+    position: absolute;
+    inset: -12% -8%;
+    z-index: -1;
+    background: radial-gradient(closest-side, rgba(7, 7, 11, 0.92), rgba(7, 7, 11, 0.7) 60%, rgba(7, 7, 11, 0));
+  }
+
+  .about { margin-top: var(--space-8); }
+
+  /* Without scripting (or if main.js fails) there is no ring and no
+     flight: the hero is one screen with the name, and the cases are an
+     ordinary list below it. */
+  html:not(.js) .intro { height: auto; }
+  html:not(.js) .hero__orbit { display: none; }
+  .tunnel:not(.tunnel--flight) .tunnel__case + .tunnel__case { margin-top: var(--space-10); }
+
+  /* The tunnel's links are reachable from the keyboard: focus flies the
+     camera to that case (main.js), and the ring shows where focus is. */
+  .tunnel__case a:focus-visible {
+    outline: 2px solid var(--purple);
+    outline-offset: 4px;
+  }
+}
+
+/* Phones and tablets: the same sky, fitted to the narrow screen. */
+@media (max-width: 900px) {
+  .hero__role { font-size: 13px; margin-top: var(--space-2); column-gap: var(--space-1); }
+  .hero__role span + span::before { margin-right: var(--space-1); }
+  /* No hover on touch: a tap on a topic opens its case straight away. */
+  .hero__orbit-preview { display: none; }
+
+  .tunnel__case,
+  .tunnel__case--right { grid-template-columns: 1fr; gap: var(--space-3); }
+  .tunnel__case--right .tunnel__cover { order: 0; }
+  .tunnel__title { font-size: 30px; }
+  .tunnel--flight .tunnel__case { width: 96vw; }
+  .tunnel__desc { font-size: 16px; }
 }
 
 @media (max-width: 1100px) {
-  .hero__title { font-size: 40px; white-space: normal; }
-  .showcase { flex-direction: column; gap: var(--space-3); }
-  .laptop { width: 100%; order: -1; }
-
-  /* The tooltip is a card floating over the corner of the laptop, sized at
-     40% of it. That reads on a wide screen; once the laptop itself drops to
-     full width here, 40% is still a cramped little card hanging off the
-     screenshot's corner. It stops floating and becomes a full-width block
-     instead — placed after .laptop__body in the markup, so in normal flow
-     it lands below the screenshot rather than above it. */
-  .laptop__tooltip {
-    position: static;
-    width: 100%;
-    max-width: none;
-    margin-top: var(--space-2);
-    align-items: flex-start;
-  }
-
-  .cases__grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .case--broad, .case--hero, .case--wide { grid-column: auto; grid-row: auto; }
 
   .about__grid { grid-template-columns: 1fr; }
@@ -1779,10 +1833,10 @@ h1, h2, h3 {
      box (below) so one filter covers both halves. */
   .nav.is-scrolled .nav__shell,
   .nav.is-open .nav__shell {
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(12, 12, 18, 0.6);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 30px rgba(18, 20, 26, 0.08), 0 2px 10px rgba(18, 20, 26, 0.04);
   }
   /* Taking the shell out of flow (below) leaves .nav with nothing but its
@@ -1844,9 +1898,14 @@ h1, h2, h3 {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-  /* Open, the bar is full width: the close button belongs at its start. */
+  /* The menu button sits on the right on every page, closed or open. */
+  .nav__shell { margin-left: auto; }
+  /* Closed, the hidden menu hangs off the shell; with the shell now on the
+     right it has to open leftward, or its width runs past the screen edge
+     and lets the page slide sideways. */
+  .nav:not(.is-open) .nav__menu { left: auto; right: 0; }
   .nav.is-open .nav__inner {
-    justify-content: flex-start;
+    justify-content: flex-end;
   }
   /* The wide layout frosts .nav__inner; on mobile the shell does it
      instead, so this has to be cleared or the two stack — 0.75 over 0.75
@@ -1882,3 +1941,152 @@ h1, h2, h3 {
   .logo { font-size: 13px; }
 }
 
+
+/* ---------- Phone case preview ---------- */
+
+.case-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.case-sheet[hidden] { display: none; }
+.case-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(3, 3, 6, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.case-sheet.is-open .case-sheet__backdrop { opacity: 1; }
+.case-sheet.is-dragging .case-sheet__backdrop { transition: none; }
+/* A bottom sheet, as in Yandex apps: it rises from the bottom edge, is
+   rounded on top only, and follows the finger down to be swiped away. */
+.case-sheet__card {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 12px var(--space-2) calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-radius: 24px 24px 0 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  box-shadow: 0 -20px 60px -20px rgba(214, 107, 208, 0.45);
+  text-align: center;
+  touch-action: pan-x;
+  transform: translateY(100%);
+  transition: transform 0.38s cubic-bezier(0.22, 0.7, 0.3, 1);
+}
+.case-sheet.is-open .case-sheet__card { transform: translateY(0); }
+.case-sheet.is-dragging .case-sheet__card { transition: none; }
+.case-sheet__handle {
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin: 0 auto var(--space-2);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.28);
+}
+.case-sheet__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top;
+  border-radius: var(--radius-md);
+}
+.case-sheet__title {
+  margin: 20px var(--space-1) var(--space-1);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.case-sheet__media {
+  position: relative;
+}
+.case-sheet__company {
+  margin: 0 var(--space-1) var(--space-3);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.case-sheet__desc {
+  margin: 0 var(--space-1) var(--space-1);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text);
+}
+.case-sheet__go {
+  width: 100%;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .case-sheet__card, .case-sheet__backdrop { transition: none; }
+}
+html.sheet-lock, html.sheet-lock body { overflow: hidden; }
+
+/* ---------- Toast ---------- */
+
+/* A small notice that rises from the bottom edge and goes away by itself. */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 300;
+  padding: 12px var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(24, 24, 34, 0.94);
+  color: var(--text);
+  font-size: 15px;
+  white-space: nowrap;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 16px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.toast.is-shown {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; }
+}
+
+/* Tag chips sit on the cover, bottom right: the same chips, the same size,
+   in the tunnel on every screen and in the phone preview. */
+.case-chips {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  pointer-events: none;
+}
+.case-chips .tunnel__tag {
+  padding: var(--space-half) var(--space-2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(10, 10, 16, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #f1f0f6;
+}

@@ -1793,7 +1793,12 @@ main,
   }
   .tunnel--flight .tunnel__index,
   .tunnel--flight .tunnel__stats { display: none; }
-  .tunnel--flight .tunnel__meta { justify-content: center; margin-top: var(--space-2); }
+  /* Company and tags sit right under the name, above the description. */
+  .tunnel--flight .tunnel__text { display: flex; flex-direction: column; align-items: center; }
+  .tunnel--flight .tunnel__title { order: 1; }
+  .tunnel--flight .tunnel__meta { order: 2; justify-content: center; margin: 0 0 var(--space-2); }
+  .tunnel--flight .tunnel__desc { order: 3; }
+  .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
   .tunnel--flight .tunnel__title { margin-bottom: var(--space-1); font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
 

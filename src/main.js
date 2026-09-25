@@ -457,6 +457,13 @@ function startSpace() {
     }
     // e: the tunnel letting go as "Обо мне" comes up.
     const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
+    // "Обо мне" comes out of the tunnel's depth like the cases, growing from
+    // small to full size as it rises into view.
+    if (flight && about) {
+      const ap = ease(clamp01((sy - (aboutTop - h)) / (h * 0.75)));
+      about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';
+      about.style.opacity = String(ap);
+    }
     // Camera depth in the tunnel.
     const tp = flight
       ? clamp01((sy - mStart - h * 0.25) / (tunnelTop + tunnelH - h * 0.8 - mStart - h * 0.25))
@@ -663,8 +670,9 @@ function startSpace() {
         dirY = Math.sin(a);
       }
 
-      // Faint scatter by "Обо мне".
-      if (e > 0) {
+      // Faint scatter by "Обо мне" (flow). In flight the tunnel simply ends
+      // there: its dust fades out so nothing moves behind the text.
+      if (e > 0 && !flight) {
         x += (p.u * w - x) * e;
         y += (p.v * h - y) * e;
         size += (p.size - size) * e;
@@ -707,7 +715,7 @@ function startSpace() {
       ctx.fillStyle = colour;
       for (let i = 0; i < list.length; i += 3) ctx.fillRect(list[i], list[i + 1], list[i + 2], list[i + 2]);
     };
-    const fade = 1 - e * 0.6;
+    const fade = flight ? 1 - e : 1 - e * 0.6;
     paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
     // In flow mode the ring's last dust fades out as the stream fades in.
     const ringFade = flight && m > 0 ? m : 1;

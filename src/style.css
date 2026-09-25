@@ -1781,7 +1781,7 @@ main,
      round them in the background. */
   /* Room for the camera to swing from on top of the stream to beside it
      before the first case comes up. */
-  .tunnel--flow { padding-top: 120vh; }
+  .tunnel--flow { padding-top: 160vh; }
   .tunnel--flow .tunnel__case {
     min-height: 90vh;
     padding: var(--space-6) 0;

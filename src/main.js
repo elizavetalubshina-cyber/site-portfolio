@@ -442,7 +442,11 @@ function startSpace() {
     // side: the camera starts on top of the stream looking down along it,
     // then swings round beside it to look at it (and the cases) side on.
     const introEnd = introTop + introH - h;
-    const side = flight ? 1 : ease(clamp01((sy - (introEnd + h * 0.25)) / (h * 0.9)));
+    // hole: first the camera flies on into the dark centre of the stream
+    // seen end-on, the hole opening wider and wider round the viewer...
+    const hole = flight ? 0 : ease(clamp01((sy - (introEnd + h * 0.05)) / (h * 0.7)));
+    // ...then it swings round beside the stream.
+    const side = flight ? 1 : ease(clamp01((sy - (introEnd + h * 0.65)) / (h * 0.9)));
     if (!flight) {
       if (m > 0.05) burst = still ? 1 : Math.min(1, burst + dt / 1100);
       else burst = still ? 0 : Math.max(0, burst - dt / 700);
@@ -607,7 +611,7 @@ function startSpace() {
         if (side < 1) {
           const zf = 1 - ((p.s + streamT * p.speed * 2.5) % 1);
           const z = 30 + zf * 3200;
-          const sc = 520 / z;
+          const sc = (520 * (1 + 9 * hole * hole)) / z;
           const ta = (d * 0.004) + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
           const tr = (120 + 60 * p.fall * p.fall) * sc;
           const tx = w / 2 + Math.cos(ta) * tr;

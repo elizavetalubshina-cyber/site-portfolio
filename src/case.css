@@ -24,7 +24,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin: var(--space-4) 0 0 max(var(--space-3), calc((100% - 920px) / 2));
+  margin: var(--space-2) 0 0 max(var(--space-3), calc((100% - 920px) / 2));
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2) var(--space-1) 0;
   font-size: 14px;
@@ -60,7 +60,7 @@
 
 .case-hero {
   margin-top: 0;
-  padding: var(--space-4) var(--space-3) var(--space-5);
+  padding: var(--space-3) var(--space-3) var(--space-5);
 }
 
 .case-hero__tags {
@@ -85,6 +85,7 @@
 }
 
 .case-cover {
+  position: relative;
   margin: var(--space-4) 0 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -746,4 +747,19 @@ kbd {
   .related__grid { grid-template-columns: 1fr; }
   .short__stats { grid-template-columns: 1fr; }
   .case-side-by-side { grid-template-columns: 1fr; }
+}
+
+/* Phone: the back link shares the row with the menu button instead of
+   taking a row of its own under it, so the case starts right away. */
+@media (max-width: 640px) {
+  .case-page .case-back {
+    position: absolute;
+    /* main starts under the 70px nav row; this centres the link on the
+       menu button in that row. */
+    top: -29px;
+    right: var(--space-2);
+    z-index: 101;
+    margin: 0;
+  }
+  .case-page .case-hero { padding-top: var(--space-3); }
 }

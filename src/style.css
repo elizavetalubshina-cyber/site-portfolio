@@ -755,109 +755,10 @@ h1, h2, h3 {
   opacity: 0.8;
 }
 
-/* ---------- Hero stage: case covers ---------- */
-
-.hero__stage {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-/* The outer link carries the cursor drift (a transform set from main.js);
-   the inner card carries the entrance and the hover, so the two never
-   fight over one transform. */
-.hero__tile {
-  position: absolute;
-  display: block;
-  width: var(--w);
-  left: var(--x);
-  top: var(--y);
-  will-change: transform;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.hero__tile-card {
-  position: relative;
-  display: block;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--dark-card);
-  box-shadow: 0 2px 6px rgba(18, 20, 26, 0.08), 0 30px 60px -24px rgba(18, 20, 26, 0.45);
-  transform: rotate(var(--rot));
-  transition: transform 0.45s cubic-bezier(0.22, 0.7, 0.3, 1), box-shadow 0.45s ease;
-  animation: hero-tile-in 0.9s cubic-bezier(0.22, 0.7, 0.3, 1) backwards;
-  animation-delay: var(--delay);
-}
-.hero__tile-card img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: top;
-}
-
-.hero__tile-label {
-  position: absolute;
-  left: var(--space-2);
-  bottom: var(--space-2);
-  padding: var(--space-half) var(--space-2);
-  border-radius: 999px;
-  background: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  color: #12141a;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .hero__tile:hover { z-index: 3; }
-  .hero__tile:hover .hero__tile-card {
-    transform: rotate(0deg) scale(1.08);
-    box-shadow: 0 2px 6px rgba(18, 20, 26, 0.1), 0 40px 80px -24px rgba(18, 20, 26, 0.55);
-  }
-  .hero__tile:hover .hero__tile-label {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes hero-tile-in {
-  from {
-    opacity: 0;
-    transform: rotate(var(--rot)) translateY(40px) scale(0.92);
-  }
-}
-
-/* Positions are shares of the hero box, so the layout holds its shape
-   from a 1024px laptop to a 1920px monitor. Each tile sits in a band the
-   text rows leave free: two above the name, three below it. */
-/* --u is 1vw on a typical 16:10 or 16:9 window and shrinks with the height
-   on a short one, so the covers never grow into the name or the pitch when
-   browser chrome eats the viewport. */
-.hero__stage { --u: min(1vw, 1.55vh); }
-.hero__tile--subtitles     { --x: 3%;  --y: 7%;  --w: calc(21 * var(--u)); --rot: -5deg; --delay: 0.05s; }
-.hero__tile--design-system { --x: 38%; --y: 4%;  --w: calc(13 * var(--u)); --rot: 3deg;  --delay: 0.2s; }
-.hero__tile--satellite     { --x: 72%; --y: 6%;  --w: calc(19 * var(--u)); --rot: 5deg;  --delay: 0.12s; }
-.hero__tile--tracktice     { --x: 26%; --y: 69%; --w: calc(17 * var(--u)); --rot: -3deg; --delay: 0.28s; }
-.hero__tile--ecosystem     { --x: 58%; --y: 71%; --w: calc(15 * var(--u)); --rot: 6deg;  --delay: 0.35s; }
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__tile-card { animation: none; transition: none; }
-}
-
 /* ---------- Cases ---------- */
 
 .cases { margin-top: var(--space-12); }
 .cases h2 { font-size: 32px; margin-bottom: var(--space-3); }
-
-.cases__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(clamp(280px, 21vw, 400px), auto);
-  gap: var(--space-2);
-}
 
 .case {
   position: relative;
@@ -1536,7 +1437,6 @@ main,
     padding-top: 0;
     padding-bottom: 0;
   }
-  .hero__stage { display: none; }
   .hero__head { will-change: transform, opacity; }
 
   /* The name sits inside the ring on one line, so the topics orbiting it
@@ -1663,8 +1563,6 @@ main,
     clip: rect(0 0 0 0);
     white-space: nowrap;
   }
-  .cases__grid { display: none; }
-
   .tunnel { display: block; }
 
   /* Shared card look: cover and text side by side. */
@@ -1805,10 +1703,17 @@ main,
      lags the scroll) while it grows in, then scrolled on as usual. */
   /* Pulled up into the tunnel's last stretch: "Обо мне" starts to grow
      as the walls clear, with no empty scroll in between. */
-  .home-page .cases:has(.tunnel--flight) + .outro { margin-top: calc(96px - 65vh); }
+  /* Where "Обо мне" is held: just under the nav on a phone, where it is
+     taller than the screen; about the middle of a desktop screen, so it
+     neither crowds the nav nor leaves an empty half above the footer. */
+  .home-page { --about-top: 112px; }
+  @media (min-width: 901px) {
+    .home-page { --about-top: clamp(128px, calc(50vh - 230px), 40vh); }
+  }
+  .home-page .cases:has(.tunnel--flight) + .outro { margin-top: calc(var(--about-top) - 65vh); }
   .home-page .cases:has(.tunnel--flight) + .outro .about {
     position: sticky;
-    top: 96px;
+    top: var(--about-top);
     margin-top: 0;
   }
   .home-page .cases:has(.tunnel--flight) + .outro .outro__room { height: 25vh; }
@@ -1825,51 +1730,42 @@ main,
     background: radial-gradient(closest-side, rgba(7, 7, 11, 0.92), rgba(7, 7, 11, 0.7) 60%, rgba(7, 7, 11, 0));
   }
 
-  /* Flow: the cases scroll by as an ordinary list and the tunnel walls run
-     round them in the background. */
-  /* Room for the camera to swing from on top of the stream to beside it
-     before the first case comes up. */
-  .tunnel--flow { padding-top: 160vh; }
-  .tunnel--flow .tunnel__case {
-    min-height: 90vh;
-    padding: var(--space-6) 0;
-  }
-  /* Each case comes toward the camera out of the stream: from smaller and
-     further off to its place, rather than sliding up. */
-  .tunnel--flow .tunnel__case .tunnel__cover,
-  .tunnel--flow .tunnel__case .tunnel__text {
-    opacity: 0;
-    transform: scale(0.82);
-    transition: opacity 0.9s ease, transform 1.1s cubic-bezier(0.16, 0.8, 0.3, 1);
-  }
-  .tunnel--flow .tunnel__case .tunnel__text {
-    position: relative;
-    transition-delay: 0.12s;
-  }
-  /* Same pool of night as in flight, behind the text only: the covers are
-     opaque already. */
-  .tunnel--flow .tunnel__text::before {
-    content: '';
-    position: absolute;
-    inset: -30% -20%;
-    z-index: -1;
-    background: radial-gradient(closest-side, rgba(7, 7, 11, 0.9), rgba(7, 7, 11, 0.6) 60%, rgba(7, 7, 11, 0));
-  }
-  .tunnel--flow .tunnel__case.is-visible .tunnel__cover,
-  .tunnel--flow .tunnel__case.is-visible .tunnel__text {
-    opacity: 1;
-    transform: none;
-  }
-
   .about { margin-top: var(--space-8); }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .tunnel--flow .tunnel__case .tunnel__cover,
-  .tunnel--flow .tunnel__case .tunnel__text {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  /* A quiet pointer down to the cases for anyone who does not think to
+     scroll through the animation. Part of the name block, so it falls into
+     the point with it. */
+  .hero__hint {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-3);
+    padding: var(--space-1) var(--space-2);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-decoration: none;
+    pointer-events: auto;
+    transition: color 0.2s ease;
+  }
+  .hero__hint span { display: inline-block; animation: hint-bob 2.4s ease-in-out infinite; }
+  .hero__hint:hover { color: var(--text); }
+  @keyframes hint-bob {
+    50% { transform: translateY(3px); }
+  }
+
+  /* Without scripting (or if main.js fails) there is no ring and no
+     flight: the hero is one screen with the name, and the cases are an
+     ordinary list below it. */
+  html:not(.js) .intro { height: auto; }
+  html:not(.js) .hero__orbit { display: none; }
+  .tunnel:not(.tunnel--flight) .tunnel__case + .tunnel__case { margin-top: var(--space-10); }
+
+  /* The tunnel's links are reachable from the keyboard: focus flies the
+     camera to that case (main.js), and the ring shows where focus is. */
+  .tunnel__case a:focus-visible {
+    outline: 2px solid var(--purple);
+    outline-offset: 4px;
   }
 }
 
@@ -1883,14 +1779,12 @@ main,
   .tunnel__case,
   .tunnel__case--right { grid-template-columns: 1fr; gap: var(--space-3); }
   .tunnel__case--right .tunnel__cover { order: 0; }
-  .tunnel--flow .tunnel__case { min-height: 0; padding: var(--space-8) 0; }
   .tunnel__title { font-size: 30px; }
   .tunnel--flight .tunnel__case { width: 96vw; }
   .tunnel__desc { font-size: 16px; }
 }
 
 @media (max-width: 1100px) {
-  .cases__grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .case--broad, .case--hero, .case--wide { grid-column: auto; grid-row: auto; }
 
   .about__grid { grid-template-columns: 1fr; }
@@ -2139,6 +2033,7 @@ main,
   padding: var(--space-2) var(--space-4);
 }
 @media (prefers-reduced-motion: reduce) {
+  .hero__hint span { animation: none; }
   .case-sheet__card, .case-sheet__backdrop { transition: none; }
 }
 html.sheet-lock, html.sheet-lock body { overflow: hidden; }

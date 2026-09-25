@@ -1,3 +1,7 @@
+// Case links opened from script carry the same origin mark as clicked
+// links (see markCaseUrl at the end of this file).
+const withFrom = (href) => markCaseUrl(href);
+
 const navHeader = document.querySelector('.nav');
 const navToggle = document.querySelector('.nav__toggle');
 const navMenu = document.querySelector('.nav__menu');
@@ -36,6 +40,8 @@ document.querySelectorAll('.nav__links a, .nav__menu a, .logo, .case-toc a').for
   link.addEventListener('click', (e) => {
     const id = link.getAttribute('href');
     if (!id || id === '#' || !id.startsWith('#')) return;
+    // On the homepage the cases are handled by the tunnel (startSpace).
+    if (id === '#cases' && window.spaceStarted) return;
     const target = document.querySelector(id);
     if (!target) return;
     e.preventDefault();
@@ -50,7 +56,8 @@ document.querySelectorAll('.nav__links a, .nav__menu a, .logo, .case-toc a').for
     if (outro && (id === '#about' || id === '#contacts') && getComputedStyle(document.getElementById('about')).position === 'sticky') {
       let top = 0;
       for (let el = outro; el; el = el.offsetParent) top += el.offsetTop;
-      window.scrollTo({ top: top - 96 + window.innerHeight * 0.22, behavior: 'smooth' });
+      const held = parseFloat(getComputedStyle(document.getElementById('about')).top) || 96;
+      window.scrollTo({ top: top - held + window.innerHeight * 0.22, behavior: 'smooth' });
       return;
     }
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -117,10 +124,6 @@ const deferredVideos = document.querySelectorAll('video[data-play-in-view]');
 
 if (deferredVideos.length) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-// Case links opened from script carry the same origin mark as clicked
-// links (see markCaseUrl at the end of this file).
-const withFrom = (href) => markCaseUrl(href);
-
   // `controls` is in the markup, not added here, so that with scripting off the
   // video is still watchable instead of a frozen poster. Once this code is
   // running it takes over starting and stopping, and the bar goes away — the
@@ -235,14 +238,10 @@ if (caseToc) {
 //      orbiting it;
 //   2. scrolling while the hero is pinned sucks the ring in: the dust
 //      spirals ever faster into one point and the name shrinks into it;
-//   3. out of that point the dust flies apart into the walls of a tunnel,
-//      and the cases are in the tunnel. Two ways to show them:
-//        flight - the stage is pinned and the scroll flies down the tunnel,
-//                 each case coming up out of its depth, pausing to be read,
-//                 then passing by;
-//        flow   - the cases scroll by as a list and the tunnel runs round
-//                 them;
-//   4. by "Обо мне" the dust settles into a faint scatter.
+//   3. out of that point the dust opens into the walls of a tunnel; the
+//      stage is pinned and the scroll flies down it, each case coming up
+//      out of its depth, pausing to be read, then passing by;
+//   4. out of the tunnel's mouth "Обо мне" grows in the same way.
 // Stars sit behind it all; the cursor pushes the ring's dust aside. On
 // every screen size; with reduced motion it holds still.
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -251,25 +250,12 @@ const narrowScreen = window.matchMedia('(max-width: 900px)');
 const tunnelEl = document.getElementById('tunnel');
 const flight = !!tunnelEl && tunnelEl.classList.contains('tunnel--flight');
 
-const flowCases = tunnelEl && !flight ? tunnelEl.querySelectorAll('.tunnel__case') : [];
-if (flowCases.length && 'IntersectionObserver' in window) {
-  const reveal = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        reveal.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.25 });
-  flowCases.forEach((el) => reveal.observe(el));
-} else {
-  flowCases.forEach((el) => el.classList.add('is-visible'));
-}
-
 let spaceStarted = false;
 function startSpace() {
-  if (spaceStarted || !particleCanvas) return;
+  if (spaceStarted || !particleCanvas || !flight) return;
   spaceStarted = true;
+  // Tells the fallback in index.html the animated layout is running.
+  window.spaceStarted = true;
 
   const ctx = particleCanvas.getContext('2d');
   const intro = document.getElementById('intro');
@@ -323,7 +309,7 @@ function startSpace() {
   }));
 
   let w = 0, h = 0;
-  let introTop = 0, introH = 1, tunnelTop = 0, tunnelH = 1, aboutTop = 1;
+  let introTop = 0, introH = 1, tunnelTop = 0, tunnelH = 1, aboutTop = 1, aboutHeld = 96;
 
   const layout = () => {
     // clientWidth, not innerWidth: on a phone anything poking past the edge
@@ -346,6 +332,8 @@ function startSpace() {
     let top = 0;
     for (let el = document.getElementById('outro') || about; el; el = el.offsetParent) top += el.offsetTop;
     aboutTop = top;
+    // How far below the screen's top "Обо мне" is held (sticky, style.css).
+    aboutHeld = about ? parseFloat(getComputedStyle(about).top) || 96 : 96;
   };
 
   const mouse = { x: -9999, y: -9999 };
@@ -481,10 +469,10 @@ function startSpace() {
   // Flight: scroll through the tunnel maps to camera depth. Each case gets one
   // screen of scroll, and within it the camera slows almost to a stop at the
   // point where the case is at full size, so there is time to read it.
+  // A short run-up before the first case, so it starts far down the
+  // tunnel, a speck inside the ring, rather than already half grown.
+  const LEAD = 0.7;
   const cameraAt = (p) => {
-    // A short run-up before the first case, so it starts far down the
-    // tunnel, a speck inside the ring, rather than already half grown.
-    const LEAD = 0.7;
     const seg = p * (cards.length + LEAD) - LEAD;
     if (seg < 0) return SPACING * seg;
     const i = Math.min(cards.length - 1, Math.floor(seg));
@@ -493,72 +481,49 @@ function startSpace() {
   };
   const caseDepth = (i) => SPACING * (i + 0.5) + FOCUS;
 
-  // Flow: the stream's course in page coordinates. It comes in from above
-  // the screen, then runs down through the middle of every case cover and on past
-  // the last one. A Catmull-Rom curve through those points, sampled with
-  // the running length at each sample.
-  let path = { x: [], y: [], len: [], total: 1 };
-  const covers = cards.map((c) => c.querySelector('.tunnel__cover'));
-  const buildPath = () => {
-    if (flight || !covers.length) return;
-    // Starts above the top of the screen at the moment the camera is inside
-    // the ball, so the viewer lands in the middle of the stream and rides it
-    // down through the cases.
-    const knots = [{ x: w / 2, y: introTop + introH - h * 1.6 }, { x: w / 2, y: tunnelTop + h * 0.15 }];
-    covers.forEach((c) => {
-      const r = c.getBoundingClientRect();
-      knots.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
+  // Where on the page the tunnel opens, where it ends, and the stretch of
+  // scroll that flies down it.
+  const marks0 = () => {
+    const mStart = introTop + (introH - h) * 0.5;
+    const tunnelEnd = tunnelTop + tunnelH;
+    const from = mStart + h * 0.25;
+    return { mStart, tunnelEnd, from, span: tunnelEnd - h * 0.8 - from };
+  };
+  const depthAt = (sy) => {
+    const { from, span } = marks0();
+    return clamp01((sy - from) / span);
+  };
+  // The scroll position at which case i is at full size, in the middle of
+  // its pause (cameraAt's slow point).
+  const scrollForCase = (i) => {
+    const { from, span } = marks0();
+    return Math.round(from + span * ((i + 0.5 + LEAD) / (cards.length + LEAD)));
+  };
+  // Keyboard: the cases are only visible while the camera is at them, so a
+  // link inside one that takes focus flies the camera there first.
+  cards.forEach((card, i) => {
+    card.addEventListener('focusin', () => {
+      window.scrollTo({ top: scrollForCase(i), left: 0, behavior: 'instant' });
     });
-    const endY = tunnelTop + tunnelH;
-    knots.push({ x: w / 2, y: endY + h * 0.2 }, { x: w / 2, y: endY + h * 0.7 });
-    const x = [], y = [], len = [];
-    let total = 0;
-    for (let i = 0; i < knots.length - 1; i++) {
-      const p0 = knots[Math.max(0, i - 1)], p1 = knots[i], p2 = knots[i + 1], p3 = knots[Math.min(knots.length - 1, i + 2)];
-      for (let j = 0; j < 80; j++) {
-        const t = j / 80, t2 = t * t, t3 = t2 * t;
-        const px = 0.5 * (2 * p1.x + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
-        const py = 0.5 * (2 * p1.y + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
-        if (x.length) total += Math.hypot(px - x[x.length - 1], py - y[y.length - 1]);
-        x.push(px); y.push(py); len.push(total);
-      }
-    }
-    path = { x, y, len, total: total || 1 };
-  };
-  const onPath = (d) => {
-    const { x, y, len } = path;
-    let lo = 0, hi = len.length - 1;
-    while (lo < hi - 1) {
-      const mid = (lo + hi) >> 1;
-      if (len[mid] < d) lo = mid; else hi = mid;
-    }
-    const seg = len[hi] - len[lo] || 1;
-    const f = (d - len[lo]) / seg;
-    const dx = x[hi] - x[lo], dy = y[hi] - y[lo];
-    const n = Math.hypot(dx, dy) || 1;
-    return { x: x[lo] + dx * f, y: y[lo] + dy * f, nx: -dy / n, ny: dx / n };
-  };
+  });
+  // "Кейсы" in the menu and the hint under the name go to the first case
+  // at full size, not to the top of the tunnel block, where nothing is
+  // on screen yet.
+  document.querySelectorAll('a[href="#cases"]').forEach((link) => {
+    link.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      window.scrollTo({ top: scrollForCase(0), behavior: 'smooth' });
+    });
+  });
 
   let last = 0;
   let spin = 0;
-  // Stream clock: runs slowly on its own and speeds up with scrolling, so
-  // the stream seems to pull the viewer along; it eases back when they stop.
-  let streamT = 0;
-  let rush = 0;
-  // The burst runs on its own clock once the fall reaches it: a quick snap
-  // out rather than something the scroll has to drag along.
-  let burst = 0;
-  let lastSy = window.scrollY;
   let flow = 0;
 
   const draw = (time) => {
     const dt = still ? 0 : Math.min(50, time - last || 16);
     last = time;
     const sy = window.scrollY;
-    const v = dt > 0 ? Math.abs(sy - lastSy) / dt : 0;
-    lastSy = sy;
-    rush += (Math.min(1, v / 2.5) - rush) * 0.08;
-    streamT += dt * (1.8 + rush * 7);
 
     // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
@@ -569,56 +534,33 @@ function startSpace() {
     // the edges of the screen and its dust streams by on every side.
     const dive = Math.pow(clamp01((k - 0.82) / 0.18), 3);
     const zoom = 1 + 3.5 * k * k * k + 45 * dive;
-    // m: the point bursting into the tunnel walls.
-    // Flight: the tunnel opens halfway through the fall, straight out of the
-    // shrinking ring, and the flight down it starts right after.
-    const mStart = introTop + (introH - h) * 0.5;
-    const m = flight
-      ? ease(clamp01((sy - mStart) / (h * 0.5)))
-      : clamp01((sy - (introTop + introH - h * 1.05)) / (h * 0.6));
-    // side: the camera starts on top of the stream looking down along it,
-    // then swings round beside it to look at it (and the cases) side on.
-    // No warp streaks: the stars stay points as the camera flies in.
-    const warp = 0;
-    const introEnd = introTop + introH - h;
-    // hole: first the camera flies on into the dark centre of the stream
-    // seen end-on, the hole opening wider and wider round the viewer...
-    const hole = flight ? 0 : ease(clamp01((sy - (introEnd + h * 0.05)) / (h * 0.7)));
-    // ...then it swings round beside the stream.
-    const side = flight ? 1 : ease(clamp01((sy - (introEnd + h * 0.65)) / (h * 0.9)));
-    if (!flight) {
-      if (m > 0.05) burst = still ? 1 : Math.min(1, burst + dt / 1100);
-      else burst = still ? 0 : Math.max(0, burst - dt / 700);
-    }
-    // e: the tunnel letting go as "Обо мне" comes up.
-    // Leaving the tunnel: tied to the end of the tunnel block rather than to
-    // "Обо мне", whose height differs a lot between desktop and phone.
-    // Leaving the tunnel (flight): the camera flies out of its mouth, the
-    // walls rushing past the screen edges and fading, before "Обо мне".
-    const tunnelEnd = tunnelTop + tunnelH;
-    const e = flight
-      ? ease(clamp01((sy - (tunnelEnd - h * 0.92)) / (h * 0.27)))
-      : ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
+    // m: the ring giving way to the tunnel walls. The tunnel opens halfway
+    // through the fall, straight out of the shrinking ring, and the flight
+    // down it starts right after.
+    const { mStart, tunnelEnd } = marks0();
+    const m = ease(clamp01((sy - mStart) / (h * 0.5)));
+    // e: leaving the tunnel. The camera flies out of its mouth, the walls
+    // rushing past the screen edges and fading, before "Обо мне". Tied to
+    // the end of the tunnel block rather than to "Обо мне", whose height
+    // differs a lot between desktop and phone.
+    const e = ease(clamp01((sy - (tunnelEnd - h * 0.92)) / (h * 0.27)));
     // Then "Обо мне" comes out of the depth like the cases: held under the
     // nav by CSS (sticky) while it grows from small at the screen's middle
     // and fades in. Only scale and opacity are scripted, nothing positional.
-    if (flight && about) {
-      const pin = aboutTop - 96;
+    if (about) {
+      const pin = aboutTop - aboutHeld;
       // Finished before the page can run out of scroll, however short "Обо
       // мне" is next to the screen.
       const maxScroll = document.documentElement.scrollHeight - h;
       const span = Math.max(40, Math.min(h * 0.2, maxScroll - 2 - pin));
       const ap = ease(clamp01((sy - pin) / span));
-      about.style.transformOrigin = `50% ${Math.round(h / 2 - 96)}px`;
+      about.style.transformOrigin = `50% ${Math.round(h / 2 - aboutHeld)}px`;
       about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';
       about.style.opacity = String(ap);
       if (footer) footer.style.opacity = String(ap);
     }
     // Camera depth in the tunnel.
-    const tp = flight
-      ? clamp01((sy - mStart - h * 0.25) / (tunnelTop + tunnelH - h * 0.8 - mStart - h * 0.25))
-      : clamp01((sy - tunnelTop) / (tunnelH - h));
-    const cam = flight ? cameraAt(tp) : (sy - tunnelTop) * 1.4;
+    const cam = cameraAt(depthAt(sy));
     flow += still ? 0 : dt * 0.05;
 
     pace += (((hovering || sheetOpen) && k === 0 ? 0 : 1) - pace) * 0.12;
@@ -696,9 +638,7 @@ function startSpace() {
 
     // Short trails while things move fast (the fall, the tunnel), none at
     // rest, so the ring stays crisp.
-    // Burst: short glowing tails while the grains are flying out.
-    const flare = flight ? 0 : Math.sin(Math.PI * burst) * 1.1;
-    const trail = still ? 0 : Math.max(k * Math.pow(1 - burst, 4), flight ? m * (1 - e) * 0.55 : 0, flare) * 0.55;
+    const trail = still ? 0 : Math.max(k, m * (1 - e) * 0.55) * 0.55;
     if (trail > 0.02) {
       ctx.globalAlpha = 1;
       ctx.fillStyle = `rgba(${BG}, ${1 - trail})`;
@@ -709,7 +649,7 @@ function startSpace() {
 
     const drift = still ? 0 : time * 0.001;
     const near = [], mid = [], far = [], accent = [], stars = [], streaks = [];
-    const flowDust = [], flowBack = [], flowAccent = [], ringOut = [];
+    const ringOut = [];
     const tcx = w / 2, tcy = h / 2;
     const halfDiag = Math.hypot(w, h) / 2 + 20;
     // Out of the tunnel's mouth: the walls open wide past the screen edges.
@@ -727,12 +667,7 @@ function startSpace() {
         const rr = p.sr * halfDiag * z0 / zc * 0.9;
         const sx = w / 2 + Math.cos(p.sa) * rr;
         const sy2 = h / 2 + Math.sin(p.sa) * rr;
-        const st = Math.min(90, (rr / halfDiag) * warp * 160);
-        if (st > 3 && rr > halfDiag * 0.2 && !still) {
-          streaks.push(sx, sy2, sx - Math.cos(p.sa) * st, sy2 - Math.sin(p.sa) * st);
-        } else {
-          stars.push(sx, sy2, p.size * 0.8 * Math.min(2, z0 / zc));
-        }
+        stars.push(sx, sy2, p.size * 0.8 * Math.min(2, z0 / zc));
         continue;
       }
 
@@ -748,60 +683,8 @@ function startSpace() {
       let bucket = 0;
       let streak = 0, dirX = 0, dirY = 0;
 
-      // Flow: the stream does not grow out of the point. It fades in where it
-      // belongs while the point fades out, its dust drawing in from wider to
-      // its line as it comes. Inside, the dust winds round the line as a
-      // helix: the near side of each turn is drawn larger, the far side
-      // smaller, so it reads as a twisting rope pulling downward.
-      if (burst > 0 && !flight) {
-        // Each grain leaves the point at its own moment and flies out to its
-        // place in the stream, overshooting outward on the way, so the point
-        // bursts and the burst becomes the stream.
-        const bt = clamp01((burst - p.fall * 0.25) / 0.75);
-        const mp = 1 - Math.pow(1 - bt, 3);
-        const d = ((p.s + streamT * p.speed) % 1) * path.total;
-        const q = onPath(d);
-        // The stream opens out of the point like a cone: no width at its
-        // source, full width about a screen further on, so it never starts
-        // with a flat cut.
-        const open = 1;
-        const wide = (120 + 60 * p.fall * p.fall) * open;
-        const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
-        const off = Math.cos(turn) * wide + p.band * 14 * open;
-        const depth = Math.sin(turn);
-        let fx = q.x + q.nx * off;
-        let fy = q.y + q.ny * off - sy;
-        // Looking down along the stream from on top of it: the helix seen
-        // end-on, in perspective, its dust coming up toward the camera.
-        if (side < 1) {
-          const zf = 1 - ((p.s + streamT * p.speed * 2.5) % 1);
-          const z = 30 + zf * 3200;
-          const sc = (520 * (1 + 9 * hole * hole)) / z;
-          const ta = (d * 0.004) + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
-          const tr = (120 + 60 * p.fall * p.fall) * sc;
-          const tx = w / 2 + Math.cos(ta) * tr;
-          const ty = h / 2 + Math.sin(ta) * tr;
-          fx = tx + (fx - tx) * side;
-          fy = ty + (fy - ty) * side;
-        }
-        if (e > 0) {
-          fx += (p.u * w - fx) * e;
-          fy += (p.v * h - fy) * e;
-        }
-        // The dust that flew past the camera gathers in from all round the
-        // screen into the stream, with a slight swirl on the way.
-        const blast = Math.sin(Math.PI * mp) * (20 + 60 * p.u);
-        fx = x + (fx - x) * mp + Math.cos(p.a) * blast;
-        fy = y + (fy - y) * mp + Math.sin(p.a) * blast;
-        if (fx > -4 && fx < w + 4 && fy > -4 && fy < h + 4) {
-          const sz = p.size * (1 + 0.2 * mp) * (1 + 0.55 * depth * mp) * (1 + rush * 0.35);
-          (p.accent ? flowAccent : depth > 0 || mp < 0.5 ? flowDust : flowBack).push(fx, fy, sz);
-        }
-        continue;
-      }
-
       // Tunnel walls: a cylinder seen from inside, drawn in perspective.
-      if (m > 0 && flight) {
+      if (m > 0) {
         const z = ((((p.tz - cam - flow) % DEPTH) + DEPTH) % DEPTH) + 40;
         const s = FOCUS / z;
         const a = p.ta;
@@ -820,14 +703,6 @@ function startSpace() {
         streak = m * (1 - e) * Math.min(22, 5 * s);
         dirX = Math.cos(a);
         dirY = Math.sin(a);
-      }
-
-      // Faint scatter by "Обо мне" (flow). In flight the tunnel simply ends
-      // there: its dust fades out so nothing moves behind the text.
-      if (e > 0 && !flight) {
-        x += (p.u * w - x) * e;
-        y += (p.v * h - y) * e;
-        size += (p.size - size) * e;
       }
 
       if (!still && m < 1) {
@@ -867,14 +742,12 @@ function startSpace() {
       ctx.fillStyle = colour;
       for (let i = 0; i < list.length; i += 3) ctx.fillRect(list[i], list[i + 1], list[i + 2], list[i + 2]);
     };
-    const fade = flight ? 1 - e : 1 - e * 0.6;
+    // The tunnel ends at "Обо мне": its dust fades out so nothing moves
+    // behind the text.
+    const fade = 1 - e;
     paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
-    // In flow mode the ring's last dust fades out as the stream fades in.
-    const ringFade = flight && m > 0 ? m : 1;
+    const ringFade = m > 0 ? m : 1;
     paint(ringOut, 'rgb(236, 233, 255)', 0.85 * (1 - m));
-    paint(flowBack, 'rgb(236, 233, 255)', 0.45 * fade);
-    paint(flowDust, 'rgb(236, 233, 255)', 0.95 * fade);
-    paint(flowAccent, 'rgb(214, 107, 208)', 0.95 * fade);
     paint(far, 'rgb(236, 233, 255)', 0.45 * fade * ringFade);
     paint(mid, 'rgb(236, 233, 255)', 0.75 * fade * ringFade);
     paint(near, 'rgb(236, 233, 255)', 0.85 * fade * ringFade);
@@ -908,7 +781,7 @@ function startSpace() {
     if (streaks.length) {
       ctx.globalAlpha = 0.45;
       ctx.strokeStyle = 'rgb(236, 233, 255)';
-      ctx.lineWidth = flight ? 1.2 : 1;
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       for (let i = 0; i < streaks.length; i += 4) {
         ctx.moveTo(streaks[i], streaks[i + 1]);
@@ -919,9 +792,9 @@ function startSpace() {
 
     ctx.globalAlpha = 1;
 
-    // Flight: each case comes out of the depth, reads at full size, and
-    // flies past the viewer.
-    if (flight) {
+    // Each case comes out of the depth, reads at full size, and flies past
+    // the viewer.
+    {
       // One case at a time: the next stays hidden until the one in front of
       // it has flown by and faded out.
       let ahead = 0;
@@ -944,7 +817,7 @@ function startSpace() {
     }
   };
 
-  const relayout = () => { layout(); buildPath(); };
+  const relayout = () => { layout(); };
   relayout();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
   window.addEventListener('load', relayout);
@@ -954,8 +827,17 @@ function startSpace() {
     draw(0);
     window.addEventListener('scroll', () => requestAnimationFrame(() => draw(0)), { passive: true });
   } else {
+    // A slow phone gets fewer particles: if the first couple of seconds
+    // run well under 40 frames a second, the field is thinned out once.
+    let frames = 0, spent = 0, prev = 0;
     const loop = (time) => {
       draw(time);
+      if (frames < 150 && prev) {
+        frames++;
+        if (frames > 30) spent += time - prev;
+        if (frames === 150 && spent / 120 > 25) pts.length = Math.floor(pts.length * 0.55);
+      }
+      prev = time;
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);

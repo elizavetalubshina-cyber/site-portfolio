@@ -436,6 +436,14 @@
   width: 100%;
   border-radius: var(--radius-md);
 }
+/* Most screenshots are of light interfaces; on the night background their
+   edges bled into white patches. A thin frame and a lift off the sky keep
+   them reading as pictures placed on the page. */
+.case-figure img,
+.case-cover,
+.short-ref img {
+  box-shadow: 0 0 0 1px var(--border), 0 24px 60px -30px rgba(0, 0, 0, 0.8);
+}
 .case-figure figcaption {
   margin-top: var(--space-1);
   font-size: 13px;

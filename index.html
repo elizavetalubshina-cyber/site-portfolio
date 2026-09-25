@@ -36,6 +36,15 @@
        never starts, the page falls back to a plain one (see style.css). -->
   <script>
     document.documentElement.classList.add('js');
+    // Arriving from a case page's header (/#cases, /#about, /#contacts):
+    // the browser would scroll smoothly down to the anchor and play the
+    // whole fall and flight on the way, flashing the cases past. The anchor
+    // is taken off before the page renders and main.js lands on the right
+    // place at once instead.
+    if (/^#(cases|about|contacts|top)$/.test(location.hash)) {
+      window.landOn = location.hash.slice(1);
+      history.replaceState(history.state, '', location.pathname + location.search);
+    }
     window.addEventListener('load', function () {
       if (window.spaceStarted) return;
       document.documentElement.classList.remove('js');

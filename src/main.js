@@ -1048,7 +1048,18 @@ function startSpace() {
     }
   };
 
-  const relayout = () => { layout(); placeStops(); };
+  const relayout = () => { layout(); placeStops(); land(); };
+  // Landing from another page's header link (index.html took the anchor
+  // off): straight to the first case, or to "Обо мне", without scrolling
+  // through everything above it. Repeated on each relayout until the page
+  // has settled, so late fonts and images cannot leave it off its mark.
+  let landing = window.landOn || '';
+  const land = () => {
+    if (!landing) return;
+    const i = landing === 'cases' ? 1 : landing === 'top' ? 0 : stops.length - 1;
+    window.scrollTo({ top: stops[i], left: 0, behavior: 'instant' });
+  };
+  window.addEventListener('load', () => setTimeout(() => { landing = ''; }, 300), { once: true });
   relayout();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
   window.addEventListener('load', relayout);

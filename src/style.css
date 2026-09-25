@@ -1542,8 +1542,12 @@ main,
     font-weight: 600;
     color: var(--purple);
   }
-  .hero__orbit-tag:hover { background: rgba(214, 107, 208, 0.14); z-index: 2; }
-  .hero__orbit-tag:hover .hero__orbit-preview {
+  /* .is-hot: the cursor is on the project's point on the ring (main.js),
+     which opens the same preview as its name. */
+  .hero__orbit-tag:hover,
+  .hero__orbit-tag.is-hot { background: rgba(214, 107, 208, 0.14); z-index: 2; }
+  .hero__orbit-tag:hover .hero__orbit-preview,
+  .hero__orbit-tag.is-hot .hero__orbit-preview {
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, 0) scale(1);

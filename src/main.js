@@ -847,6 +847,7 @@ function startSpace() {
         // Preview opens toward the room: down from tags in the upper half,
         // up from tags in the lower half, so it never leaves the screen.
         tag.classList.toggle('is-below', cy + oy < h / 2);
+        tag.classList.toggle('is-hot', hotPoint === i && shown > 0.4);
       });
     }
 

@@ -1728,19 +1728,6 @@ main,
     font-size: 15px;
     color: var(--text-secondary);
   }
-  .tunnel__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-1) var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-  .tunnel__head .tunnel__title { margin: 0; }
-  .tunnel__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1);
-  }
   .tunnel__company {
     margin: var(--space-2) 0 0;
     font-size: 13px;
@@ -1801,10 +1788,7 @@ main,
   .tunnel--flight .tunnel__stats { display: none; }
   /* Name with its tag chips to the right, then the description, then the
      company. */
-  .tunnel--flight .tunnel__head { justify-content: center; }
   .tunnel--flight .tunnel__company { text-align: center; }
-  .tunnel--flight .tunnel__tag { font-size: 14px; padding: var(--space-half) var(--space-2); }
-  .tunnel--flight .tunnel__company { font-size: 14px; }
   .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
   .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
@@ -2105,15 +2089,7 @@ main,
   font-size: 22px;
   font-weight: 700;
 }
-.case-sheet__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1) var(--space-2);
-  margin: var(--space-2) var(--space-2) var(--space-1);
-}
-.case-sheet__head .case-sheet__title { margin: 0; }
+.case-sheet__media { position: relative; margin-top: var(--space-1); }
 .case-sheet__company {
   margin: calc(var(--space-2) * -1) 0 var(--space-3);
   font-size: 13px;
@@ -2150,8 +2126,33 @@ main,
   transform: translate(-50%, -50%) rotate(45deg);
 }
 .case-sheet__close::after { transform: translate(-50%, -50%) rotate(-45deg); }
-.case-sheet__img { margin-top: var(--space-1); }
 @media (prefers-reduced-motion: reduce) {
   .case-sheet__card, .case-sheet__backdrop { transition: none; }
 }
 html.sheet-lock, html.sheet-lock body { overflow: hidden; }
+
+/* Tag chips sit on the cover, bottom right: the same chips, the same size,
+   in the tunnel on every screen and in the phone preview. */
+.case-chips {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  pointer-events: none;
+}
+.case-chips .tunnel__tag {
+  padding: var(--space-half) var(--space-2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(10, 10, 16, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #f1f0f6;
+}

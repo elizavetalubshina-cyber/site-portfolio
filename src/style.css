@@ -1803,13 +1803,13 @@ main,
   /* Room after the last case for the flight out of the tunnel, then the
      about section held in place (sticky, so no scripted repositioning that
      lags the scroll) while it grows in, then scrolled on as usual. */
-  .home-page .cases:has(.tunnel--flight) + .outro { margin-top: 80vh; }
+  .home-page .cases:has(.tunnel--flight) + .outro { margin-top: 50vh; }
   .home-page .cases:has(.tunnel--flight) + .outro .about {
     position: sticky;
     top: 96px;
     margin-top: 0;
   }
-  .home-page .cases:has(.tunnel--flight) + .outro .outro__room { height: 80vh; }
+  .home-page .cases:has(.tunnel--flight) + .outro .outro__room { height: 40vh; }
   .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
 

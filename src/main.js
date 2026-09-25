@@ -50,7 +50,7 @@ document.querySelectorAll('.nav__links a, .nav__menu a, .logo, .case-toc a').for
     if (outro && (id === '#about' || id === '#contacts') && getComputedStyle(document.getElementById('about')).position === 'sticky') {
       let top = 0;
       for (let el = outro; el; el = el.offsetParent) top += el.offsetTop;
-      window.scrollTo({ top: top - 96 + window.innerHeight * 0.62, behavior: 'smooth' });
+      window.scrollTo({ top: top - 96 + window.innerHeight * 0.32, behavior: 'smooth' });
       return;
     }
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -607,7 +607,7 @@ function startSpace() {
       // Finished before the page can run out of scroll, however short "Обо
       // мне" is next to the screen.
       const maxScroll = document.documentElement.scrollHeight - h;
-      const span = Math.max(40, Math.min(h * 0.6, maxScroll - 2 - pin));
+      const span = Math.max(40, Math.min(h * 0.3, maxScroll - 2 - pin));
       const ap = ease(clamp01((sy - pin) / span));
       about.style.transformOrigin = `50% ${Math.round(h / 2 - 96)}px`;
       about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';

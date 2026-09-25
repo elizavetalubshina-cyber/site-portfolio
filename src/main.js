@@ -358,6 +358,23 @@ function startSpace() {
     // widens innerWidth and would push the ring off centre.
     w = document.documentElement.clientWidth;
     h = window.innerHeight;
+    // "Обо мне" is held in the middle of the room between the nav and the
+    // footer while it grows in, and stays there to the end of the page. If
+    // it is taller than that room it is held just under the nav instead.
+    // The empty room after it is exactly what the end of the page needs to
+    // keep it there, plus the scroll the grow-in takes (0.2 of a screen).
+    // When it is too tall to be held whole, there is no room after it at
+    // all, so it ends right above the footer.
+    const outroRoom = document.querySelector('.outro__room');
+    if (about && outroRoom) {
+      const navB = document.querySelector('.nav__shell').getBoundingClientRect().bottom;
+      const footH = footer ? footer.offsetHeight : 0;
+      const aboutH = about.offsetHeight;
+      const held = Math.round(Math.max(navB + 16, navB + (h - footH - navB - aboutH) / 2));
+      document.body.style.setProperty('--about-top', `${held}px`);
+      const fits = h - footH - held - aboutH >= 0;
+      outroRoom.style.height = fits ? `${Math.round(h - footH - held - aboutH + h * 0.2)}px` : '0px';
+    }
     // Safari gives up on canvases past ~16.7M pixels and draws nothing.
     const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / Math.max(1, w * h)));
     particleCanvas.width = w * dpr;
@@ -601,12 +618,18 @@ function startSpace() {
     // and fades in. Only scale and opacity are scripted, nothing positional.
     if (about) {
       const pin = aboutTop - aboutHeld;
-      // Finished before the page can run out of scroll, however short "Обо
-      // мне" is next to the screen.
+      // Grows over 0.2 of a screen of scroll, all of it while held when the
+      // page has that much left after the hold starts. On a phone, where it
+      // is taller than the screen and no empty room follows it, the page
+      // runs out sooner: then it starts growing a little earlier, on its way
+      // up, and finishes as the page ends.
       const maxScroll = document.documentElement.scrollHeight - h;
-      const span = Math.max(40, Math.min(h * 0.2, maxScroll - 2 - pin));
-      const ap = ease(clamp01((sy - pin) / span));
-      about.style.transformOrigin = `50% ${Math.round(h / 2 - aboutHeld)}px`;
+      const span = h * 0.2;
+      const after = Math.max(0, maxScroll - 2 - pin);
+      const start = pin - Math.max(0, span - after);
+      const ap = ease(clamp01((sy - start) / span));
+      // Grows out of its own middle, where it is held.
+      about.style.transformOrigin = '50% 50%';
       about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';
       about.style.opacity = String(ap);
       if (footer) footer.style.opacity = String(ap);

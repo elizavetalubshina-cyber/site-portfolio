@@ -1703,9 +1703,9 @@ main,
      lags the scroll) while it grows in, then scrolled on as usual. */
   /* Pulled up into the tunnel's last stretch: "Обо мне" starts to grow
      as the walls clear, with no empty scroll in between. */
-  /* Where "Обо мне" is held: just under the nav on a phone, where it is
-     taller than the screen; about the middle of a desktop screen, so it
-     neither crowds the nav nor leaves an empty half above the footer. */
+  /* Where "Обо мне" is held. main.js sets the exact value (the middle of
+     the room between the nav and the footer) and the room's height after
+     it; these are the fallbacks until it runs. */
   .home-page { --about-top: 112px; }
   @media (min-width: 901px) {
     .home-page { --about-top: clamp(128px, calc(50vh - 230px), 40vh); }
@@ -1717,6 +1717,9 @@ main,
     margin-top: 0;
   }
   .home-page .cases:has(.tunnel--flight) + .outro .outro__room { height: 25vh; }
+  /* The contacts are the last thing on the page; the footer follows them
+     closely instead of after a case page's long closing gap. */
+  .home-page .footer { margin-top: var(--space-6); }
   .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
 

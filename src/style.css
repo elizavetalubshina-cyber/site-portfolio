@@ -315,6 +315,9 @@
   --green: #1fbf75;
   --red: #e6394a;
   --purple: #d66bd0;
+  /* Filled buttons keep the brand purple: white on the lighter accent above
+     is only 3.1:1, on this it is 6:1. */
+  --purple-fill: #ac21a2;
   color-scheme: dark;
   --dark-card: #16181d;
   --dark-card-2: #1d2027;
@@ -1138,7 +1141,7 @@ h1, h2, h3 {
 }
 
 .btn--fill {
-  background: var(--purple);
+  background: var(--purple-fill);
   color: #fff;
   border-color: transparent;
   box-shadow: 0 12px 24px -8px rgba(172, 33, 162, 0.35);

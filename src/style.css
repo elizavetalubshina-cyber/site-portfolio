@@ -1792,8 +1792,8 @@ main,
     object-position: top;
   }
   .tunnel--flight .tunnel__index,
-  .tunnel--flight .tunnel__stats,
-  .tunnel--flight .tunnel__meta { display: none; }
+  .tunnel--flight .tunnel__stats { display: none; }
+  .tunnel--flight .tunnel__meta { justify-content: center; margin-top: var(--space-2); }
   .tunnel--flight .tunnel__title { margin-bottom: var(--space-1); font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
 

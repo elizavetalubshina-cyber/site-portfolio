@@ -459,7 +459,7 @@ function startSpace() {
     const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
     // Camera depth in the tunnel.
     const tp = flight
-      ? clamp01((sy - mStart - h * 0.25) / (tunnelTop + tunnelH - h - mStart - h * 0.25))
+      ? clamp01((sy - mStart - h * 0.25) / (tunnelTop + tunnelH - h * 0.8 - mStart - h * 0.25))
       : clamp01((sy - tunnelTop) / (tunnelH - h));
     const cam = flight ? cameraAt(tp) : (sy - tunnelTop) * 1.4;
     flow += still ? 0 : dt * 0.05;
@@ -761,6 +761,9 @@ function startSpace() {
     // Flight: each case comes out of the depth, reads at full size, and
     // flies past the viewer.
     if (flight) {
+      // One case at a time: the next stays hidden until the one in front of
+      // it has flown by and faded out.
+      let ahead = 0;
       cards.forEach((card, i) => {
         const z = caseDepth(i) - cam;
         let op = 0, sc = 0.1;
@@ -769,6 +772,9 @@ function startSpace() {
           // Hidden until the tunnel has fully formed, then grows from a speck.
           op = clamp01((sc - 0.1) / 0.55) * (1 - clamp01((sc - 1.3) / 0.6)) * clamp01((m - 0.85) / 0.15);
         }
+        op *= (1 - ahead) * (1 - e);
+        const shownOwn = op;
+        ahead = Math.max(ahead, shownOwn > 0.02 || z <= 40 ? (z > 40 ? Math.min(1, shownOwn * 3) : 0) : 0);
         card.style.opacity = String(op);
         card.style.transform = `translate(-50%, -50%) scale(${Math.min(sc, 4)})`;
         card.style.pointerEvents = op > 0.85 ? 'auto' : 'none';

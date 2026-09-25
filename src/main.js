@@ -791,7 +791,6 @@ function startSpace() {
     const spinSpeed = (0.00006 + k * k * 0.005) * pace;
     spin += dt * spinSpeed;
 
-    const hb = head.getBoundingClientRect();
     // The centre of everything is the middle of the screen, where the pinned
     // name sits. Tying it to the name made the core ride up with the page
     // once the hero let go.
@@ -824,13 +823,19 @@ function startSpace() {
         const narrow = w - 2 * r < 300;
         const ry = narrow ? R * pull + 70 : r;
         let oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * ry));
-        // On a narrow screen there is no room beside the ring, so a label
-        // would cross the name. It keeps moving smoothly and fades out while
-        // it passes the name's band, rather than hopping over it.
-        const band = hb.height / 2 + 14;
-        const clear = narrow ? clamp01((Math.abs(oy) - band) / 36) : 1;
         const tw = tag.offsetWidth;
         const th = tag.offsetHeight;
+        // On a narrow screen there is no room beside the ring: a label there
+        // would sit on the ring's dust or run off the screen. So it shows
+        // only while it rides clear above or below the ring, fading in and
+        // out on the way; beside the ring only its point is left, and that
+        // point still opens the case.
+        let clear = 1;
+        if (narrow) {
+          const boxTop = oy - th * (1 - sa) / 2;
+          const gap = Math.max(-(boxTop + th), boxTop);
+          clear = clamp01((gap - R * pull * 1.1) / 24);
+        }
         const left = Math.min(w - tw - 8, Math.max(8, x - tw * (1 - ca) / 2));
         const ly = cy + oy - th * (1 - sa) / 2 + th / 2;
         const lx = Math.abs(left - (cx + ca * R * pull)) < Math.abs(left + tw - (cx + ca * R * pull)) ? left : left + tw;

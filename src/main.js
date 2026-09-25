@@ -445,11 +445,14 @@ function startSpace() {
   let lastMarks = [];
   let hotPoint = -1;
   const HIT = 24;
+  // The point under the cursor keeps a wider catch than the others: the
+  // orbit takes a moment to stop once one is hovered, and the point must not
+  // slip out from under a cursor that already shows it as clickable.
   const pointAt = (x, y) => {
-    let best = -1, bestD = HIT;
+    let best = -1, bestD = HIT * 1.6;
     lastMarks.forEach((mk, i) => {
       if (mk.alpha < 0.4) return;
-      const d = Math.hypot(mk.x - x, mk.y - y);
+      const d = Math.hypot(mk.x - x, mk.y - y) * (i === hotPoint ? 1 : 1.6);
       if (d < bestD) { bestD = d; best = i; }
     });
     return best;
@@ -541,7 +544,8 @@ function startSpace() {
   });
   document.addEventListener('click', (ev) => {
     if (ev.target.closest('a, button')) return;
-    const i = pointAt(ev.clientX, ev.clientY);
+    // With a mouse, the point the cursor shows as clickable is the one.
+    const i = hotPoint >= 0 && ev.pointerType === 'mouse' ? hotPoint : pointAt(ev.clientX, ev.clientY);
     if (i < 0) return;
     if (narrowScreen.matches) openSheet(tags[i]);
     else window.location.href = withFrom(lastMarks[i].href);
@@ -595,13 +599,17 @@ function startSpace() {
   };
   // Step by step through the tunnel: one flick of the wheel, one swipe or
   // one key press moves to the next stop and no further, so no case can be
-  // flown past unseen. The stops are the top of the page, each case at full
-  // size, "Обо мне" fully grown and the end of the page. Scrollbar drags and
+  // flown past unseen. The stops are the top of the page, the tunnel just
+  // opened, each case at full size, "Обо мне" fully grown and the end of
+  // the page. Scrollbar drags and
   // links still move freely; the next step starts from the nearest stop.
   let stops = [0];
   const placeStops = () => {
     const maxScroll = document.documentElement.scrollHeight - h;
-    const at = [0, ...cards.map((c, i) => scrollForCase(i))];
+    // Two steps to the first case: the fall into the point, with the
+    // tunnel opening out of it, then the first case up out of its depth.
+    const opened = marks0().mStart + h * 0.5;
+    const at = [0, ...(opened < scrollForCase(0) - 80 ? [opened] : []), ...cards.map((c, i) => scrollForCase(i))];
     if (about) {
       const pin = aboutTop - aboutHeld;
       const after = Math.max(0, maxScroll - 2 - pin);
@@ -893,19 +901,11 @@ function startSpace() {
         const left = Math.min(w - tw - 8, Math.max(8, x - tw * (1 - ca) / 2));
         const ly = cy + oy - th * (1 - sa) / 2 + th / 2;
         const lx = Math.abs(left - (cx + ca * R * pull)) < Math.abs(left + tw - (cx + ca * R * pull)) ? left : left + tw;
-        // The point shies away from the cursor like the dust around it.
+        // The point keeps its place on the orbit: only the dust round it
+        // parts for the cursor, so a project stays where the eye found it.
         const px = cx + ca * R * pull, py = cy + sa * R * pull;
-        const mdx = px - mouse.x, mdy = py - mouse.y;
-        const md = Math.hypot(mdx, mdy);
-        let mtx = 0, mty = 0;
-        if (!still && k < 0.2 && md < repel * 1.3 && md > 0.1 && !tag.matches(':hover')) {
-          const q = 1 - md / (repel * 1.3);
-          const f = q * q * (3 - 2 * q) * 46 * mouse.force;
-          mtx = (mdx / md) * f;
-          mty = (mdy / md) * f;
-        }
-        tag._ox = (tag._ox || 0) + (mtx - (tag._ox || 0)) * soft;
-        tag._oy = (tag._oy || 0) + (mty - (tag._oy || 0)) * soft;
+        tag._ox = 0;
+        tag._oy = 0;
         marks.push({
           x: px + tag._ox, y: py + tag._oy, lx: lx + tag._ox, ly: ly + tag._oy,
           on: tag.matches(':hover') || hotPoint === i, alpha: 1 - clamp01(k * 1.6), line: clear, href: tag.href,

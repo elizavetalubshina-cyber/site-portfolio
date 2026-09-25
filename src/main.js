@@ -593,6 +593,104 @@ function startSpace() {
     const { from, span } = marks0();
     return Math.round(from + span * ((i + 0.5 + LEAD) / (cards.length + LEAD)));
   };
+  // Step by step through the tunnel: one flick of the wheel, one swipe or
+  // one key press moves to the next stop and no further, so no case can be
+  // flown past unseen. The stops are the top of the page, each case at full
+  // size, "Обо мне" fully grown and the end of the page. Scrollbar drags and
+  // links still move freely; the next step starts from the nearest stop.
+  let stops = [0];
+  const placeStops = () => {
+    const maxScroll = document.documentElement.scrollHeight - h;
+    const at = [0, ...cards.map((c, i) => scrollForCase(i))];
+    if (about) {
+      const pin = aboutTop - aboutHeld;
+      const after = Math.max(0, maxScroll - 2 - pin);
+      const grown = pin - Math.max(0, h * 0.2 - after) + h * 0.2;
+      if (maxScroll - grown > 40) at.push(Math.round(grown));
+    }
+    at.push(maxScroll);
+    stops = at.map((y) => Math.max(0, Math.min(maxScroll, Math.round(y))));
+  };
+  const nearestStop = () => {
+    const y = window.scrollY;
+    let best = 0;
+    stops.forEach((s, i) => { if (Math.abs(s - y) < Math.abs(stops[best] - y)) best = i; });
+    return best;
+  };
+  let stepping = false;
+  const stepTo = (i) => {
+    const to = stops[Math.max(0, Math.min(stops.length - 1, i))];
+    const from = window.scrollY;
+    if (Math.abs(to - from) < 2) return;
+    if (still) { window.scrollTo({ top: to, behavior: 'instant' }); return; }
+    stepping = true;
+    const dur = Math.min(1400, Math.max(700, 500 + Math.abs(to - from) * 0.25));
+    const t0 = performance.now();
+    const tick = (t) => {
+      const u = Math.min(1, (t - t0) / dur);
+      const q = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      window.scrollTo({ top: from + (to - from) * q, behavior: 'instant' });
+      if (u < 1) requestAnimationFrame(tick);
+      else stepping = false;
+    };
+    requestAnimationFrame(tick);
+  };
+  const step = (dir) => {
+    const here = nearestStop();
+    const y = window.scrollY;
+    // Between two stops (after a scrollbar drag), the first step settles on
+    // the next one in that direction.
+    let i = here + dir;
+    if (dir > 0 && stops[here] > y + 2) i = here;
+    if (dir < 0 && stops[here] < y - 2) i = here;
+    stepTo(i);
+  };
+  const blocked = (target) => sheetOpen
+    || document.documentElement.classList.contains('sheet-lock')
+    || (target && target.closest && target.closest('.nav.is-open, .case-sheet'));
+  if (flight) {
+    // Wheel and trackpad: one gesture, one step. A trackpad keeps sending
+    // events for a second or so after the fingers lift; those are swallowed
+    // until there is a short pause.
+    let lastWheel = 0;
+    window.addEventListener('wheel', (ev) => {
+      if (ev.ctrlKey || blocked(ev.target)) return;
+      ev.preventDefault();
+      const now = performance.now();
+      const quiet = now - lastWheel > 220;
+      lastWheel = now;
+      if (stepping || !quiet || Math.abs(ev.deltaY) < 3) return;
+      step(ev.deltaY > 0 ? 1 : -1);
+    }, { passive: false });
+    // Touch: the page does not scroll under the finger; a swipe of more
+    // than a few pixels is one step in its direction, a tap stays a tap.
+    let touchY = null, touchMoved = 0;
+    window.addEventListener('touchstart', (ev) => {
+      touchY = ev.touches.length === 1 && !blocked(ev.target) ? ev.touches[0].clientY : null;
+      touchMoved = 0;
+    }, { passive: true });
+    window.addEventListener('touchmove', (ev) => {
+      if (touchY === null) return;
+      ev.preventDefault();
+      touchMoved = touchY - ev.touches[0].clientY;
+    }, { passive: false });
+    window.addEventListener('touchend', () => {
+      if (touchY === null) return;
+      touchY = null;
+      if (!stepping && Math.abs(touchMoved) > 30) step(touchMoved > 0 ? 1 : -1);
+    });
+    document.addEventListener('keydown', (ev) => {
+      if (blocked(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      if (ev.target.closest && ev.target.closest('input, textarea, select, [contenteditable]')) return;
+      if (ev.key === ' ' && ev.target.closest && ev.target.closest('button')) return;
+      const down = ev.key === 'ArrowDown' || ev.key === 'PageDown' || (ev.key === ' ' && !ev.shiftKey);
+      const up = ev.key === 'ArrowUp' || ev.key === 'PageUp' || (ev.key === ' ' && ev.shiftKey);
+      if (!down && !up) return;
+      ev.preventDefault();
+      if (!stepping) step(down ? 1 : -1);
+    });
+  }
+
   // Keyboard: the cases are only visible while the camera is at them, so a
   // link inside one that takes focus flies the camera there first.
   if (flight) cards.forEach((card, i) => {
@@ -1069,7 +1167,7 @@ function startSpace() {
     }
   };
 
-  const relayout = () => { layout(); buildPath(); };
+  const relayout = () => { layout(); buildPath(); placeStops(); };
   relayout();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
   window.addEventListener('load', relayout);

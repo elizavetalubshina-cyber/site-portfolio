@@ -1696,7 +1696,21 @@ main,
   /* Name with its tag chips to the right, then the description, then the
      company. */
   .tunnel--flight .tunnel__company { text-align: center; }
-  .tunnel__more { margin-top: var(--space-3); font-size: 15px; padding: 12px var(--space-4); }
+  /* Secondary, in the same frosted glass as the nav's burger: the case's
+     cover and name lead, the button only confirms the way in. */
+  .tunnel__more {
+    margin-top: var(--space-3);
+    font-size: 15px;
+    padding: 12px var(--space-4);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tunnel__more:hover { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.24); }
+  }
+
   .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
   /* Room after the last case for the flight out of the tunnel, then the
      about section held in place (sticky, so no scripted repositioning that

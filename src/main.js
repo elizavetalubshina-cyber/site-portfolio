@@ -349,7 +349,7 @@ function startSpace() {
   const cameraAt = (p) => {
     // A short run-up before the first case, so it starts far down the
     // tunnel, a speck inside the ring, rather than already half grown.
-    const LEAD = 1.6;
+    const LEAD = 0.7;
     const seg = p * (cards.length + LEAD) - LEAD;
     if (seg < 0) return SPACING * seg;
     const i = Math.min(cards.length - 1, Math.floor(seg));
@@ -435,8 +435,11 @@ function startSpace() {
     const dive = Math.pow(clamp01((k - 0.82) / 0.18), 3);
     const zoom = 1 + 3.5 * k * k * k + 45 * dive;
     // m: the point bursting into the tunnel walls.
+    // Flight: the tunnel opens halfway through the fall, straight out of the
+    // shrinking ring, and the flight down it starts right after.
+    const mStart = introTop + (introH - h) * 0.5;
     const m = flight
-      ? ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)))
+      ? ease(clamp01((sy - mStart) / (h * 0.5)))
       : clamp01((sy - (introTop + introH - h * 1.05)) / (h * 0.6));
     // side: the camera starts on top of the stream looking down along it,
     // then swings round beside it to look at it (and the cases) side on.
@@ -454,7 +457,9 @@ function startSpace() {
     // e: the tunnel letting go as "Обо мне" comes up.
     const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
     // Camera depth in the tunnel.
-    const tp = clamp01((sy - tunnelTop) / (tunnelH - h));
+    const tp = flight
+      ? clamp01((sy - mStart - h * 0.25) / (tunnelTop + tunnelH - h - mStart - h * 0.25))
+      : clamp01((sy - tunnelTop) / (tunnelH - h));
     const cam = flight ? cameraAt(tp) : (sy - tunnelTop) * 1.4;
     flow += still ? 0 : dt * 0.05;
 

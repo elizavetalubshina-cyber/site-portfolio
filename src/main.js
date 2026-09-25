@@ -271,6 +271,7 @@ function startSpace() {
   const tags = orbit ? [...orbit.children] : [];
   const cards = tunnelEl ? [...tunnelEl.querySelectorAll('.tunnel__case')] : [];
   const about = document.getElementById('about');
+  const footer = document.querySelector('.home-page .footer');
   const still = reducedMotion.matches;
 
   // Fewer particles on a phone: the screen is smaller and so is the budget.
@@ -582,19 +583,29 @@ function startSpace() {
     // e: the tunnel letting go as "Обо мне" comes up.
     // Leaving the tunnel: tied to the end of the tunnel block rather than to
     // "Обо мне", whose height differs a lot between desktop and phone.
+    // Leaving the tunnel (flight): the camera flies out of its mouth, the
+    // walls rushing past the screen edges and fading, before "Обо мне".
+    const tunnelEnd = tunnelTop + tunnelH;
     const e = flight
-      ? ease(clamp01((sy - (tunnelTop + tunnelH - h * 1.1)) / (h * 0.5)))
+      ? ease(clamp01((sy - (tunnelEnd - h * 0.85)) / (h * 0.75)))
       : ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
-    // "Обо мне" comes out of the tunnel's depth like the cases, growing from
-    // small to full size as it rises into view.
+    // Then "Обо мне" appears in place, out of the open space ahead: held at
+    // its resting spot under the nav while it scrolls up (so it never slides
+    // in from the bottom edge), fading in and settling from slightly small.
     if (flight && about) {
-      const ap = ease(clamp01((sy - (aboutTop - h)) / (h * 0.75)));
-      // Grows out of the middle of the screen, where the tunnel's depth is,
-      // not up from the bottom edge.
-      const oy = window.innerHeight / 2 - (aboutTop - sy);
-      about.style.transformOrigin = `50% ${oy}px`;
-      about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';
+      const start = aboutTop - h * 0.95;
+      // It settles 96px under the top, or lower when the page ends first (a
+      // short about on a tall screen): its resting spot is then wherever the
+      // bottom of the page leaves it, so dropping the hold never jumps.
+      const maxScroll = document.documentElement.scrollHeight - h;
+      const end = Math.min(aboutTop - 96, maxScroll - 4);
+      const rest = aboutTop - end;
+      const ap = ease(clamp01((sy - start) / Math.max(1, end - start)));
+      const hold = Math.min(0, rest - (aboutTop - sy));
+      about.style.transformOrigin = '50% 0';
+      about.style.transform = ap < 1 ? `translateY(${hold}px) scale(${0.9 + 0.1 * ap})` : '';
       about.style.opacity = String(ap);
+      if (footer) footer.style.opacity = String(ap);
     }
     // Camera depth in the tunnel.
     const tp = flight
@@ -694,7 +705,8 @@ function startSpace() {
     const flowDust = [], flowBack = [], flowAccent = [], ringOut = [];
     const tcx = w / 2, tcy = h / 2;
     const halfDiag = Math.hypot(w, h) / 2 + 20;
-    const wall = Math.max(w, h) * 0.55;
+    // Out of the tunnel's mouth: the walls open wide past the screen edges.
+    const wall = Math.max(w, h) * 0.55 * (1 + 3.5 * e * e);
     // The walls do not turn: a rotating tunnel made people motion-sick.
 
     for (const p of pts) {

@@ -1800,6 +1800,9 @@ main,
   .tunnel--flight .tunnel__company { text-align: center; }
   .tunnel__more { margin-top: var(--space-3); font-size: 15px; padding: 12px var(--space-4); }
   .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
+  /* Room after the last case for the flight out of the tunnel, before
+     "Обо мне" appears. */
+  .home-page .cases:has(.tunnel--flight) + .about { margin-top: 80vh; }
   .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
 

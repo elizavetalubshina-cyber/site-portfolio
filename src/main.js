@@ -409,6 +409,9 @@ function startSpace() {
   // the stream seems to pull the viewer along; it eases back when they stop.
   let streamT = 0;
   let rush = 0;
+  // The burst runs on its own clock once the fall reaches it: a quick snap
+  // out rather than something the scroll has to drag along.
+  let burst = 0;
   let lastSy = window.scrollY;
   let flow = 0;
 
@@ -419,7 +422,7 @@ function startSpace() {
     const v = dt > 0 ? Math.abs(sy - lastSy) / dt : 0;
     lastSy = sy;
     rush += (Math.min(1, v / 2.5) - rush) * 0.08;
-    streamT += dt * (1 + rush * 5);
+    streamT += dt * (1.8 + rush * 7);
 
     // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
@@ -427,6 +430,10 @@ function startSpace() {
     const m = flight
       ? ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)))
       : clamp01((sy - (tunnelTop - h * 1.05)) / (h * 0.6));
+    if (!flight) {
+      if (m > 0.05) burst = still ? 1 : Math.min(1, burst + dt / 1100);
+      else burst = still ? 0 : Math.max(0, burst - dt / 700);
+    }
     // e: the tunnel letting go as "Обо мне" comes up.
     const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
     // Camera depth in the tunnel.
@@ -508,7 +515,9 @@ function startSpace() {
 
     // Short trails while things move fast (the fall, the tunnel), none at
     // rest, so the ring stays crisp.
-    const trail = still ? 0 : Math.max(k * Math.pow(1 - m, flight ? 1 : 4), flight ? m * (1 - e) * 0.55 : 0) * 0.55;
+    // Burst: short glowing tails while the grains are flying out.
+    const flare = flight ? 0 : Math.sin(Math.PI * burst) * 1.1;
+    const trail = still ? 0 : Math.max(k * Math.pow(1 - burst, 4), flight ? m * (1 - e) * 0.55 : 0, flare) * 0.55;
     if (trail > 0.02) {
       ctx.globalAlpha = 1;
       ctx.fillStyle = `rgba(${BG}, ${1 - trail})`;
@@ -553,11 +562,12 @@ function startSpace() {
       // its line as it comes. Inside, the dust winds round the line as a
       // helix: the near side of each turn is drawn larger, the far side
       // smaller, so it reads as a twisting rope pulling downward.
-      if (m > 0 && !flight) {
+      if (burst > 0 && !flight) {
         // Each grain leaves the point at its own moment and flies out to its
         // place in the stream, overshooting outward on the way, so the point
         // bursts and the burst becomes the stream.
-        const mp = ease(clamp01((m - p.fall * 0.35) / 0.65));
+        const bt = clamp01((burst - p.fall * 0.25) / 0.75);
+        const mp = 1 - Math.pow(1 - bt, 3);
         const d = ((p.s + streamT * p.speed) % 1) * path.total;
         const q = onPath(d);
         const wide = 120 + 60 * p.fall * p.fall;
@@ -570,7 +580,7 @@ function startSpace() {
           fx += (p.u * w - fx) * e;
           fy += (p.v * h - fy) * e;
         }
-        const blast = Math.sin(Math.PI * mp) * (60 + 220 * p.u);
+        const blast = Math.sin(Math.PI * mp) * (90 + 420 * p.u);
         fx = x + (fx - x) * mp + Math.cos(p.a) * blast;
         fy = y + (fy - y) * mp + Math.sin(p.a) * blast;
         if (fx > -4 && fx < w + 4 && fy > -4 && fy < h + 4) {

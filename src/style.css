@@ -1044,13 +1044,15 @@ h1, h2, h3 {
    ever been applied to one case, so the same badge was two different colours
    depending on which page you had opened. */
 .tag {
-  background: rgba(214, 107, 208, 0.14);
-  color: var(--text);
-  font-size: 11px;
+  /* One chip across the site: the same as the chips on the homepage covers. */
+  background: rgba(10, 10, 16, 0.72);
+  color: #f1f0f6;
+  font-size: 13px;
   font-weight: 500;
+  line-height: 1.4;
   padding: var(--space-half) var(--space-2);
-  border-radius: 14px;
-  border: 1px solid rgba(214, 107, 208, 0.35);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 /* On the bento cards the badge stays white. It sits on top of a product
    screenshot there rather than on the page, and the pink would start competing
@@ -1197,7 +1199,9 @@ h1, h2, h3 {
 .about__photo {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3.4;
+  /* Wide enough that the photo ends about where the short text column does,
+     so neither side leaves a tall empty gap. */
+  aspect-ratio: 16 / 10;
   background: var(--surface);
   border-radius: var(--radius-md);
   overflow: hidden;

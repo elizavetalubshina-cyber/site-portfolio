@@ -342,6 +342,36 @@ function startSpace() {
   // preview hold still under the cursor.
   let hovering = false;
   let pace = 1;
+
+  // The project points on the ring are links too: a tap or click near one
+  // opens its case. On a phone its name fades out while it passes the name,
+  // so the point is then the only way in.
+  let lastMarks = [];
+  let hotPoint = -1;
+  const HIT = 24;
+  const pointAt = (x, y) => {
+    let best = -1, bestD = HIT;
+    lastMarks.forEach((mk, i) => {
+      if (mk.alpha < 0.4) return;
+      const d = Math.hypot(mk.x - x, mk.y - y);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  };
+  document.addEventListener('click', (ev) => {
+    if (ev.target.closest('a, button')) return;
+    const i = pointAt(ev.clientX, ev.clientY);
+    if (i >= 0) window.location.href = lastMarks[i].href;
+  });
+  window.addEventListener('pointermove', (ev) => {
+    if (ev.pointerType !== 'mouse') return;
+    const i = pointAt(ev.clientX, ev.clientY);
+    if (i !== hotPoint) {
+      hotPoint = i;
+      document.body.style.cursor = i >= 0 ? 'pointer' : '';
+      hovering = i >= 0;
+    }
+  }, { passive: true });
   tags.forEach((tag) => {
     tag.addEventListener('pointerenter', () => { hovering = true; });
     tag.addEventListener('pointerleave', () => { hovering = false; });
@@ -544,7 +574,7 @@ function startSpace() {
         tag._oy = (tag._oy || 0) + (mty - (tag._oy || 0)) * 0.12;
         marks.push({
           x: px + tag._ox, y: py + tag._oy, lx: lx + tag._ox, ly: ly + tag._oy,
-          on: tag.matches(':hover'), alpha: 1 - clamp01(k * 1.6), line: clear,
+          on: tag.matches(':hover') || hotPoint === i, alpha: 1 - clamp01(k * 1.6), line: clear, href: tag.href,
         });
         tag.style.transform = `translate(${left - hr.left + (tag._ox || 0)}px, ${cy + oy - hr.top + (tag._oy || 0)}px) translate(0, ${-50 * (1 - sa)}%)`;
         const shown = (1 - clamp01(k * 1.6)) * clear;
@@ -741,6 +771,7 @@ function startSpace() {
     paint(near, 'rgb(236, 233, 255)', 0.85 * fade * ringFade);
     paint(accent, 'rgb(214, 107, 208)', 0.95 * fade * ringFade);
 
+    lastMarks = marks;
     marks.forEach((mk) => {
       if (mk.alpha <= 0.01) return;
       ctx.globalAlpha = mk.alpha * mk.line * (mk.on ? 0.9 : 0.35);

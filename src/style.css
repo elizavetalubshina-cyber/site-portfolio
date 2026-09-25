@@ -1752,10 +1752,15 @@ main,
      (one screen per case plus the entry), and main.js moves each case from
      the depth of the tunnel toward the viewer by scaling it. */
   .tunnel--flight { height: 600vh; }
+  /* Fixed, not sticky: a sticky stage still slides with the page until it
+     pins, and holding the cases still against that from script lags a frame
+     behind the scroll, which made them jump. The tunnel block only supplies
+     the scroll length. */
   .tunnel--flight .tunnel__stage {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    inset: 0;
     height: 100vh;
+    pointer-events: none;
   }
   .tunnel--flight .tunnel__case {
     position: absolute;

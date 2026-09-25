@@ -755,10 +755,6 @@ function startSpace() {
     // Flight: each case comes out of the depth, reads at full size, and
     // flies past the viewer.
     if (flight) {
-      // Until the stage pins, it is still sliding up from below; this holds
-      // the cases at the centre of the screen meanwhile, so they only ever
-      // come out of the depth and never ride up with the page.
-      const lift = Math.max(0, tunnelEl.getBoundingClientRect().top);
       cards.forEach((card, i) => {
         const z = caseDepth(i) - cam;
         let op = 0, sc = 0.1;
@@ -768,7 +764,7 @@ function startSpace() {
           op = clamp01((sc - 0.1) / 0.55) * (1 - clamp01((sc - 1.3) / 0.6)) * clamp01((m - 0.85) / 0.15);
         }
         card.style.opacity = String(op);
-        card.style.transform = `translate(-50%, calc(-50% - ${lift}px)) scale(${Math.min(sc, 4)})`;
+        card.style.transform = `translate(-50%, -50%) scale(${Math.min(sc, 4)})`;
         card.style.pointerEvents = op > 0.85 ? 'auto' : 'none';
         card.style.zIndex = String(100 - i);
       });

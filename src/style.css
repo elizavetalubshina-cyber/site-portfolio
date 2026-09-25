@@ -1747,44 +1747,6 @@ main,
     background: radial-gradient(closest-side, rgba(7, 7, 11, 0.92), rgba(7, 7, 11, 0.7) 60%, rgba(7, 7, 11, 0));
   }
 
-  /* Flow: the cases scroll by as an ordinary list and the tunnel walls run
-     round them in the background. */
-  /* Room for the camera to swing from on top of the stream to beside it
-     before the first case comes up. */
-  .tunnel--flow { padding-top: 0; }
-  /* Flow: a shorter fall into the point, so the cases come sooner. */
-  .home-page .intro:has(~ .cases .tunnel--flow) { height: 115vh; }
-  .tunnel--flow .tunnel__case {
-    min-height: 90vh;
-    padding: var(--space-6) 0;
-  }
-  /* Each case comes toward the camera out of the stream: from smaller and
-     further off to its place, rather than sliding up. */
-  .tunnel--flow .tunnel__case .tunnel__cover,
-  .tunnel--flow .tunnel__case .tunnel__text {
-    opacity: 0;
-    transform: scale(0.82);
-    transition: opacity 0.9s ease, transform 1.1s cubic-bezier(0.16, 0.8, 0.3, 1);
-  }
-  .tunnel--flow .tunnel__case .tunnel__text {
-    position: relative;
-    transition-delay: 0.12s;
-  }
-  /* Same pool of night as in flight, behind the text only: the covers are
-     opaque already. */
-  .tunnel--flow .tunnel__text::before {
-    content: '';
-    position: absolute;
-    inset: -30% -20%;
-    z-index: -1;
-    background: radial-gradient(closest-side, rgba(7, 7, 11, 0.9), rgba(7, 7, 11, 0.6) 60%, rgba(7, 7, 11, 0));
-  }
-  .tunnel--flow .tunnel__case.is-visible .tunnel__cover,
-  .tunnel--flow .tunnel__case.is-visible .tunnel__text {
-    opacity: 1;
-    transform: none;
-  }
-
   .about { margin-top: var(--space-8); }
 
   /* Without scripting (or if main.js fails) there is no ring and no
@@ -1792,7 +1754,7 @@ main,
      ordinary list below it. */
   html:not(.js) .intro { height: auto; }
   html:not(.js) .hero__orbit { display: none; }
-  .tunnel:not(.tunnel--flight):not(.tunnel--flow) .tunnel__case + .tunnel__case { margin-top: var(--space-10); }
+  .tunnel:not(.tunnel--flight) .tunnel__case + .tunnel__case { margin-top: var(--space-10); }
 
   /* The tunnel's links are reachable from the keyboard: focus flies the
      camera to that case (main.js), and the ring shows where focus is. */
@@ -1814,7 +1776,6 @@ main,
   .tunnel__case--right .tunnel__cover { order: 0; }
   .tunnel__title { font-size: 30px; }
   .tunnel--flight .tunnel__case { width: 96vw; }
-  .tunnel--flow .tunnel__case { min-height: 0; padding: var(--space-8) 0; }
   .tunnel__desc { font-size: 16px; }
 }
 
@@ -2067,12 +2028,6 @@ main,
   padding: var(--space-2) var(--space-4);
 }
 @media (prefers-reduced-motion: reduce) {
-  .tunnel--flow .tunnel__case .tunnel__cover,
-  .tunnel--flow .tunnel__case .tunnel__text {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
   .case-sheet__card, .case-sheet__backdrop { transition: none; }
 }
 html.sheet-lock, html.sheet-lock body { overflow: hidden; }

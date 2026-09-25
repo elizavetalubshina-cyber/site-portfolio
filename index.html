@@ -40,7 +40,7 @@
       if (window.spaceStarted) return;
       document.documentElement.classList.remove('js');
       var t = document.getElementById('tunnel');
-      if (t) t.classList.remove('tunnel--flight', 'tunnel--flow');
+      if (t) t.classList.remove('tunnel--flight');
     });
   </script>
   <link rel="stylesheet" href="/src/style.css" />
@@ -170,9 +170,7 @@
            The flight is switched on right here, before the first paint;
            without scripting the cases are an ordinary list. -->
       <div class="tunnel" id="tunnel">
-        <!-- ?cases=flow shows the second variant: the cases as a list with
-             a stream of dust winding down through them. -->
-        <script>document.getElementById('tunnel').classList.add(/[?&]cases=flow\b/.test(location.search) ? 'tunnel--flow' : 'tunnel--flight');</script>
+        <script>document.getElementById('tunnel').classList.add('tunnel--flight');</script>
         <div class="tunnel__stage">
           <article class="tunnel__case tunnel__case--left">
           <a class="tunnel__cover" href="/cases/vs-subtitles.html" tabindex="-1" aria-hidden="true">

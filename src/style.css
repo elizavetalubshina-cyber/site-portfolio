@@ -2054,7 +2054,7 @@ main,
   max-width: 560px;
   max-height: 88vh;
   overflow-y: auto;
-  padding: var(--space-1) var(--space-2) calc(var(--space-3) + env(safe-area-inset-bottom));
+  padding: 12px var(--space-2) calc(var(--space-3) + env(safe-area-inset-bottom));
   border-radius: 24px 24px 0 0;
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -2071,7 +2071,7 @@ main,
   display: block;
   width: 40px;
   height: 5px;
-  margin: 0 auto var(--space-1);
+  margin: 0 auto var(--space-2);
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.28);
 }
@@ -2084,48 +2084,33 @@ main,
   border-radius: var(--radius-md);
 }
 .case-sheet__title {
-  margin: var(--space-2) var(--space-2) var(--space-half);
+  margin: 20px var(--space-1) var(--space-1);
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
+  line-height: 1.15;
 }
-.case-sheet__media { position: relative; margin-top: var(--space-1); }
+.case-sheet__media {
+  position: relative;
+}
 .case-sheet__company {
-  margin: calc(var(--space-2) * -1) 0 var(--space-3);
+  margin: 0 var(--space-1) var(--space-3);
   font-size: 13px;
   color: var(--text-muted);
 }
 .case-sheet__desc {
-  margin: 0 var(--space-2) var(--space-3);
-  font-size: 15px;
+  margin: 0 var(--space-1) var(--space-1);
+  font-size: 16px;
   line-height: 1.45;
-  color: var(--text-secondary);
+  color: var(--text);
 }
-.case-sheet__go { justify-content: center; font-size: 15px; padding: var(--space-2) var(--space-4); }
-.case-sheet__close {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  z-index: 1;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(7, 7, 11, 0.7);
-  cursor: pointer;
+.case-sheet__go {
+  width: 100%;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
 }
-.case-sheet__close::before,
-.case-sheet__close::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 16px;
-  height: 2px;
-  background: #fff;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-.case-sheet__close::after { transform: translate(-50%, -50%) rotate(-45deg); }
 @media (prefers-reduced-motion: reduce) {
   .case-sheet__card, .case-sheet__backdrop { transition: none; }
 }

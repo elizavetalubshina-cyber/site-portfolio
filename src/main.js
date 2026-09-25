@@ -1166,22 +1166,32 @@ function startSpace() {
     // Each case comes out of the depth, reads at full size, and flies past
     // the viewer.
     if (flight) {
-      // One case at a time: the next stays hidden until the one in front of
-      // it has flown by and faded out.
+      // One case at a time. A case comes up out of the depth, and once it
+      // has been read it does not fly on into the viewer: it slides up off
+      // the screen at its full size and fades, while the next one rises
+      // out of the depth behind it.
       let ahead = 0;
       cards.forEach((card, i) => {
         const z = caseDepth(i) - cam;
-        let op = 0, sc = 0.1;
-        if (z > 40) {
+        let op = 0, sc = 0.1, lift = 0, gone = 0;
+        if (z >= FOCUS) {
           sc = FOCUS / z;
           // Hidden until the tunnel has fully formed, then grows from a speck.
-          op = clamp01((sc - 0.1) / 0.55) * (1 - clamp01((sc - 1.3) / 0.6)) * clamp01((m - 0.85) / 0.15);
+          op = clamp01((sc - 0.1) / 0.55) * clamp01((m - 0.85) / 0.15);
+        } else {
+          // Past its stop: held at full size, it moves up and fades.
+          gone = ease(clamp01((FOCUS - z) / (SPACING * 0.45)));
+          sc = 1;
+          lift = gone * h * 0.7;
+          op = (1 - gone) * clamp01((m - 0.85) / 0.15);
         }
+        const own = op;
         op *= (1 - ahead) * (1 - e);
-        const shownOwn = op;
-        ahead = Math.max(ahead, shownOwn > 0.02 || z <= 40 ? (z > 40 ? Math.min(1, shownOwn * 3) : 0) : 0);
+        // A case on its way in, or at its stop, keeps the ones behind it
+        // hidden; one on its way out lets the next come up as it goes.
+        ahead = Math.max(ahead, z >= FOCUS ? Math.min(1, own * 3) : (1 - gone) * (own > 0 ? 1 : 0));
         card.style.opacity = String(op);
-        card.style.transform = `translate(-50%, -50%) scale(${Math.min(sc, 4)})`;
+        card.style.transform = `translate(-50%, calc(-50% - ${Math.round(lift)}px)) scale(${Math.min(sc, 4)})`;
         card.style.pointerEvents = op > 0.85 ? 'auto' : 'none';
         card.style.zIndex = String(100 - i);
       });

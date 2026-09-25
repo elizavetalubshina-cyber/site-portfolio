@@ -1772,6 +1772,31 @@ main,
     transform: translate(-50%, -50%) scale(0.2);
     will-change: transform, opacity;
   }
+  /* In the tunnel a case is just a large picture, its name and one line
+     on what it is, stacked and centred. */
+  .tunnel--flight .tunnel__case,
+  .tunnel--flight .tunnel__case--right {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    justify-items: center;
+    text-align: center;
+    width: min(1320px, 88vw, calc(72vh * 1.6));
+  }
+  .tunnel--flight .tunnel__case--right .tunnel__cover { order: 0; }
+  .tunnel--flight .tunnel__cover {
+    width: 100%;
+  }
+  .tunnel--flight .tunnel__cover img {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+  }
+  .tunnel--flight .tunnel__index,
+  .tunnel--flight .tunnel__stats,
+  .tunnel--flight .tunnel__meta { display: none; }
+  .tunnel--flight .tunnel__title { margin-bottom: var(--space-1); font-size: clamp(28px, 2.8vw, 44px); }
+  .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
+
   /* A soft pool of night behind the case, so the streaks flying past do not
      run through the text. */
   .tunnel--flight .tunnel__case::before {
@@ -1842,6 +1867,7 @@ main,
   .tunnel__case--right .tunnel__cover { order: 0; }
   .tunnel--flow .tunnel__case { min-height: 0; padding: var(--space-8) 0; }
   .tunnel__title { font-size: 30px; }
+  .tunnel--flight .tunnel__case { width: 96vw; }
   .tunnel__desc { font-size: 16px; }
 }
 

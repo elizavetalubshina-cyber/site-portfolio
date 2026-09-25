@@ -330,7 +330,11 @@ function startSpace() {
   const still = reducedMotion.matches;
 
   // Fewer particles on a phone: the screen is smaller and so is the budget.
-  const COUNT = narrowScreen.matches ? 5000 : 9000;
+  // The flow spreads its dust along the whole page, so it needs more of it
+  // to read as one dense stream.
+  const COUNT = flowMode
+    ? (narrowScreen.matches ? 9000 : 16000)
+    : (narrowScreen.matches ? 5000 : 9000);
   const REPEL = 110;
   // Tunnel world: depth of the visible stretch, the distance at which
   // something is drawn at its real size, and the gap between cases.
@@ -885,9 +889,11 @@ function startSpace() {
         // source, full width about a screen further on, so it never starts
         // with a flat cut.
         const open = 1;
-        const wide = (120 + 60 * p.fall * p.fall) * open;
+        // A tighter rope than before, narrower still on a phone, so the
+        // dust packs close instead of spreading thin.
+        const wide = ((narrowScreen.matches ? 60 : 90) + 40 * p.fall * p.fall) * open;
         const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
-        const off = Math.cos(turn) * wide + p.band * 14 * open;
+        const off = Math.cos(turn) * wide + p.band * 9 * open;
         const depth = Math.sin(turn);
         let fx = q.x + q.nx * off;
         let fy = q.y + q.ny * off - sy;
@@ -898,7 +904,7 @@ function startSpace() {
           const z = 30 + zf * 3200;
           const sc = (520 * (1 + 9 * hole * hole)) / z;
           const ta = (d * 0.004) + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
-          const tr = (120 + 60 * p.fall * p.fall) * sc;
+          const tr = ((narrowScreen.matches ? 60 : 90) + 40 * p.fall * p.fall) * sc;
           const tx = w / 2 + Math.cos(ta) * tr;
           const ty = h / 2 + Math.sin(ta) * tr;
           fx = tx + (fx - tx) * side;

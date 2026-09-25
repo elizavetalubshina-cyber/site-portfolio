@@ -1536,6 +1536,9 @@ main,
     top: 0;
     padding: var(--space-half) var(--space-1);
     border-radius: 6px;
+    /* A patch of night behind the name, for the spots on a phone where it
+       has to cross the ring's dust. */
+    background: rgba(7, 7, 11, 0.72);
     color: var(--text);
     text-decoration: none;
     opacity: 0;
@@ -1554,12 +1557,7 @@ main,
     text-transform: uppercase;
     white-space: nowrap;
   }
-  .hero__orbit-label::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--purple);
-  }
+  /* The point for each project is drawn on the ring by main.js. */
 
   /* Preview card: cover, name, one line on what it is, and the way in.
      Opens above the tag, or below it for tags in the upper half of the

@@ -450,6 +450,9 @@ function startSpace() {
     head.style.transform = k > 0 ? `scale(${Math.max(0.02, 1 - k)})` : '';
     head.style.opacity = String(1 - clamp01(k * 1.25));
 
+    // Each project is a point flying in the ring's dust; its name sits
+    // outside, on clear sky, joined to the point by a thin line.
+    const marks = [];
     if (tags.length) {
       const hr = hero.getBoundingClientRect();
       tags.forEach((tag, i) => {
@@ -461,13 +464,24 @@ function startSpace() {
         const r = R * pull * 1.1 + 16;
         const x = cx + ca * r;
         // Kept clear of the nav at the top and on screen at the bottom.
-        let oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * r));
+        // A phone has no room beside the ring but plenty above and below it,
+        // so there the names ride a taller oval that clears the dust.
+        const narrow = w - 2 * r < 300;
+        const ry = narrow ? R * pull + 70 : r;
+        let oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * ry));
         // On a narrow screen there is no room beside the ring, so a label
         // would cross the name; it steps round the name's band instead.
         const band = hb.height / 2 + 14;
-        if (w - 2 * r < 300 && Math.abs(oy) < band) oy = (sa < 0 ? -band - 12 : band);
+        if (narrow && Math.abs(oy) < band) oy = (sa < 0 ? -band - 12 : band);
         const tw = tag.offsetWidth;
+        const th = tag.offsetHeight;
         const left = Math.min(w - tw - 8, Math.max(8, x - tw * (1 - ca) / 2));
+        const ly = cy + oy - th * (1 - sa) / 2 + th / 2;
+        const lx = Math.abs(left - (cx + ca * R * pull)) < Math.abs(left + tw - (cx + ca * R * pull)) ? left : left + tw;
+        marks.push({
+          x: cx + ca * R * pull, y: cy + sa * R * pull, lx, ly,
+          on: tag.matches(':hover'), alpha: 1 - clamp01(k * 1.6),
+        });
         tag.style.transform = `translate(${left - hr.left}px, ${cy + oy - hr.top}px) translate(0, ${-50 * (1 - sa)}%)`;
         const shown = 1 - clamp01(k * 1.6);
         tag.style.opacity = String(shown);
@@ -622,6 +636,31 @@ function startSpace() {
     paint(mid, 'rgb(236, 233, 255)', 0.75 * fade * ringFade);
     paint(near, 'rgb(236, 233, 255)', 0.85 * fade * ringFade);
     paint(accent, 'rgb(214, 107, 208)', 0.95 * fade * ringFade);
+
+    marks.forEach((mk) => {
+      if (mk.alpha <= 0.01) return;
+      ctx.globalAlpha = mk.alpha * (mk.on ? 0.9 : 0.35);
+      ctx.strokeStyle = 'rgb(214, 107, 208)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(mk.x, mk.y);
+      ctx.lineTo(mk.lx, mk.ly);
+      ctx.stroke();
+      const r = mk.on ? 9 : 6;
+      const g = ctx.createRadialGradient(mk.x, mk.y, 0, mk.x, mk.y, r * 2.4);
+      g.addColorStop(0, 'rgba(214, 107, 208, 0.55)');
+      g.addColorStop(1, 'rgba(214, 107, 208, 0)');
+      ctx.globalAlpha = mk.alpha;
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(mk.x, mk.y, r * 2.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#f7d9f5';
+      ctx.beginPath();
+      ctx.arc(mk.x, mk.y, r / 2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
     if (streaks.length) {
       ctx.globalAlpha = 0.75;
       ctx.strokeStyle = 'rgb(236, 233, 255)';

@@ -688,13 +688,13 @@ function startSpace() {
     const { mStart, tunnelEnd } = marks0();
     const m = flight
       ? ease(clamp01((sy - mStart) / (h * 0.5)))
-      : clamp01((sy - (introTop + introH - h * 1.05)) / (h * 0.6));
+      : clamp01((sy - (introTop + introH - h * 1.05)) / (h * 0.45));
     const introEnd = introTop + introH - h;
     // Flow: first the camera flies on into the dark centre of the stream
     // seen end-on, the hole opening wider round the viewer, then it swings
     // round beside the stream to see it, and the cases, side on.
-    const hole = flight ? 0 : ease(clamp01((sy - (introEnd + h * 0.05)) / (h * 0.7)));
-    const side = flight ? 1 : ease(clamp01((sy - (introEnd + h * 0.65)) / (h * 0.9)));
+    const hole = flight ? 0 : ease(clamp01((sy - (introEnd + h * 0.02)) / (h * 0.4)));
+    const side = flight ? 1 : ease(clamp01((sy - (introEnd + h * 0.3)) / (h * 0.55)));
     if (!flight) {
       if (m > 0.05) burst = still ? 1 : Math.min(1, burst + dt / 1100);
       else burst = still ? 0 : Math.max(0, burst - dt / 700);

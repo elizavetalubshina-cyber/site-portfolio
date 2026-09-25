@@ -88,6 +88,48 @@ if (navHeader && heroTitle) {
   window.addEventListener('resize', onScroll);
 }
 
+// Email: a click copies the address and says so in a notice at the bottom,
+// rather than opening a mail app the visitor may not use. If copying is
+// not possible, the link works as an ordinary mailto.
+const toast = document.getElementById('toast');
+let toastTimer = 0;
+const showToast = (text) => {
+  if (!toast) return;
+  toast.textContent = text;
+  toast.classList.add('is-shown');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('is-shown'), 2200);
+};
+const copyText = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    // Older browsers and some embedded views: the pre-Clipboard-API way.
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+    area.remove();
+    return ok;
+  }
+};
+if (toast) {
+  document.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
+    link.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const address = link.getAttribute('href').slice(7).split('?')[0];
+      if (await copyText(address)) showToast('Почта скопирована');
+      else window.location.href = link.href;
+    });
+  });
+}
+
 const galleryPhotos = document.querySelectorAll('#aboutPhotoGallery img');
 const galleryDots = document.querySelectorAll('#aboutPhotoGallery .photo-dot');
 

@@ -1732,28 +1732,6 @@ main,
 
   .about { margin-top: var(--space-8); }
 
-  /* A quiet pointer down to the cases for anyone who does not think to
-     scroll through the animation. Part of the name block, so it falls into
-     the point with it. */
-  .hero__hint {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    margin-top: var(--space-3);
-    padding: var(--space-1) var(--space-2);
-    border-radius: 999px;
-    color: var(--text-secondary);
-    font-size: 14px;
-    text-decoration: none;
-    pointer-events: auto;
-    transition: color 0.2s ease;
-  }
-  .hero__hint span { display: inline-block; animation: hint-bob 2.4s ease-in-out infinite; }
-  .hero__hint:hover { color: var(--text); }
-  @keyframes hint-bob {
-    50% { transform: translateY(3px); }
-  }
-
   /* Without scripting (or if main.js fails) there is no ring and no
      flight: the hero is one screen with the name, and the cases are an
      ordinary list below it. */
@@ -2033,10 +2011,38 @@ main,
   padding: var(--space-2) var(--space-4);
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero__hint span { animation: none; }
   .case-sheet__card, .case-sheet__backdrop { transition: none; }
 }
 html.sheet-lock, html.sheet-lock body { overflow: hidden; }
+
+/* ---------- Toast ---------- */
+
+/* A small notice that rises from the bottom edge and goes away by itself. */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 300;
+  padding: 12px var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(24, 24, 34, 0.94);
+  color: var(--text);
+  font-size: 15px;
+  white-space: nowrap;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 16px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.toast.is-shown {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; }
+}
 
 /* Tag chips sit on the cover, bottom right: the same chips, the same size,
    in the tunnel on every screen and in the phone preview. */

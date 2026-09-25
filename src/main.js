@@ -621,27 +621,36 @@ function startSpace() {
     stops.forEach((s, i) => { if (Math.abs(s - y) < Math.abs(stops[best] - y)) best = i; });
     return best;
   };
-  let stepping = false;
-  const stepTo = (i) => {
-    const to = stops[Math.max(0, Math.min(stops.length - 1, i))];
+  // One step is one smooth move to a stop. It starts the moment the wheel
+  // or finger moves, runs fast at first and settles slowly into the case,
+  // so the scroll answers at once and the arrival takes its time. A new
+  // gesture during a move is never lost: it re-aims at the stop after the
+  // one being approached.
+  let target = -1;
+  let anim = 0;
+  const moveTo = (i) => {
+    i = Math.max(0, Math.min(stops.length - 1, i));
+    target = i;
+    const to = stops[i];
     const from = window.scrollY;
-    if (Math.abs(to - from) < 2) return;
-    if (still) { window.scrollTo({ top: to, behavior: 'instant' }); return; }
-    stepping = true;
-    // Unhurried: about 1.2 s from case to case, 1.7 s for the long way from
-    // the ring down to the first case, so the fall and the flight read.
-    const dur = Math.min(2000, Math.max(1100, 900 + Math.abs(to - from) * 0.6));
+    cancelAnimationFrame(anim);
+    if (Math.abs(to - from) < 2) { target = -1; return; }
+    if (still) { window.scrollTo({ top: to, behavior: 'instant' }); target = -1; return; }
+    // About 1 s from case to case, 1.4 s down from the ring.
+    const dur = Math.min(1500, Math.max(900, 700 + Math.abs(to - from) * 0.5));
     const t0 = performance.now();
     const tick = (t) => {
       const u = Math.min(1, (t - t0) / dur);
-      const q = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      const q = 1 - Math.pow(1 - u, 4);
       window.scrollTo({ top: from + (to - from) * q, behavior: 'instant' });
-      if (u < 1) requestAnimationFrame(tick);
-      else stepping = false;
+      if (u < 1) anim = requestAnimationFrame(tick);
+      else target = -1;
     };
-    requestAnimationFrame(tick);
+    anim = requestAnimationFrame(tick);
   };
   const step = (dir) => {
+    // Already moving: the next stop after the one being approached.
+    if (target >= 0) { moveTo(target + dir); return; }
     const here = nearestStop();
     const y = window.scrollY;
     // Between two stops (after a scrollbar drag), the first step settles on
@@ -649,42 +658,54 @@ function startSpace() {
     let i = here + dir;
     if (dir > 0 && stops[here] > y + 2) i = here;
     if (dir < 0 && stops[here] < y - 2) i = here;
-    stepTo(i);
+    moveTo(i);
   };
   const blocked = (target) => sheetOpen
     || document.documentElement.classList.contains('sheet-lock')
     || (target && target.closest && target.closest('.nav.is-open, .case-sheet'));
   if (flight) {
-    // Wheel and trackpad: one gesture, one step. A trackpad keeps sending
-    // events for a second or so after the fingers lift; those are swallowed
-    // until there is a short pause.
-    let lastWheel = 0;
+    // Wheel and trackpad: one gesture, one step, taken on its first event.
+    // A trackpad keeps sending ever smaller events for a second after the
+    // fingers lift; those belong to the same gesture. A new gesture shows
+    // as a pause, a turn, or a sudden rise in the deltas.
+    let lastWheel = 0, lastDelta = 0, lastDir = 0, gestureAt = 0;
     window.addEventListener('wheel', (ev) => {
       if (ev.ctrlKey || blocked(ev.target)) return;
       ev.preventDefault();
       const now = performance.now();
-      const quiet = now - lastWheel > 220;
+      const d = ev.deltaY;
+      if (Math.abs(d) < 1) return;
+      const dir = d > 0 ? 1 : -1;
+      // Soon after a step, small deltas are the tail of its inertia even
+      // across a short gap; only a clear push counts as a new gesture.
+      const tail = now - gestureAt < 1000 && Math.abs(d) < 15;
+      const fresh = !tail && (now - lastWheel > 150
+        || dir !== lastDir
+        || (now - gestureAt > 300 && Math.abs(d) > Math.abs(lastDelta) * 1.8 + 6));
       lastWheel = now;
-      if (stepping || !quiet || Math.abs(ev.deltaY) < 3) return;
-      step(ev.deltaY > 0 ? 1 : -1);
+      lastDelta = d;
+      lastDir = dir;
+      if (!fresh) return;
+      gestureAt = now;
+      step(dir);
     }, { passive: false });
-    // Touch: the page does not scroll under the finger; a swipe of more
-    // than a few pixels is one step in its direction, a tap stays a tap.
-    let touchY = null, touchMoved = 0;
+    // Touch: the step starts as soon as the finger has clearly moved, not
+    // when it lifts. A tap stays a tap.
+    let touchY = null, touched = false;
     window.addEventListener('touchstart', (ev) => {
       touchY = ev.touches.length === 1 && !blocked(ev.target) ? ev.touches[0].clientY : null;
-      touchMoved = 0;
+      touched = false;
     }, { passive: true });
     window.addEventListener('touchmove', (ev) => {
       if (touchY === null) return;
       ev.preventDefault();
-      touchMoved = touchY - ev.touches[0].clientY;
+      const dy = touchY - ev.touches[0].clientY;
+      if (!touched && Math.abs(dy) > 24) {
+        touched = true;
+        step(dy > 0 ? 1 : -1);
+      }
     }, { passive: false });
-    window.addEventListener('touchend', () => {
-      if (touchY === null) return;
-      touchY = null;
-      if (!stepping && Math.abs(touchMoved) > 30) step(touchMoved > 0 ? 1 : -1);
-    });
+    window.addEventListener('touchend', () => { touchY = null; });
     document.addEventListener('keydown', (ev) => {
       if (blocked(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
       if (ev.target.closest && ev.target.closest('input, textarea, select, [contenteditable]')) return;
@@ -693,7 +714,7 @@ function startSpace() {
       const up = ev.key === 'ArrowUp' || ev.key === 'PageUp' || (ev.key === ' ' && ev.shiftKey);
       if (!down && !up) return;
       ev.preventDefault();
-      if (!stepping) step(down ? 1 : -1);
+      if (!ev.repeat) step(down ? 1 : -1);
     });
   }
 

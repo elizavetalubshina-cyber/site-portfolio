@@ -1476,6 +1476,8 @@ h1, h2, h3 {
 .sky {
   position: fixed;
   inset: 0;
+  display: block;
+  max-width: 100%;
   z-index: 0;
   width: 100%;
   height: 100%;
@@ -1993,6 +1995,10 @@ main,
   }
   /* The menu button sits on the right on every page, closed or open. */
   .nav__shell { margin-left: auto; }
+  /* Closed, the hidden menu hangs off the shell; with the shell now on the
+     right it has to open leftward, or its width runs past the screen edge
+     and lets the page slide sideways. */
+  .nav:not(.is-open) .nav__menu { left: auto; right: 0; }
   .nav.is-open .nav__inner {
     justify-content: flex-end;
   }

@@ -954,7 +954,9 @@ if (!particleCanvas) {
     x: Math.random(), y: Math.random(), s: Math.random() < 0.85 ? 1 : 1.8, a: 0.2 + Math.random() * 0.5,
   }));
   const paintSky = () => {
-    const w = window.innerWidth, h = window.innerHeight;
+    // clientWidth, not innerWidth: on a phone innerWidth can report more than
+    // the screen, and a canvas that wide lets the page slide sideways.
+    const w = document.documentElement.clientWidth, h = window.innerHeight;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     sky.width = w * dpr;
     sky.height = h * dpr;

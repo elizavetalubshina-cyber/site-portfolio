@@ -1737,9 +1737,9 @@ main,
      round them in the background. */
   /* Room for the camera to swing from on top of the stream to beside it
      before the first case comes up. */
-  .tunnel--flow { padding-top: 15vh; }
+  .tunnel--flow { padding-top: 0; }
   /* Flow: a shorter fall into the point, so the cases come sooner. */
-  .home-page .intro:has(~ .cases .tunnel--flow) { height: 135vh; }
+  .home-page .intro:has(~ .cases .tunnel--flow) { height: 115vh; }
   .tunnel--flow .tunnel__case {
     min-height: 90vh;
     padding: var(--space-6) 0;

@@ -271,7 +271,7 @@ function startSpace() {
   const still = reducedMotion.matches;
 
   // Fewer particles on a phone: the screen is smaller and so is the budget.
-  const COUNT = narrowScreen.matches ? 8000 : 22000;
+  const COUNT = narrowScreen.matches ? 5000 : 9000;
   const REPEL = 110;
   // Tunnel world: depth of the visible stretch, the distance at which
   // something is drawn at its real size, and the gap between cases.
@@ -430,7 +430,6 @@ function startSpace() {
     // Camera: how far it has flown in toward the point, how fast it is going
     // (for the warp streaks) and how much closer the point looks.
     const cameraIn = k * k * 1.6;
-    const warp = Math.max(0, k - 0.15) * 1.2 * (1 - burst);
     // At the very end the camera flies into the ball itself: it swells past
     // the edges of the screen and its dust streams by on every side.
     const dive = Math.pow(clamp01((k - 0.82) / 0.18), 3);
@@ -441,6 +440,7 @@ function startSpace() {
       : clamp01((sy - (introTop + introH - h * 1.05)) / (h * 0.6));
     // side: the camera starts on top of the stream looking down along it,
     // then swings round beside it to look at it (and the cases) side on.
+    const warp = Math.max(0, k - 0.15) * 1.2 * (1 - burst) * (1 - m);
     const introEnd = introTop + introH - h;
     // hole: first the camera flies on into the dark centre of the stream
     // seen end-on, the hole opening wider and wider round the viewer...
@@ -648,7 +648,7 @@ function startSpace() {
         bucket = z < DEPTH * 0.25 ? 0 : z < DEPTH * 0.6 ? 1 : 2;
         // Near the viewer the dust is drawn as short streaks pointing away
         // from the centre, the way things smear past at speed.
-        streak = m * (1 - e) * Math.min(42, 10 * s);
+        streak = m * (1 - e) * Math.min(22, 5 * s);
         dirX = Math.cos(a);
         dirY = Math.sin(a);
       }
@@ -734,7 +734,7 @@ function startSpace() {
     });
     ctx.globalAlpha = 1;
     if (streaks.length) {
-      ctx.globalAlpha = flight ? 0.75 : 0.45;
+      ctx.globalAlpha = 0.45;
       ctx.strokeStyle = 'rgb(236, 233, 255)';
       ctx.lineWidth = flight ? 1.2 : 1;
       ctx.beginPath();

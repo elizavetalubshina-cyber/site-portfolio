@@ -366,9 +366,10 @@ function startSpace() {
   const covers = cards.map((c) => c.querySelector('.tunnel__cover'));
   const buildPath = () => {
     if (flight || !covers.length) return;
-    // Starts at the point the ring fell into (the middle of the screen at
-    // the moment the hero lets go): the stream is what bursts out of it.
-    const knots = [{ x: w / 2, y: introTop + introH - h / 2 }, { x: w / 2, y: tunnelTop + h * 0.15 }];
+    // Starts above the top of the screen at the moment the camera is inside
+    // the ball, so the viewer lands in the middle of the stream and rides it
+    // down through the cases.
+    const knots = [{ x: w / 2, y: introTop + introH - h * 1.6 }, { x: w / 2, y: tunnelTop + h * 0.15 }];
     covers.forEach((c) => {
       const r = c.getBoundingClientRect();
       knots.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
@@ -430,7 +431,10 @@ function startSpace() {
     // (for the warp streaks) and how much closer the point looks.
     const cameraIn = k * k * 1.6;
     const warp = Math.max(0, k - 0.15) * 1.2 * (1 - burst);
-    const zoom = 1 + 3.5 * k * k * k;
+    // At the very end the camera flies into the ball itself: it swells past
+    // the edges of the screen and its dust streams by on every side.
+    const dive = Math.pow(clamp01((k - 0.82) / 0.18), 3);
+    const zoom = 1 + 3.5 * k * k * k + 45 * dive;
     // m: the point bursting into the tunnel walls.
     const m = flight
       ? ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)))
@@ -587,7 +591,7 @@ function startSpace() {
         // The stream opens out of the point like a cone: no width at its
         // source, full width about a screen further on, so it never starts
         // with a flat cut.
-        const open = Math.sin(Math.min(1, d / (h * 0.9)) * Math.PI / 2);
+        const open = 1;
         const wide = (120 + 60 * p.fall * p.fall) * open;
         const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
         const off = Math.cos(turn) * wide + p.band * 14 * open;
@@ -598,7 +602,9 @@ function startSpace() {
           fx += (p.u * w - fx) * e;
           fy += (p.v * h - fy) * e;
         }
-        const blast = Math.sin(Math.PI * mp) * (90 + 420 * p.u);
+        // The dust that flew past the camera gathers in from all round the
+        // screen into the stream, with a slight swirl on the way.
+        const blast = Math.sin(Math.PI * mp) * (20 + 60 * p.u);
         fx = x + (fx - x) * mp + Math.cos(p.a) * blast;
         fy = y + (fy - y) * mp + Math.sin(p.a) * blast;
         if (fx > -4 && fx < w + 4 && fy > -4 && fy < h + 4) {

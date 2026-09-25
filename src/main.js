@@ -521,9 +521,10 @@ function startSpace() {
         const ry = narrow ? R * pull + 70 : r;
         let oy = Math.min(h / 2 - 28, Math.max(-(h / 2 - 96), sa * ry));
         // On a narrow screen there is no room beside the ring, so a label
-        // would cross the name; it steps round the name's band instead.
+        // would cross the name. It keeps moving smoothly and fades out while
+        // it passes the name's band, rather than hopping over it.
         const band = hb.height / 2 + 14;
-        if (narrow && Math.abs(oy) < band) oy = (sa < 0 ? -band - 12 : band);
+        const clear = narrow ? clamp01((Math.abs(oy) - band) / 36) : 1;
         const tw = tag.offsetWidth;
         const th = tag.offsetHeight;
         const left = Math.min(w - tw - 8, Math.max(8, x - tw * (1 - ca) / 2));
@@ -543,10 +544,10 @@ function startSpace() {
         tag._oy = (tag._oy || 0) + (mty - (tag._oy || 0)) * 0.12;
         marks.push({
           x: px + tag._ox, y: py + tag._oy, lx: lx + tag._ox, ly: ly + tag._oy,
-          on: tag.matches(':hover'), alpha: 1 - clamp01(k * 1.6),
+          on: tag.matches(':hover'), alpha: 1 - clamp01(k * 1.6), line: clear,
         });
         tag.style.transform = `translate(${left - hr.left + (tag._ox || 0)}px, ${cy + oy - hr.top + (tag._oy || 0)}px) translate(0, ${-50 * (1 - sa)}%)`;
-        const shown = 1 - clamp01(k * 1.6);
+        const shown = (1 - clamp01(k * 1.6)) * clear;
         tag.style.opacity = String(shown);
         tag.style.pointerEvents = shown > 0.4 ? 'auto' : 'none';
         // Preview opens toward the room: down from tags in the upper half,
@@ -742,7 +743,7 @@ function startSpace() {
 
     marks.forEach((mk) => {
       if (mk.alpha <= 0.01) return;
-      ctx.globalAlpha = mk.alpha * (mk.on ? 0.9 : 0.35);
+      ctx.globalAlpha = mk.alpha * mk.line * (mk.on ? 0.9 : 0.35);
       ctx.strokeStyle = 'rgb(214, 107, 208)';
       ctx.lineWidth = 1;
       ctx.beginPath();

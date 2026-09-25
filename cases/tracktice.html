@@ -127,9 +127,11 @@
     <section class="case-detail container">
      <div class="case-detail__layout">
       <div class="case-detail__content">
-      <!-- Как работает подсчёт -->
+      <!-- Подробнее о процессе -->
       <div class="case-block">
-        <h2 id="how-counting-works">Как работает подсчёт</h2>
+        <h2 id="process">Подробнее о процессе</h2>
+
+        <h3 id="how-counting-works">Как работает подсчёт</h3>
         <p>Камера над дверью следит за одной линией в кадре. Когда человек её пересекает, счётчик прибавляет к «Вошло» или «Вышло» — как именно система определяет направление, сказать не могу. От того, где стоит линия, зависит, будет счётчик считать верно или начнёт терять и задваивать проходы.</p>
         <p>Чаще всего в интерфейс заходят один раз — при настройке аппаратуры. В редких случаях что-то донастраивают позже.</p>
 
@@ -137,23 +139,22 @@
           <img src="/src/assets/cases/tracktice/counting-schema.webp" alt="Камера видит линию подсчёта и счётчик входов/выходов" width="834" height="1040" loading="lazy" decoding="async" />
           <figcaption>Панель «Информация о системе»: линия в кадре и счётчик входов/выходов.</figcaption>
         </figure>
-      </div>
 
-      <!-- Ограничения -->
-      <div class="case-block">
-        <h2 id="constraints">Ограничения</h2>
+        <h3 id="constraints">Ограничения</h3>
         <p><strong>Способ ввода линии задавала разработка.</strong> Параметры уходят в устройство числами в пикселях, и формат ввода был определён до меня. Перетаскивание линии по кадру просто не рассматривалось как вариант.</p>
       </div>
 
-      <!-- Экран калибровки -->
+      <!-- Ключевые решения -->
       <div class="case-block">
-        <h2 id="calibration-screen">Экран калибровки</h2>
+        <h2 id="decisions">Ключевые решения</h2>
 
-        <h3 id="calibration-layout">Логика раскладки</h3>
+        <h3 id="calibration-screen">Экран калибровки</h3>
+
+        <h4 id="calibration-layout">Логика раскладки</h4>
         <p>Три вертикальные зоны, повторяющие порядок действий инженера: подключение и режим работы → разметка линии → проверка на живом кадре.</p>
         <p>Зоны сделаны постоянно видимыми, а не сворачиваемыми блоками. Инженер смотрит в третью зону, продолжая править вторую: аккордеон заставлял бы раскрывать блоки заново на каждой итерации.</p>
 
-        <h3 id="calibration-tradeoffs">Что я решала внутри ограничения</h3>
+        <h4 id="calibration-tradeoffs">Что я решала внутри ограничения</h4>
         <p>Раз способ ввода изменить было нельзя, я работала с тем, что могла контролировать — стоимостью одной итерации.</p>
         <p><strong>Шаговый ввод стрелками.</strong> Подстройка на пиксель — один клик, без выделения и перенабора значения. Для правки «чуть выше» это точнее, чем ввод с клавиатуры.</p>
         <p><strong>Переключение дверей в шапке экрана.</strong> Все камеры машины настраиваются в одном месте, без возврата в список.</p>
@@ -161,11 +162,8 @@
         <figure class="case-figure">
           <img src="/src/assets/cases/tracktice/calibration-screen-full.webp" alt="Экран калибровки подсчёта целиком" width="2304" height="1296" loading="lazy" decoding="async" />
         </figure>
-      </div>
 
-      <!-- Системные настройки -->
-      <div class="case-block">
-        <h2 id="system-settings">Системные настройки</h2>
+        <h3 id="system-settings">Системные настройки</h3>
         <p>Параметры устройства — сеть, сервер, время, GPS — разложены на четыре независимых блока по зоне ответственности. Внутри блока порядок полей повторяет порядок, в котором их обычно заполняют.</p>
 
         <figure class="case-figure">
@@ -174,9 +172,9 @@
         </figure>
       </div>
 
-      <!-- Вывод -->
+      <!-- Рефлексия -->
       <div class="case-block">
-        <h2 id="conclusion">Вывод</h2>
+        <h2 id="reflection">Рефлексия</h2>
         <p>С тех пор прошло время. Я разобрала свои экраны заново — вот что сделала бы иначе и почему.</p>
 
         <h3 id="conclusion-line">1. Линия должна задаваться в кадре</h3>
@@ -214,24 +212,27 @@
         </div>
         <ol>
           <li><a href="#short">Коротко</a></li>
-          <li><a href="#how-counting-works">Как работает подсчёт</a></li>
-          <li><a href="#constraints">Ограничения</a></li>
           <li class="case-toc__group">
-            <span class="case-toc__row"><a href="#calibration-screen">Экран калибровки</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
+            <span class="case-toc__row"><a href="#process">Подробнее о процессе</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
             <ol>
-              <li><a href="#calibration-layout">Логика раскладки</a></li>
-              <li><a href="#calibration-tradeoffs">Что решала внутри ограничения</a></li>
+              <li><a href="#how-counting-works">Как работает подсчёт</a></li>
+              <li><a href="#constraints">Ограничения</a></li>
             </ol>
           </li>
-          <li><a href="#system-settings">Системные настройки</a></li>
           <li class="case-toc__group">
-            <span class="case-toc__row"><a href="#conclusion">Вывод</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
+            <span class="case-toc__row"><a href="#decisions">Ключевые решения</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
+            <ol>
+              <li><a href="#calibration-screen">Экран калибровки</a></li>
+              <li><a href="#system-settings">Системные настройки</a></li>
+            </ol>
+          </li>
+          <li class="case-toc__group">
+            <span class="case-toc__row"><a href="#reflection">Рефлексия</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
             <ol>
               <li><a href="#conclusion-line">1. Линия должна задаваться в кадре</a></li>
               <li><a href="#conclusion-states">2. Состояния</a></li>
             </ol>
           </li>
-        </ol>
       </nav>
      </div>
     </section>

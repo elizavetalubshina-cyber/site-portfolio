@@ -2098,6 +2098,12 @@ main,
   font-size: 22px;
   font-weight: 700;
 }
+.case-sheet__meta {
+  justify-content: center;
+  margin: var(--space-1) var(--space-2) var(--space-2);
+}
+.case-sheet__meta,
+.case-sheet .tunnel__meta { display: flex; }
 .case-sheet__desc {
   margin: 0 var(--space-2) var(--space-3);
   font-size: 15px;

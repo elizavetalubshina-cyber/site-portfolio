@@ -327,7 +327,11 @@ function startSpace() {
     introH = intro.offsetHeight;
     tunnelTop = tunnelEl.getBoundingClientRect().top + window.scrollY;
     tunnelH = tunnelEl.offsetHeight;
-    aboutTop = about.getBoundingClientRect().top + window.scrollY;
+    // Measured without the grow-in transform "Обо мне" carries, which would
+    // otherwise shift its box and skew every position derived from it.
+    let top = 0;
+    for (let el = about; el; el = el.offsetParent) top += el.offsetTop;
+    aboutTop = top;
   };
 
   const mouse = { x: -9999, y: -9999 };
@@ -456,11 +460,19 @@ function startSpace() {
       else burst = still ? 0 : Math.max(0, burst - dt / 700);
     }
     // e: the tunnel letting go as "Обо мне" comes up.
-    const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
+    // Leaving the tunnel: tied to the end of the tunnel block rather than to
+    // "Обо мне", whose height differs a lot between desktop and phone.
+    const e = flight
+      ? ease(clamp01((sy - (tunnelTop + tunnelH - h * 1.1)) / (h * 0.5)))
+      : ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
     // "Обо мне" comes out of the tunnel's depth like the cases, growing from
     // small to full size as it rises into view.
     if (flight && about) {
       const ap = ease(clamp01((sy - (aboutTop - h)) / (h * 0.75)));
+      // Grows out of the middle of the screen, where the tunnel's depth is,
+      // not up from the bottom edge.
+      const oy = window.innerHeight / 2 - (aboutTop - sy);
+      about.style.transformOrigin = `50% ${oy}px`;
       about.style.transform = ap < 1 ? `scale(${0.35 + 0.65 * ap})` : '';
       about.style.opacity = String(ap);
     }

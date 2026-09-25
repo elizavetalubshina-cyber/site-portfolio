@@ -972,12 +972,22 @@ if (!particleCanvas) {
   window.addEventListener('resize', paintSky);
 }
 
-// A case page always opens at its top. Browsers (and embedded previews)
-// can carry a scroll position over from the page the visitor came from or
-// restore one on back and forward; a link to a section keeps its anchor.
+// A case page opens at its top when it is arrived at by a link. Going back
+// or forward to it keeps the place it was left at.
 if (document.body.classList.contains('case-page')) {
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  const toTop = () => { if (!location.hash) window.scrollTo(0, 0); };
-  toTop();
-  window.addEventListener('pageshow', toTop);
+  const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  if (!location.hash && (!nav || nav.type !== 'back_forward')) window.scrollTo(0, 0);
+
+  // The back arrow returns to wherever the visitor came from on this site:
+  // the homepage at the case they were looking at, or the previous case.
+  // Opened from outside (a shared link), it goes to the homepage's cases.
+  const back = document.querySelector('.case-back');
+  let fromSite = false;
+  try { fromSite = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) { fromSite = false; }
+  if (back && fromSite && history.length > 1) {
+    back.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      history.back();
+    });
+  }
 }

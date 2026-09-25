@@ -1728,15 +1728,21 @@ main,
     font-size: 15px;
     color: var(--text-secondary);
   }
-  .tunnel__meta {
+  .tunnel__head {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    gap: var(--space-1) var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .tunnel__head .tunnel__title { margin: 0; }
+  .tunnel__tags {
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--space-1);
-    margin-top: var(--space-3);
   }
   .tunnel__company {
-    margin-right: var(--space-1);
+    margin: var(--space-2) 0 0;
     font-size: 13px;
     color: var(--text-muted);
   }
@@ -1793,13 +1799,14 @@ main,
   }
   .tunnel--flight .tunnel__index,
   .tunnel--flight .tunnel__stats { display: none; }
-  /* Company and tags sit right under the name, above the description. */
-  .tunnel--flight .tunnel__text { display: flex; flex-direction: column; align-items: center; }
-  .tunnel--flight .tunnel__title { order: 1; }
-  .tunnel--flight .tunnel__meta { order: 2; justify-content: center; margin: 0 0 var(--space-2); }
-  .tunnel--flight .tunnel__desc { order: 3; }
+  /* Name with its tag chips to the right, then the description, then the
+     company. */
+  .tunnel--flight .tunnel__head { justify-content: center; }
+  .tunnel--flight .tunnel__company { text-align: center; }
+  .tunnel--flight .tunnel__tag { font-size: 14px; padding: var(--space-half) var(--space-2); }
+  .tunnel--flight .tunnel__company { font-size: 14px; }
   .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
-  .tunnel--flight .tunnel__title { margin-bottom: var(--space-1); font-size: clamp(28px, 2.8vw, 44px); }
+  .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
 
   /* A soft pool of night behind the case, so the streaks flying past do not
@@ -2098,12 +2105,20 @@ main,
   font-size: 22px;
   font-weight: 700;
 }
-.case-sheet__meta {
+.case-sheet__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
-  margin: var(--space-1) var(--space-2) var(--space-2);
+  gap: var(--space-1) var(--space-2);
+  margin: var(--space-2) var(--space-2) var(--space-1);
 }
-.case-sheet__meta,
-.case-sheet .tunnel__meta { display: flex; }
+.case-sheet__head .case-sheet__title { margin: 0; }
+.case-sheet__company {
+  margin: calc(var(--space-2) * -1) 0 var(--space-3);
+  font-size: 13px;
+  color: var(--text-muted);
+}
 .case-sheet__desc {
   margin: 0 var(--space-2) var(--space-3);
   font-size: 15px;

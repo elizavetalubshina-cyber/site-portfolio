@@ -371,11 +371,13 @@ function startSpace() {
     sheet.querySelector('.case-sheet__title').textContent = tag.querySelector('.hero__orbit-title').textContent;
     sheet.querySelector('.case-sheet__desc').textContent = tag.querySelector('.hero__orbit-desc').textContent;
     sheet.querySelector('.case-sheet__go').href = tag.href;
-    // Company and tag chips, taken from the same case in the tunnel below.
+    // Tag chips and company, taken from the same case in the tunnel below.
     const same = [...document.querySelectorAll('.tunnel__case')]
       .find((c) => c.querySelector('.tunnel__title a').href === tag.href);
-    const src = same && same.querySelector('.tunnel__meta');
-    sheet.querySelector('.case-sheet__meta').innerHTML = src ? src.innerHTML : '';
+    const tagsEl = same && same.querySelector('.tunnel__tags');
+    const companyEl = same && same.querySelector('.tunnel__company');
+    sheet.querySelector('.case-sheet__tags').innerHTML = tagsEl ? tagsEl.innerHTML : '';
+    sheet.querySelector('.case-sheet__company').textContent = companyEl ? companyEl.textContent : '';
     sheet.hidden = false;
     document.documentElement.classList.add('sheet-lock');
     sheetOpen = true;

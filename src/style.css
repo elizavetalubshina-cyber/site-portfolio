@@ -1717,9 +1717,9 @@ main,
     margin-top: 0;
   }
   .home-page .cases:has(.tunnel--flight) + .outro .outro__room { height: 25vh; }
-  /* The contacts are the last thing on the page; the footer follows them
-     closely instead of after a case page's long closing gap. */
-  .home-page .footer { margin-top: var(--space-6); }
+  /* The contacts are the last thing on the homepage: no footer line under
+     them, "Обо мне" is the page's closing screen. */
+  .home-page .footer { display: none; }
   .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }
 

@@ -359,21 +359,23 @@ function startSpace() {
     w = document.documentElement.clientWidth;
     h = window.innerHeight;
     // "Обо мне" is held in the middle of the room between the nav and the
-    // footer while it grows in, and stays there to the end of the page. If
+    // bottom of the screen while it grows in, and stays there to the end of the page. If
     // it is taller than that room it is held just under the nav instead.
     // The empty room after it is exactly what the end of the page needs to
     // keep it there, plus the scroll the grow-in takes (0.2 of a screen).
-    // When it is too tall to be held whole, there is no room after it at
-    // all, so it ends right above the footer.
+    // When it is too tall to be held whole, only a small margin follows
+    // it, so the page ends just under the contacts.
     const outroRoom = document.querySelector('.outro__room');
     if (about && outroRoom) {
       const navB = document.querySelector('.nav__shell').getBoundingClientRect().bottom;
-      const footH = footer ? footer.offsetHeight : 0;
+      // Room kept under it at the bottom of the screen (and under the
+      // footer, where a page shows one).
+      const footH = (footer ? footer.offsetHeight : 0) + 32;
       const aboutH = about.offsetHeight;
       const held = Math.round(Math.max(navB + 16, navB + (h - footH - navB - aboutH) / 2));
       document.body.style.setProperty('--about-top', `${held}px`);
       const fits = h - footH - held - aboutH >= 0;
-      outroRoom.style.height = fits ? `${Math.round(h - footH - held - aboutH + h * 0.2)}px` : '0px';
+      outroRoom.style.height = `${Math.round(fits ? h - footH - held - aboutH + h * 0.2 : 32)}px`;
     }
     // Safari gives up on canvases past ~16.7M pixels and draws nothing.
     const dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(12e6 / Math.max(1, w * h)));

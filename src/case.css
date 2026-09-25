@@ -24,10 +24,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin: var(--space-2) 0 0 max(var(--space-3), calc((100% - 920px) / 2));
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2) var(--space-1) 0;
-  font-size: 14px;
+  margin-top: var(--space-2);
+  width: 44px;
+  height: 44px;
+  margin-left: calc(max(var(--space-3), calc((100% - 920px) / 2)) - 12px);
+  font-size: 22px;
   font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
@@ -757,10 +758,14 @@ kbd {
     position: absolute;
     /* main starts under the 70px nav row; this centres the link on the
        menu button in that row. */
-    top: -29px;
-    left: var(--space-3);
+    top: -34px;
+    left: var(--space-1);
     z-index: 101;
     margin: 0;
   }
   .case-page .case-hero { padding-top: var(--space-3); }
+  /* The sticky nav row lies over the back arrow; only the menu button in
+     it takes taps, so the arrow underneath stays tappable. */
+  .case-page .nav:not(.is-open) { pointer-events: none; }
+  .case-page .nav:not(.is-open) .nav__shell { pointer-events: auto; }
 }

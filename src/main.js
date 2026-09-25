@@ -336,9 +336,19 @@ function startSpace() {
     aboutHeld = about ? parseFloat(getComputedStyle(about).top) || 96 : 96;
   };
 
-  const mouse = { x: -9999, y: -9999 };
-  window.addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-  document.documentElement.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+  // The cursor, or a finger while it is on the glass, pushes the dust aside.
+  // `on` is what the pointer asks for and `force` eases after it, so the
+  // dust parts and closes again softly instead of snapping. The position is
+  // kept after a finger lifts, so the dent heals in place rather than
+  // sliding off.
+  const mouse = { x: -9999, y: -9999, on: 0, force: 0 };
+  const aim = (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.on = 1; };
+  window.addEventListener('pointermove', aim, { passive: true });
+  window.addEventListener('pointerdown', aim, { passive: true });
+  const release = (e) => { if (e.pointerType !== 'mouse') mouse.on = 0; };
+  window.addEventListener('pointerup', release, { passive: true });
+  window.addEventListener('pointercancel', release, { passive: true });
+  document.documentElement.addEventListener('mouseleave', () => { mouse.on = 0; });
 
   // While a topic is hovered the orbit eases to a stop, so the tag and its
   // preview hold still under the cursor.
@@ -564,6 +574,10 @@ function startSpace() {
     flow += still ? 0 : dt * 0.05;
 
     pace += (((hovering || sheetOpen) && k === 0 ? 0 : 1) - pace) * 0.12;
+    // Easing per frame, scaled by the frame's length, so the dust follows
+    // the pointer at the same pace at 60 and at 120 frames a second.
+    const soft = still ? 1 : 1 - Math.pow(0.91, dt / 16.7);
+    mouse.force += (mouse.on - mouse.force) * (still ? 1 : 1 - Math.pow(0.93, dt / 16.7));
     const spinSpeed = (0.00006 + k * k * 0.005) * pace;
     spin += dt * spinSpeed;
 
@@ -616,12 +630,13 @@ function startSpace() {
         const md = Math.hypot(mdx, mdy);
         let mtx = 0, mty = 0;
         if (!still && k < 0.2 && md < REPEL * 1.3 && md > 0.1 && !tag.matches(':hover')) {
-          const f = (1 - md / (REPEL * 1.3)) * 46;
+          const q = 1 - md / (REPEL * 1.3);
+          const f = q * q * (3 - 2 * q) * 46 * mouse.force;
           mtx = (mdx / md) * f;
           mty = (mdy / md) * f;
         }
-        tag._ox = (tag._ox || 0) + (mtx - (tag._ox || 0)) * 0.12;
-        tag._oy = (tag._oy || 0) + (mty - (tag._oy || 0)) * 0.12;
+        tag._ox = (tag._ox || 0) + (mtx - (tag._ox || 0)) * soft;
+        tag._oy = (tag._oy || 0) + (mty - (tag._oy || 0)) * soft;
         marks.push({
           x: px + tag._ox, y: py + tag._oy, lx: lx + tag._ox, ly: ly + tag._oy,
           on: tag.matches(':hover') || hotPoint === i, alpha: 1 - clamp01(k * 1.6), line: clear, href: tag.href,
@@ -714,16 +729,19 @@ function startSpace() {
         const dx = x - mouse.x, dy = y - mouse.y;
         const dm = Math.hypot(dx, dy);
         let tx = 0, ty = 0;
-        if (dm < REPEL && dm > 0.1) {
-          const f = (1 - dm / REPEL) * 40;
+        if (dm < REPEL && dm > 0.1 && mouse.force > 0.001) {
+          // Smoothstep falloff: strongest at the pointer, fading to nothing
+          // at the edge, so the hole has no hard rim.
+          const q = 1 - dm / REPEL;
+          const f = q * q * (3 - 2 * q) * 40 * mouse.force;
           tx = (dx / dm) * f;
           ty = (dy / dm) * f;
         }
-        p.ox += (tx - p.ox) * 0.12;
-        p.oy += (ty - p.oy) * 0.12;
+        p.ox += (tx - p.ox) * soft;
+        p.oy += (ty - p.oy) * soft;
       } else {
-        p.ox *= 0.9;
-        p.oy *= 0.9;
+        p.ox -= p.ox * soft;
+        p.oy -= p.oy * soft;
       }
       x += p.ox;
       y += p.oy;

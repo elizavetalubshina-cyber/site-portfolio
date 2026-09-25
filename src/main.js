@@ -599,17 +599,13 @@ function startSpace() {
   };
   // Step by step through the tunnel: one flick of the wheel, one swipe or
   // one key press moves to the next stop and no further, so no case can be
-  // flown past unseen. The stops are the top of the page, the tunnel just
-  // opened, each case at full size, "Обо мне" fully grown and the end of
-  // the page. Scrollbar drags and
+  // flown past unseen. The stops are the top of the page, each case at full
+  // size, "Обо мне" fully grown and the end of the page. Scrollbar drags and
   // links still move freely; the next step starts from the nearest stop.
   let stops = [0];
   const placeStops = () => {
     const maxScroll = document.documentElement.scrollHeight - h;
-    // Two steps to the first case: the fall into the point, with the
-    // tunnel opening out of it, then the first case up out of its depth.
-    const opened = marks0().mStart + h * 0.5;
-    const at = [0, ...(opened < scrollForCase(0) - 80 ? [opened] : []), ...cards.map((c, i) => scrollForCase(i))];
+    const at = [0, ...cards.map((c, i) => scrollForCase(i))];
     if (about) {
       const pin = aboutTop - aboutHeld;
       const after = Math.max(0, maxScroll - 2 - pin);
@@ -632,7 +628,9 @@ function startSpace() {
     if (Math.abs(to - from) < 2) return;
     if (still) { window.scrollTo({ top: to, behavior: 'instant' }); return; }
     stepping = true;
-    const dur = Math.min(1400, Math.max(700, 500 + Math.abs(to - from) * 0.25));
+    // Unhurried: about 1.2 s from case to case, 1.7 s for the long way from
+    // the ring down to the first case, so the fall and the flight read.
+    const dur = Math.min(2000, Math.max(1100, 900 + Math.abs(to - from) * 0.6));
     const t0 = performance.now();
     const tick = (t) => {
       const u = Math.min(1, (t - t0) / dur);

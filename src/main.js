@@ -636,8 +636,10 @@ function startSpace() {
     cancelAnimationFrame(anim);
     if (Math.abs(to - from) < 2) { target = -1; return; }
     if (still) { window.scrollTo({ top: to, behavior: 'instant' }); target = -1; return; }
-    // About 1 s from case to case, 1.4 s down from the ring.
-    const dur = Math.min(1500, Math.max(900, 700 + Math.abs(to - from) * 0.5));
+    // About 1.6 s from case to case; the way down from the ring (or back
+    // up to it) keeps its own 1.4 s.
+    const ring = i === 0 || from < stops[1] - 2;
+    const dur = ring ? Math.min(1500, Math.max(900, 700 + Math.abs(to - from) * 0.5)) : 1600;
     const t0 = performance.now();
     const tick = (t) => {
       const u = Math.min(1, (t - t0) / dur);

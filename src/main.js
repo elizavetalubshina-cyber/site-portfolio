@@ -109,11 +109,9 @@ const deferredVideos = document.querySelectorAll('video[data-play-in-view]');
 
 if (deferredVideos.length) {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-// Case links opened from script carry the same ?from=site mark as clicked
-// links (see the click listener at the end of this file).
-const withFrom = (href) => {
-  try { const u = new URL(href, location.href); u.searchParams.set('from', 'site'); return u.href; } catch (e) { return href; }
-};
+// Case links opened from script carry the same origin mark as clicked
+// links (see markCaseUrl at the end of this file).
+const withFrom = (href) => markCaseUrl(href);
 
   // `controls` is in the markup, not added here, so that with scripting off the
   // video is still watchable instead of a frozen poster. Once this code is
@@ -977,42 +975,82 @@ if (!particleCanvas) {
   window.addEventListener('resize', paintSky);
 }
 
-// A case page opens at its top when it is arrived at by a link. Going back
-// or forward to it keeps the place it was left at.
-if (document.body.classList.contains('case-page')) {
-  const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-  if (!location.hash && (!nav || nav.type !== 'back_forward')) window.scrollTo(0, 0);
-
-  // The back arrow returns to wherever the visitor came from on this site:
-  // the homepage at the case they were looking at, or the previous case.
-  // Opened from outside (a shared link), it goes to the homepage's cases.
+// Where a case was opened from travels in its URL as ?back=<address>: the
+// homepage with its scroll position, or the previous case with its own
+// back address inside, so a chain of cases unwinds step by step. The back
+// arrow is then an ordinary link. Neither the referrer nor the history
+// stack can be trusted here: embedded previews run the site in a sandbox
+// where the referrer is blank and history entries go missing.
+const siteRoot = (() => {
+  const bare = location.href.split(/[?#]/)[0];
+  const i = bare.indexOf('/cases/');
+  return i >= 0 ? bare.slice(0, i + 1) : bare.replace(/[^/]*$/, '');
+})();
+const onSite = (href) => typeof href === 'string' && href.startsWith(siteRoot);
+const currentBack = () => {
   const back = document.querySelector('.case-back');
-  // Links inside the site mark the case they open with ?from=site (below).
-  // The referrer cannot be relied on: embedded previews run the page in a
-  // sandbox where it is empty or of another origin.
-  const fromSite = new URLSearchParams(location.search).has('from');
-  if (fromSite) {
-    try {
-      const clean = location.pathname + location.hash;
-      history.replaceState(history.state, '', clean);
-    } catch (e) { /* the address bar just keeps the parameter */ }
+  return back ? back.href : null;
+};
+const hereAsBack = () => {
+  const url = new URL(location.href);
+  url.hash = '';
+  url.search = '';
+  if (document.body.classList.contains('case-page')) {
+    const b = currentBack();
+    if (onSite(b)) url.searchParams.set('back', b);
+  } else {
+    url.searchParams.set('y', String(Math.round(window.scrollY)));
   }
-  if (back && fromSite && history.length > 1) {
-    back.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      history.back();
-    });
+  return url.href;
+};
+const markCaseUrl = (href) => {
+  let url;
+  try { url = new URL(href, location.href); } catch (e) { return href; }
+  if (!/\/cases\/[^/]+\.html$/.test(url.pathname)) return href;
+  url.searchParams.set('back', hereAsBack());
+  return url.href;
+};
+document.addEventListener('click', (ev) => {
+  const a = ev.target.closest && ev.target.closest('a[href]');
+  if (!a || a.target === '_blank' || a.classList.contains('case-back')) return;
+  const marked = markCaseUrl(a.getAttribute('href'));
+  if (marked !== a.getAttribute('href')) a.href = marked;
+}, true);
+
+const dropParams = (...names) => {
+  try {
+    const url = new URL(location.href);
+    names.forEach((n) => url.searchParams.delete(n));
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+  } catch (e) { /* the address bar just keeps them */ }
+};
+
+if (document.body.classList.contains('case-page')) {
+  const target = new URLSearchParams(location.search).get('back');
+  const back = document.querySelector('.case-back');
+  if (back && onSite(target)) back.href = target;
+  dropParams('back');
+
+  // Opened by a link, a case starts at its top, whatever scroll position the
+  // browser or the preview carries over. Instant, not smooth: the page's
+  // smooth scrolling would otherwise animate it, and late restores win.
+  const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  if (!location.hash && (!nav || nav.type !== 'back_forward')) {
+    const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    toTop();
+    requestAnimationFrame(toTop);
+    window.addEventListener('load', () => { toTop(); requestAnimationFrame(toTop); }, { once: true });
   }
 }
 
-// Every link from one page of the site to a case says so, which is how the
-// case's back arrow knows it can simply go back.
-document.addEventListener('click', (ev) => {
-  const a = ev.target.closest && ev.target.closest('a[href]');
-  if (!a || a.target === '_blank') return;
-  let url;
-  try { url = new URL(a.getAttribute('href'), location.href); } catch (e) { return; }
-  if (!/\/cases\/[^/]+\.html$/.test(url.pathname) || url.searchParams.has('from')) return;
-  url.searchParams.set('from', 'site');
-  a.href = url.href;
-}, true);
+// Back on the homepage from a case: return to the scroll position the case
+// was opened at, so the same case is on screen in the tunnel.
+if (document.body.classList.contains('home-page')) {
+  const y = Number(new URLSearchParams(location.search).get('y'));
+  if (y > 0) {
+    const go = () => window.scrollTo({ top: y, left: 0, behavior: 'instant' });
+    go();
+    window.addEventListener('load', () => { go(); requestAnimationFrame(go); }, { once: true });
+  }
+  if (new URLSearchParams(location.search).has('y')) dropParams('y');
+}

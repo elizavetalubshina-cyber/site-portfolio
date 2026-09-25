@@ -366,9 +366,9 @@ function startSpace() {
   const covers = cards.map((c) => c.querySelector('.tunnel__cover'));
   const buildPath = () => {
     if (flight || !covers.length) return;
-    // Starts well above the screen, so the stream always comes in from
-    // over the top edge instead of beginning mid-screen.
-    const knots = [{ x: w / 2, y: tunnelTop - h * 1.8 }, { x: w / 2, y: tunnelTop - h * 0.1 }];
+    // Starts at the point the ring fell into (the middle of the screen at
+    // the moment the hero lets go): the stream is what bursts out of it.
+    const knots = [{ x: w / 2, y: introTop + introH - h / 2 }, { x: w / 2, y: tunnelTop + h * 0.15 }];
     covers.forEach((c) => {
       const r = c.getBoundingClientRect();
       knots.push({ x: r.left + r.width / 2, y: r.top + window.scrollY + r.height / 2 });
@@ -424,7 +424,9 @@ function startSpace() {
     // k: the suction, 0 at rest, 1 when everything has gone into the point.
     const k = ease(clamp01((sy - introTop) / (introH - h)));
     // m: the point bursting into the tunnel walls.
-    const m = ease(clamp01((sy - (tunnelTop - h * (flight ? 0.9 : 1.2))) / (h * (flight ? 0.8 : 0.75))));
+    const m = flight
+      ? ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)))
+      : clamp01((sy - (tunnelTop - h * 1.05)) / (h * 0.6));
     // e: the tunnel letting go as "Обо мне" comes up.
     const e = ease(clamp01((sy - (aboutTop - h)) / (h * 0.8)));
     // Camera depth in the tunnel.
@@ -552,12 +554,15 @@ function startSpace() {
       // helix: the near side of each turn is drawn larger, the far side
       // smaller, so it reads as a twisting rope pulling downward.
       if (m > 0 && !flight) {
+        // Each grain leaves the point at its own moment and flies out to its
+        // place in the stream, overshooting outward on the way, so the point
+        // bursts and the burst becomes the stream.
+        const mp = ease(clamp01((m - p.fall * 0.35) / 0.65));
         const d = ((p.s + streamT * p.speed) % 1) * path.total;
         const q = onPath(d);
-        const wide = (120 + 60 * p.fall * p.fall) * (1 + 2.5 * (1 - m));
-        // Two strands half a turn apart; a little jitter keeps them dusty.
+        const wide = 120 + 60 * p.fall * p.fall;
         const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
-        const off = Math.cos(turn) * wide;
+        const off = Math.cos(turn) * wide + p.band * 14;
         const depth = Math.sin(turn);
         let fx = q.x + q.nx * off;
         let fy = q.y + q.ny * off - sy;
@@ -565,14 +570,14 @@ function startSpace() {
           fx += (p.u * w - fx) * e;
           fy += (p.v * h - fy) * e;
         }
+        const blast = Math.sin(Math.PI * mp) * (60 + 220 * p.u);
+        fx = x + (fx - x) * mp + Math.cos(p.a) * blast;
+        fy = y + (fy - y) * mp + Math.sin(p.a) * blast;
         if (fx > -4 && fx < w + 4 && fy > -4 && fy < h + 4) {
-          const sz = p.size * 1.2 * (1 + 0.55 * depth) * (1 + rush * 0.35);
-          // A little scatter across the strand so it reads as dust, not a line.
-          fx += q.nx * p.band * 14;
-          fy += q.ny * p.band * 14;
-          (p.accent ? flowAccent : depth > 0 ? flowDust : flowBack).push(fx, fy, sz);
+          const sz = p.size * (1 + 0.2 * mp) * (1 + 0.55 * depth * mp) * (1 + rush * 0.35);
+          (p.accent ? flowAccent : depth > 0 || mp < 0.5 ? flowDust : flowBack).push(fx, fy, sz);
         }
-        if (m >= 1) continue;
+        continue;
       }
 
       // Tunnel walls: a cylinder seen from inside, drawn in perspective.
@@ -640,10 +645,10 @@ function startSpace() {
     const fade = 1 - e * 0.6;
     paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
     // In flow mode the ring's last dust fades out as the stream fades in.
-    const ringFade = flight ? 1 : 1 - m;
-    paint(flowBack, 'rgb(236, 233, 255)', 0.45 * m * fade);
-    paint(flowDust, 'rgb(236, 233, 255)', 0.95 * m * fade);
-    paint(flowAccent, 'rgb(214, 107, 208)', 0.95 * m * fade);
+    const ringFade = 1;
+    paint(flowBack, 'rgb(236, 233, 255)', 0.45 * fade);
+    paint(flowDust, 'rgb(236, 233, 255)', 0.95 * fade);
+    paint(flowAccent, 'rgb(214, 107, 208)', 0.95 * fade);
     paint(far, 'rgb(236, 233, 255)', 0.45 * fade * ringFade);
     paint(mid, 'rgb(236, 233, 255)', 0.75 * fade * ringFade);
     paint(near, 'rgb(236, 233, 255)', 0.85 * fade * ringFade);

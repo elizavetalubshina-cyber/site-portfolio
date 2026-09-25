@@ -461,7 +461,7 @@ function startSpace() {
         // label reads against clear sky instead of over the dust: on the
         // right of the ring it starts at the point, on the left it ends there.
         const ca = Math.cos(a), sa = Math.sin(a);
-        const r = R * pull * 1.1 + 16;
+        const r = R * pull * 1.04 + 10;
         const x = cx + ca * r;
         // Kept clear of the nav at the top and on screen at the bottom.
         // A phone has no room beside the ring but plenty above and below it,
@@ -478,11 +478,23 @@ function startSpace() {
         const left = Math.min(w - tw - 8, Math.max(8, x - tw * (1 - ca) / 2));
         const ly = cy + oy - th * (1 - sa) / 2 + th / 2;
         const lx = Math.abs(left - (cx + ca * R * pull)) < Math.abs(left + tw - (cx + ca * R * pull)) ? left : left + tw;
+        // The point shies away from the cursor like the dust around it.
+        const px = cx + ca * R * pull, py = cy + sa * R * pull;
+        const mdx = px - mouse.x, mdy = py - mouse.y;
+        const md = Math.hypot(mdx, mdy);
+        let mtx = 0, mty = 0;
+        if (!still && k < 0.2 && md < REPEL * 1.3 && md > 0.1 && !tag.matches(':hover')) {
+          const f = (1 - md / (REPEL * 1.3)) * 46;
+          mtx = (mdx / md) * f;
+          mty = (mdy / md) * f;
+        }
+        tag._ox = (tag._ox || 0) + (mtx - (tag._ox || 0)) * 0.12;
+        tag._oy = (tag._oy || 0) + (mty - (tag._oy || 0)) * 0.12;
         marks.push({
-          x: cx + ca * R * pull, y: cy + sa * R * pull, lx, ly,
+          x: px + tag._ox, y: py + tag._oy, lx: lx + tag._ox, ly: ly + tag._oy,
           on: tag.matches(':hover'), alpha: 1 - clamp01(k * 1.6),
         });
-        tag.style.transform = `translate(${left - hr.left}px, ${cy + oy - hr.top}px) translate(0, ${-50 * (1 - sa)}%)`;
+        tag.style.transform = `translate(${left - hr.left + (tag._ox || 0)}px, ${cy + oy - hr.top + (tag._oy || 0)}px) translate(0, ${-50 * (1 - sa)}%)`;
         const shown = 1 - clamp01(k * 1.6);
         tag.style.opacity = String(shown);
         tag.style.pointerEvents = shown > 0.4 ? 'auto' : 'none';

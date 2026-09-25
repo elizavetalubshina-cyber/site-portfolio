@@ -713,7 +713,15 @@ h1, h2, h3 {
   pointer-events: none;
 }
 
+/* The parts of the role are set apart by short upright rules instead of
+   middle dots. */
 .hero__role {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: var(--space-2);
+  row-gap: var(--space-half);
   margin: var(--space-3) 0 0;
   font-size: 18px;
   font-weight: 600;
@@ -731,6 +739,17 @@ h1, h2, h3 {
   line-height: 1;
   white-space: nowrap;
   will-change: transform;
+}
+
+.hero__role span + span::before {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 0.9em;
+  margin-right: var(--space-2);
+  vertical-align: -0.1em;
+  background: var(--purple);
+  opacity: 0.8;
 }
 
 /* ---------- Hero stage: case covers ---------- */
@@ -1803,7 +1822,8 @@ main,
 
 /* Phones and tablets: the same sky, fitted to the narrow screen. */
 @media (max-width: 900px) {
-  .hero__role { font-size: 14px; margin-top: var(--space-2); }
+  .hero__role { font-size: 13px; margin-top: var(--space-2); column-gap: var(--space-1); }
+  .hero__role span + span::before { margin-right: var(--space-1); }
   /* No hover on touch: a tap on a topic opens its case straight away. */
   .hero__orbit-preview { display: none; }
 

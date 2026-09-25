@@ -619,13 +619,14 @@ function startSpace() {
     // Easing per frame, scaled by the frame's length, so the dust follows
     // the pointer at the same pace at 60 and at 120 frames a second.
     const soft = still ? 1 : 1 - Math.pow(0.91, dt / 16.7);
-    mouse.force += (mouse.on - mouse.force) * (still ? 1 : 1 - Math.pow(0.93, dt / 16.7));
+    // Quick to part under a finger, slower to close again.
+    const rate = mouse.on > mouse.force ? 0.82 : 0.93;
+    mouse.force += (mouse.on - mouse.force) * (still ? 1 : 1 - Math.pow(rate, dt / 16.7));
     if (mouse.force < 0.002 && !mouse.on) mouse.force = 0;
-    // A finger is broad and the screen small: on a phone the hole is
-    // smaller and shallower, so a tap parts the dust without tearing the
-    // ring open.
-    const repel = narrowScreen.matches ? 80 : REPEL;
-    const push = narrowScreen.matches ? 26 : 40;
+    // A finger covers far more than a cursor tip, so on a phone the dust
+    // parts wider and further, or the effect hides under the finger.
+    const repel = narrowScreen.matches ? 130 : REPEL;
+    const push = narrowScreen.matches ? 60 : 40;
     const pushing = !still && k < 0.2 && m === 0 && mouse.force > 0;
     const spinSpeed = (0.00006 + k * k * 0.005) * pace;
     spin += dt * spinSpeed;

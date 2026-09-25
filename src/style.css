@@ -1796,6 +1796,7 @@ main,
   /* Name with its tag chips to the right, then the description, then the
      company. */
   .tunnel--flight .tunnel__company { text-align: center; }
+  .tunnel__more { margin-top: var(--space-3); font-size: 15px; padding: 12px var(--space-4); }
   .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
   .tunnel--flight .tunnel__title { font-size: clamp(28px, 2.8vw, 44px); }
   .tunnel--flight .tunnel__desc { margin: 0 auto; max-width: 560px; }

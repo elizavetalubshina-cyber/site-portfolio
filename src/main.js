@@ -969,3 +969,13 @@ if (!particleCanvas) {
   paintSky();
   window.addEventListener('resize', paintSky);
 }
+
+// A case page always opens at its top. Browsers (and embedded previews)
+// can carry a scroll position over from the page the visitor came from or
+// restore one on back and forward; a link to a section keeps its anchor.
+if (document.body.classList.contains('case-page')) {
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  const toTop = () => { if (!location.hash) window.scrollTo(0, 0); };
+  toTop();
+  window.addEventListener('pageshow', toTop);
+}

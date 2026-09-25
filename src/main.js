@@ -443,7 +443,8 @@ function startSpace() {
       : clamp01((sy - (introTop + introH - h * 1.05)) / (h * 0.6));
     // side: the camera starts on top of the stream looking down along it,
     // then swings round beside it to look at it (and the cases) side on.
-    const warp = Math.max(0, k - 0.15) * 1.2 * (1 - burst) * (1 - m);
+    // No warp streaks: the stars stay points as the camera flies in.
+    const warp = 0;
     const introEnd = introTop + introH - h;
     // hole: first the camera flies on into the dark centre of the stream
     // seen end-on, the hole opening wider and wider round the viewer...
@@ -550,7 +551,7 @@ function startSpace() {
 
     const drift = still ? 0 : time * 0.001;
     const near = [], mid = [], far = [], accent = [], stars = [], streaks = [];
-    const flowDust = [], flowBack = [], flowAccent = [];
+    const flowDust = [], flowBack = [], flowAccent = [], ringOut = [];
     const tcx = w / 2, tcy = h / 2;
     const halfDiag = Math.hypot(w, h) / 2 + 20;
     const wall = Math.max(w, h) * 0.55;
@@ -647,9 +648,13 @@ function startSpace() {
         const a = p.ta;
         const txp = tcx + Math.cos(a) * wall * p.tr * s;
         const typ = tcy + Math.sin(a) * wall * p.tr * s;
-        x += (txp - x) * m;
-        y += (typ - y) * m;
-        size = p.size * (1 - m) + Math.min(3.2, Math.max(0.7, 1.3 * s)) * m;
+        // Crossfade rather than morph: the ring's dust fades where it is while
+        // the tunnel fades in at its own place, so the change never passes
+        // through a muddy in-between cloud.
+        if (m < 1 && x > -4 && x < w + 4 && y > -4 && y < h + 4) ringOut.push(x, y, size);
+        x = txp;
+        y = typ;
+        size = Math.min(3.2, Math.max(0.7, 1.3 * s));
         bucket = z < DEPTH * 0.25 ? 0 : z < DEPTH * 0.6 ? 1 : 2;
         // Near the viewer the dust is drawn as short streaks pointing away
         // from the centre, the way things smear past at speed.
@@ -705,7 +710,8 @@ function startSpace() {
     const fade = 1 - e * 0.6;
     paint(stars, 'rgb(255, 255, 255)', 0.45 * (1 - m * (1 - e)) + 0.001);
     // In flow mode the ring's last dust fades out as the stream fades in.
-    const ringFade = 1;
+    const ringFade = flight && m > 0 ? m : 1;
+    paint(ringOut, 'rgb(236, 233, 255)', 0.85 * (1 - m));
     paint(flowBack, 'rgb(236, 233, 255)', 0.45 * fade);
     paint(flowDust, 'rgb(236, 233, 255)', 0.95 * fade);
     paint(flowAccent, 'rgb(214, 107, 208)', 0.95 * fade);

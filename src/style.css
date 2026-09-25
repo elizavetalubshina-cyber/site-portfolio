@@ -1779,6 +1779,9 @@ main,
 
   /* Flow: the cases scroll by as an ordinary list and the tunnel walls run
      round them in the background. */
+  /* Room for the camera to swing from on top of the stream to beside it
+     before the first case comes up. */
+  .tunnel--flow { padding-top: 120vh; }
   .tunnel--flow .tunnel__case {
     min-height: 90vh;
     padding: var(--space-6) 0;

@@ -438,7 +438,11 @@ function startSpace() {
     // m: the point bursting into the tunnel walls.
     const m = flight
       ? ease(clamp01((sy - (tunnelTop - h * 0.9)) / (h * 0.8)))
-      : clamp01((sy - (tunnelTop - h * 1.05)) / (h * 0.6));
+      : clamp01((sy - (introTop + introH - h * 1.05)) / (h * 0.6));
+    // side: the camera starts on top of the stream looking down along it,
+    // then swings round beside it to look at it (and the cases) side on.
+    const introEnd = introTop + introH - h;
+    const side = flight ? 1 : ease(clamp01((sy - (introEnd + h * 0.25)) / (h * 0.9)));
     if (!flight) {
       if (m > 0.05) burst = still ? 1 : Math.min(1, burst + dt / 1100);
       else burst = still ? 0 : Math.max(0, burst - dt / 700);
@@ -598,6 +602,19 @@ function startSpace() {
         const depth = Math.sin(turn);
         let fx = q.x + q.nx * off;
         let fy = q.y + q.ny * off - sy;
+        // Looking down along the stream from on top of it: the helix seen
+        // end-on, in perspective, its dust coming up toward the camera.
+        if (side < 1) {
+          const zf = 1 - ((p.s + streamT * p.speed * 2.5) % 1);
+          const z = 30 + zf * 3200;
+          const sc = 520 / z;
+          const ta = (d * 0.004) + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
+          const tr = (120 + 60 * p.fall * p.fall) * sc;
+          const tx = w / 2 + Math.cos(ta) * tr;
+          const ty = h / 2 + Math.sin(ta) * tr;
+          fx = tx + (fx - tx) * side;
+          fy = ty + (fy - ty) * side;
+        }
         if (e > 0) {
           fx += (p.u * w - fx) * e;
           fy += (p.v * h - fy) * e;

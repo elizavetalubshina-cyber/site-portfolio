@@ -449,8 +449,11 @@ function startSpace() {
     sheet.querySelector('.case-sheet__desc').textContent = tag.querySelector('.hero__orbit-desc').textContent;
     sheet.querySelector('.case-sheet__go').href = tag.href;
     // Tag chips and company, taken from the same case in the tunnel below.
+    // Matched by page path: by now the tapped link may carry a ?back=
+    // return address (see markCaseUrl) that the tunnel's links do not.
+    const path = (href) => new URL(href, location.href).pathname;
     const same = [...document.querySelectorAll('.tunnel__case')]
-      .find((c) => c.querySelector('.tunnel__title a').href === tag.href);
+      .find((c) => path(c.querySelector('.tunnel__title a').href) === path(tag.href));
     const tagsEl = same && same.querySelector('.tunnel__tags');
     const companyEl = same && same.querySelector('.tunnel__company');
     sheet.querySelector('.case-sheet__tags').innerHTML = tagsEl ? tagsEl.innerHTML : '';

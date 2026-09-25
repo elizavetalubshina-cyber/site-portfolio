@@ -271,7 +271,7 @@ function startSpace() {
   const still = reducedMotion.matches;
 
   // Fewer particles on a phone: the screen is smaller and so is the budget.
-  const COUNT = narrowScreen.matches ? 5000 : 14000;
+  const COUNT = narrowScreen.matches ? 8000 : 22000;
   const REPEL = 110;
   // Tunnel world: depth of the visible stretch, the distance at which
   // something is drawn at its real size, and the gap between cases.
@@ -570,9 +570,13 @@ function startSpace() {
         const mp = 1 - Math.pow(1 - bt, 3);
         const d = ((p.s + streamT * p.speed) % 1) * path.total;
         const q = onPath(d);
-        const wide = 120 + 60 * p.fall * p.fall;
+        // The stream opens out of the point like a cone: no width at its
+        // source, full width about a screen further on, so it never starts
+        // with a flat cut.
+        const open = Math.sin(Math.min(1, d / (h * 0.9)) * Math.PI / 2);
+        const wide = (120 + 60 * p.fall * p.fall) * open;
         const turn = d * 0.009 + streamT * 0.0012 + (p.band > 0 ? 0 : Math.PI) + (p.phase - Math.PI) * 0.07;
-        const off = Math.cos(turn) * wide + p.band * 14;
+        const off = Math.cos(turn) * wide + p.band * 14 * open;
         const depth = Math.sin(turn);
         let fx = q.x + q.nx * off;
         let fy = q.y + q.ny * off - sy;

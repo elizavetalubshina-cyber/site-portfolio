@@ -753,7 +753,6 @@ kbd {
    taking a row of its own under it, so the case starts right away. The
    link takes the left, where "back" is expected; the menu moves right. */
 @media (max-width: 640px) {
-  .case-page .nav__shell { margin-left: auto; }
   .case-page .case-back {
     position: absolute;
     /* main starts under the 70px nav row; this centres the link on the

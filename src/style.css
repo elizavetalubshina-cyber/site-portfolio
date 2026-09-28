@@ -1047,38 +1047,34 @@ h1, h2, h3 {
 /* Press adds the same small lift the header links get; hover stays as it
    was, colour only. :hover is gated to real pointers throughout so it
    doesn't latch on after a tap on touch. */
-.btn:not(.btn--fill):active {
+.btn:not(.btn--glass):active {
   border-color: var(--purple);
   color: var(--purple);
   transform: translateY(-2px);
 }
 @media (hover: hover) {
-  .btn:not(.btn--fill):hover {
+  .btn:not(.btn--glass):hover {
     border-color: var(--purple);
     color: var(--purple);
   }
 }
 
-.btn--fill {
-  background: var(--purple-fill);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 12px 24px -8px rgba(172, 33, 162, 0.35);
-  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+/* The site's one kind of action button: secondary, in the same frosted
+   glass as the nav's burger. The content (a case's cover and name, the
+   photo) leads; the button only confirms the way in. */
+.btn--glass {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--text);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
-/* Press is a darker tone and nothing else — no lift, no bigger shadow.
-   Roughly half the resting purple's brightness: it has to clear the
-   hover shade (#8a1a84) by enough to still register on a pointer, since
-   hover has already darkened the button before the press lands. */
-.btn--fill:active {
-  background: #5f1259;
-}
-/* Hover lifts, press darkens — the two states say different things
-   rather than both recolouring the button. */
-@media (hover: hover) {
-  .btn--fill:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 28px -8px rgba(172, 33, 162, 0.4);
+.btn--glass:active { background: rgba(255, 255, 255, 0.04); }
+@media (hover: hover) and (pointer: fine) {
+  .btn--glass:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.24);
   }
 }
 
@@ -1096,7 +1092,7 @@ h1, h2, h3 {
 /* Filled like .btn--fill, so it follows the same split: hover lifts,
    press darkens. It carries .btn without .btn--fill though, so the
    outline button's rules land on it too — hence restating colour and
-   border, and cancelling the lift that .btn:not(.btn--fill):active
+   border, and cancelling the lift that .btn:not(.btn--glass):active
    would otherwise add on press. */
 .btn.laptop__tooltip-cta:active {
   background: #5f1259;
@@ -1703,6 +1699,17 @@ main,
     width: min(1320px, 88vw, calc(72vh * 1.6));
   }
   .tunnel--flight .tunnel__case--right .tunnel__cover { order: 0; }
+  /* Desktop: the case at its stop fits between the nav and the bottom
+     edge. The picture gives way to the screen's height (its text below
+     takes about 215px, the nav 85px, plus a margin each side), and the
+     case centres in the room under the nav, not on the whole screen. */
+  @media (min-width: 901px) {
+    .tunnel--flight .tunnel__case,
+    .tunnel--flight .tunnel__case--right {
+      width: min(1320px, 88vw, calc((100vh - 345px) * 1.6));
+      top: calc(50% + 42px);
+    }
+  }
   .tunnel--flight .tunnel__cover {
     width: 100%;
   }
@@ -1716,20 +1723,7 @@ main,
   /* Name with its tag chips to the right, then the description, then the
      company. */
   .tunnel--flight .tunnel__company { text-align: center; }
-  /* Secondary, in the same frosted glass as the nav's burger: the case's
-     cover and name lead, the button only confirms the way in. */
-  .tunnel__more {
-    margin-top: var(--space-3);
-    font-size: 15px;
-    padding: 12px var(--space-4);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.14);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .tunnel__more:hover { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.24); }
-  }
+  .tunnel__more { margin-top: var(--space-3); font-size: 15px; padding: 12px var(--space-4); }
 
   .home-page .about { transform-origin: 50% 0; will-change: transform, opacity; }
   /* Room after the last case for the flight out of the tunnel, then the

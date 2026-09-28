@@ -725,22 +725,41 @@ kbd {
   gap: var(--space-2);
 }
 
-/* Cards in a row line up: the description and the one-line note keep the
-   same height in every card (the longest one's), so the titles start on
-   one line, and the company sits level with the middle of the note. */
-/* Title, description, note and company are centred in the card. */
-.related .case__body { text-align: center; align-items: center; }
+/* The cover sits whole on top of the card, 16:10 like the file, with the
+   chips in its bottom right corner as on the homepage covers. Everything
+   under it lines up on the left edge. Cards in a row line up: the
+   description and the one-line note keep the same height in every card
+   (the longest one's), so the notes and companies start on one line. */
+.related .case { min-height: 0; }
+.related .case__media {
+  position: relative;
+  inset: auto;
+  flex: none;
+  aspect-ratio: 16 / 10;
+}
+.related .case__media img { object-position: center; }
+.related .case.cover-cutout .case__media { background: #0e1116; }
+.related .case.cover-cutout .case__media img { object-fit: contain; }
+.related .tags {
+  top: auto;
+  right: var(--space-1);
+  bottom: var(--space-1);
+}
+.related .case__media + .case__body,
+.related .case__body--bottom {
+  flex: 1;
+  margin-top: 0;
+  padding-top: var(--space-2);
+  background: none;
+}
 .related .case__desc { min-height: calc(2 * 1.35em); }
 .related .case__meta {
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-half);
 }
 .related .case__company { margin: 0; }
 .related .case__stats {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex: none;
   min-height: calc(3 * 1.35em);
 }

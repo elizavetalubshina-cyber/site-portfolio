@@ -942,16 +942,16 @@ h1, h2, h3 {
    depending on which page you had opened. */
 .tag {
   /* One chip across the site, on the covers and on the case cards: tinted
-     in the accent like the stat tiles in the cases, and squarer than the
-     buttons, so a label never reads as something to press. Dark enough
+     in the accent like the stat tiles in the cases, so a label never reads
+     as the glass button next to it. Dark enough
      under the tint to stay legible on any screenshot. */
   background: rgba(38, 14, 40, 0.88);
   color: #f7d9f5;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
-  padding: var(--space-half) var(--space-1);
-  border-radius: 8px;
+  padding: var(--space-half) var(--space-2);
+  border-radius: 999px;
   border: 1px solid rgba(214, 107, 208, 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1627,15 +1627,6 @@ main,
     color: inherit;
     text-decoration: none;
   }
-  .tunnel__title a::after {
-    content: ' →';
-    color: var(--purple);
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .tunnel__title a:hover::after { opacity: 1; }
-  }
   .tunnel__desc {
     margin: 0 0 var(--space-2);
     max-width: 440px;
@@ -2086,9 +2077,9 @@ html.sheet-lock, html.sheet-lock body { overflow: hidden; }
 }
 .case-chips .tunnel__tag {
   /* Same chip as .tag. */
-  padding: var(--space-half) var(--space-1);
+  padding: var(--space-half) var(--space-2);
   border: 1px solid rgba(214, 107, 208, 0.45);
-  border-radius: 8px;
+  border-radius: 999px;
   background: rgba(38, 14, 40, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);

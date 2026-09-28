@@ -838,6 +838,7 @@ h1, h2, h3 {
   background: linear-gradient(135deg, #1c2530, #0e1116);
   overflow: hidden;
 }
+.case.cover-cutout .case__media { background: transparent; }
 .case__media img {
   width: 100%;
   height: 100%;
@@ -1596,6 +1597,13 @@ main,
       0 0 0 1px rgba(255, 255, 255, 0.08),
       0 40px 120px -40px rgba(214, 107, 208, 0.45);
     transition: box-shadow 0.4s ease;
+  }
+  /* A cover drawn on a transparent ground (the design system's) keeps
+     it: no plate, frame or glow behind it. */
+  .tunnel__cover.cover-cutout,
+  .tunnel__cover.cover-cutout:hover {
+    background: transparent;
+    box-shadow: none;
   }
   .tunnel__cover img {
     display: block;

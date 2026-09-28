@@ -941,24 +941,18 @@ h1, h2, h3 {
    ever been applied to one case, so the same badge was two different colours
    depending on which page you had opened. */
 .tag {
-  /* One chip across the site: the same as the chips on the homepage covers. */
-  background: rgba(10, 10, 16, 0.72);
-  color: #f1f0f6;
+  /* One chip across the site, on the covers and on the case cards: tinted
+     in the accent like the stat tiles in the cases, and squarer than the
+     buttons, so a label never reads as something to press. Dark enough
+     under the tint to stay legible on any screenshot. */
+  background: rgba(38, 14, 40, 0.88);
+  color: #f7d9f5;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
-  padding: var(--space-half) var(--space-2);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-/* On the bento cards the badge stays white. It sits on top of a product
-   screenshot there rather than on the page, and the pink would start competing
-   with the work underneath it — which is the one thing on that card that should
-   be doing the talking. Both the grid on the homepage and the "другие кейсы"
-   strip at the foot of each case use .tags, so this covers every card. */
-.tags .tag {
-  background: rgba(10, 10, 16, 0.7);
-  border-color: rgba(255, 255, 255, 0.16);
+  padding: var(--space-half) var(--space-1);
+  border-radius: 8px;
+  border: 1px solid rgba(214, 107, 208, 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -2091,14 +2085,15 @@ html.sheet-lock, html.sheet-lock body { overflow: hidden; }
   pointer-events: none;
 }
 .case-chips .tunnel__tag {
-  padding: var(--space-half) var(--space-2);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background: rgba(10, 10, 16, 0.72);
+  /* Same chip as .tag. */
+  padding: var(--space-half) var(--space-1);
+  border: 1px solid rgba(214, 107, 208, 0.45);
+  border-radius: 8px;
+  background: rgba(38, 14, 40, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
-  color: #f1f0f6;
+  color: #f7d9f5;
 }

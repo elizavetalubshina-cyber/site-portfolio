@@ -849,11 +849,6 @@ h1, h2, h3 {
    crop lands mostly on the story list, so this pins to the right edge and
    zooms in a bit further to keep the cue panel — the part that reads as
    "subtitles" at a glance — in frame instead of chrome around it. */
-.case--media-subtitles .case__media img {
-  object-position: right top;
-  transform: scale(1.5);
-  transform-origin: right center;
-}
 
 .case--media-ecosystem .case__media {
   background: linear-gradient(160deg, #1a2230, #0e1116 65%);

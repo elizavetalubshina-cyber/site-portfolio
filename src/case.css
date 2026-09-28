@@ -438,6 +438,8 @@
 .short-ref img {
   box-shadow: 0 0 0 1px var(--border), 0 24px 60px -30px rgba(0, 0, 0, 0.8);
 }
+/* A cover drawn on a transparent ground (the design system's) keeps it. */
+.case-cover.cover-cutout { box-shadow: none; }
 .case-figure figcaption {
   margin-top: var(--space-1);
   font-size: 13px;

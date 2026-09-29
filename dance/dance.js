@@ -518,21 +518,6 @@ function wait(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-// Pencil draws itself before the heel arrives.
-function sketchIn() {
-  const paths = world.querySelectorAll('path');
-  paths.forEach((p, i) => {
-    let len = 0;
-    try { len = p.getTotalLength(); } catch (e) { return; }
-    if (!len) return;
-    p.style.strokeDasharray = `${len}`;
-    p.animate(
-      [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
-      { duration: 520, delay: (i % 40) * 8, easing: 'ease-out', fill: 'backwards' }
-    );
-  });
-}
-
 if (reduce) {
   hide(shoe);
   again.hidden = true;
@@ -541,7 +526,6 @@ if (reduce) {
 } else {
   card.classList.add('is-waiting');
   hide(shoe);
-  sketchIn();
   // Whatever happens to the stomp, the card must not stay hidden.
   const letIn = () => card.classList.replace('is-waiting', 'is-in');
   setTimeout(() => stomp({ first: true }).catch(letIn), 700);

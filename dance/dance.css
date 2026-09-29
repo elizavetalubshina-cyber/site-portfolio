@@ -107,14 +107,18 @@ body {
 .page__title .ink {
   display: inline-block;
   white-space: pre;
-  /* Generous margins: Caveat's letters reach past their boxes, and the tails
-     of у and ц hang well below the line. */
-  clip-path: inset(-60% 100% -60% -30%);
+  /* The mask runs in em, not %: a narrow letter like ? has a tiny box and
+     a tail that reaches far out of it. */
+  clip-path: inset(-0.6em calc(100% + 0.4em) -0.6em -0.4em);
   animation: write 0.16s ease-out forwards;
   animation-delay: calc(0.35s + var(--i) * 0.075s);
 }
+.page__title .ink.is-written {
+  clip-path: none;
+  animation: none;
+}
 @keyframes write {
-  to { clip-path: inset(-60% -60% -60% -30%); }
+  to { clip-path: inset(-0.6em -0.8em -0.6em -0.4em); }
 }
 
 .card__cols {

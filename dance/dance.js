@@ -30,6 +30,8 @@ if (title && !reduce) {
     span.setAttribute('aria-hidden', 'true');
     span.style.setProperty('--i', i);
     span.textContent = ch;
+    // Once written, the letter drops its mask so nothing of it is cut off.
+    span.addEventListener('animationend', () => span.classList.add('is-written'), { once: true });
     title.appendChild(span);
   });
 }
@@ -63,8 +65,14 @@ const group = (parent, attrs) => el('g', attrs, parent);
 const add = (parent, ...nodes) => nodes.forEach((n) => parent.appendChild(n));
 
 function fit() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  // The drawing's own box, not the window: on iPhone the window height
+  // changes with Safari's toolbar while the fixed drawing keeps its size, and
+  // measuring the window left the heel hanging above the ground.
+  const box = svg.getBoundingClientRect();
+  const w = box.width || window.innerWidth;
+  const h = box.height || window.innerHeight;
+  view.left = box.left;
+  view.top = box.top;
   // At least 560 units across, so on a phone the giant heel and the house
   // both fit.
   const s = Math.min(w / 560, h / 820, 1.25);
@@ -76,7 +84,7 @@ function fit() {
   svg.setAttribute('viewBox', `${view.x} ${view.y} ${vw} ${vh}`);
   if (typeof placeShoe === 'function') placeShoe();
 }
-const view = { s: 1, x: 0, y: 0 };
+const view = { s: 1, x: 0, y: 0, left: 0, top: 0 };
 
 // ---------- The drawing ----------
 
@@ -291,13 +299,14 @@ shoe.decoding = 'async';
 document.body.insertBefore(shoe, svg.nextSibling);
 
 function placeShoe() {
-  const { s: k, x, y } = view;
-  shoe.style.left = `${(SHOE_X - x) * k}px`;
-  shoe.style.top = `${(GROUND + 6 - 900 * SHOE_K - y) * k}px`;
+  const { s: k, x, y, left, top } = view;
+  shoe.style.left = `${left + (SHOE_X - x) * k}px`;
+  shoe.style.top = `${top + (GROUND + 6 - 900 * SHOE_K - y) * k}px`;
   shoe.style.width = `${600 * SHOE_K * k}px`;
 }
 fit();
 window.addEventListener('resize', fit);
+if ('ResizeObserver' in window) new ResizeObserver(fit).observe(svg);
 
 // Moves the shoe by (x, y) scene units and r degrees from where it stands.
 function poseShoe(x, y, r) {

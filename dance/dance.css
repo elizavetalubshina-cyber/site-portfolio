@@ -1,0 +1,219 @@
+/* Layout: a pencil drawing fixed to the bottom of the screen, a burgundy
+   platform heel stomps on it on arrival, then a paper card with the ways to
+   sign up settles in the empty sky above the house. One light look on
+   purpose: white paper and pencil. */
+:root {
+  --paper: #ffffff;
+  --graphite: #262428;
+  --graphite-soft: #625d66;
+  --wine: #7b1730;
+  --wine-deep: #5a0f22;
+  --wine-tint: #f7ebee;
+
+  --font-hand: 'Caveat', 'Segoe Print', 'Comic Sans MS', cursive;
+  --font-body: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Matches the stomp in dance.js: the card comes in once the heel has left. */
+  --card-delay: 2.5s;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { background: var(--paper); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--graphite);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-inline: 16px;
+  padding-block: max(6vh, 32px) 40vh;
+}
+
+/* The card is paper cut out and pinned over the drawing: a hand-drawn
+   outline (the uneven radii make the corners wobble like a pencil line). */
+.card {
+  width: min(860px, 100%);
+  background: var(--paper);
+  border: 2px solid var(--graphite);
+  border-radius: 22px 30px 18px 26px / 28px 18px 30px 20px;
+  padding: 28px clamp(20px, 4vw, 44px) 32px;
+  box-shadow: 6px 7px 0 -1px var(--paper), 6px 7px 0 1px var(--graphite);
+  animation: card-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) var(--card-delay) both;
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(24px) rotate(-1.5deg) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.card__hand {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--wine);
+}
+.card__title {
+  margin: 4px 0 20px;
+  font-family: var(--font-hand);
+  font-size: clamp(52px, 8vw, 76px);
+  font-weight: 700;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.card__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+}
+.block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.block + .block {
+  /* A pencil stroke between the columns. */
+  border-left: 2px dashed rgba(38, 36, 40, 0.25);
+  padding-left: 40px;
+  margin-left: -40px;
+}
+.block__title {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+}
+.block__text {
+  margin: 0;
+  color: var(--graphite-soft);
+  max-width: 34ch;
+}
+.block__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+.block__list li {
+  position: relative;
+  padding-left: 22px;
+}
+/* A little pencil tick before each point. */
+.block__list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 11px;
+  height: 6px;
+  border-left: 2px solid var(--wine);
+  border-bottom: 2px solid var(--wine);
+  transform: rotate(-45deg);
+}
+.block__actions {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+.block__handle {
+  font-size: 14px;
+  color: var(--graphite-soft);
+  user-select: all;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 10px 20px;
+  font: 600 15px/1.2 var(--font-body);
+  text-decoration: none;
+  border-radius: 14px 22px 16px 24px / 22px 14px 24px 16px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.btn:focus-visible {
+  outline: 3px solid var(--wine);
+  outline-offset: 3px;
+}
+.btn:active { transform: translateY(1px) scale(0.98); }
+.btn--wine {
+  background: var(--wine);
+  color: var(--paper);
+  border: 2px solid var(--wine-deep);
+}
+.btn--pencil {
+  background: var(--paper);
+  color: var(--graphite);
+  border: 2px solid var(--graphite);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn--wine:hover { background: var(--wine-deep); transform: rotate(-1deg); }
+  .btn--pencil:hover { background: var(--wine-tint); transform: rotate(1deg); }
+}
+
+.again {
+  position: fixed;
+  z-index: 2;
+  right: 16px;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 10px;
+  font: 700 22px/1 var(--font-hand);
+  color: var(--wine);
+  background: var(--paper);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.again:focus-visible { outline: 3px solid var(--wine); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .card__cols { grid-template-columns: 1fr; }
+  .block + .block {
+    border-left: 0;
+    border-top: 2px dashed rgba(38, 36, 40, 0.25);
+    padding-left: 0;
+    margin-left: 0;
+    padding-top: 20px;
+  }
+  .btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; }
+}

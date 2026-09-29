@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Dizlik dance</title>
+    <!-- A page of its own: kept out of search, out of the sitemap and with no
+         link back to the portfolio. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Индивидуальные занятия и постановка хореографии. Запись в студию и ко мне." />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%237b1730'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Onest:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="./dance.css" />
+  </head>
+  <body>
+    <svg class="scene" aria-hidden="true" focusable="false"></svg>
+
+    <main class="page">
+      <section class="card" aria-labelledby="dance-title">
+        <p class="card__hand">dizlik dance</p>
+        <h1 id="dance-title" class="card__title">Потанцуем?</h1>
+
+        <div class="card__cols">
+          <div class="block">
+            <h2 class="block__title">В студии</h2>
+            <p class="block__text">Записаться на занятие можно через администратора студии или в приложении.</p>
+            <div class="block__actions">
+              <a class="btn btn--pencil" href="#studio-admin-tg" target="_blank" rel="noopener">Администратор в Telegram</a>
+              <a class="btn btn--pencil" href="#studio-app" target="_blank" rel="noopener">Приложение студии</a>
+            </div>
+          </div>
+
+          <div class="block">
+            <h2 class="block__title">Со мной</h2>
+            <ul class="block__list">
+              <li>Индивидуальное занятие</li>
+              <li>Индив с подружкой</li>
+              <li>Поставлю хореографию под ваш трек</li>
+            </ul>
+            <div class="block__actions">
+              <a class="btn btn--wine" href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать мне в Telegram</a>
+              <span class="block__handle">@dizzzlik</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <button class="again" type="button" hidden>топнуть ещё раз</button>
+
+    <script type="module" src="./dance.js"></script>
+  </body>
+</html>

@@ -14,6 +14,8 @@ export default defineConfig({
         satellite: resolve(__dirname, 'cases/satellite.html'),
         tracktice: resolve(__dirname, 'cases/tracktice.html'),
         designSystem: resolve(__dirname, 'cases/design-system.html'),
+        // A separate page for dance classes: no links to or from the portfolio.
+        dance: resolve(__dirname, 'dance/index.html'),
       },
     },
   },

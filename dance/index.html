@@ -7,7 +7,7 @@
     <!-- A page of its own: kept out of search, out of the sitemap and with no
          link back to the portfolio. -->
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="description" content="Индивидуальные занятия и постановка хореографии. Запись в студию и ко мне." />
+    <meta name="description" content="Открытая группа для начинающих по вторникам и четвергам в 20:00 и индивидуальные занятия." />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%237b1730'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,25 +20,30 @@
 
     <main class="page">
       <section class="card" aria-labelledby="dance-title">
-        <p class="card__hand">dizlik dance</p>
         <h1 id="dance-title" class="card__title">Потанцуем?</h1>
 
         <div class="card__cols">
           <div class="block">
-            <h2 class="block__title">В студии</h2>
-            <p class="block__text">Записаться на занятие можно через администратора студии или в приложении.</p>
+            <h2 class="block__title">Моё расписание</h2>
+            <p class="slot">
+              <span class="slot__when">вт и чт, 20:00</span>
+              <span class="slot__what">Открытая группа, уровень «начинающие»</span>
+            </p>
+            <p class="block__text">Записаться можно через администратора студии или в приложении студии.</p>
             <div class="block__actions">
               <a class="btn btn--pencil" href="https://t.me/danceritmprofa" target="_blank" rel="noopener">Администратор в Telegram</a>
-              <a class="btn btn--pencil js-app" data-android="https://www.rustore.ru/catalog/app/io.fitbase.danceritm" href="https://apps.apple.com/kz/app/%D1%88%D0%BA%D0%BE%D0%BB%D0%B0-%D1%82%D0%B0%D0%BD%D1%86%D0%B5%D0%B2-%D1%80%D0%B8%D1%82%D0%BC/id6755172051?l=ru" target="_blank" rel="noopener">Приложение студии</a>
+              <a class="btn btn--pencil js-app" data-android="https://www.rustore.ru/catalog/app/io.fitbase.danceritm" href="https://apps.apple.com/kz/app/%D1%88%D0%BA%D0%BE%D0%BB%D0%B0-%D1%82%D0%B0%D0%BD%D1%86%D0%B5%D0%B2-%D1%80%D0%B8%D1%82%D0%BC/id6755172051?l=ru" target="_blank" rel="noopener">Скачать приложение</a>
             </div>
           </div>
 
           <div class="block">
-            <h2 class="block__title">Со мной</h2>
-            <ul class="block__list">
-              <li>Индивидуальное занятие</li>
-              <li>Индив с подружкой</li>
-              <li>Поставлю хореографию под ваш трек</li>
+            <h2 class="block__title">Индивидуально</h2>
+            <p class="block__text">Если идти в группу пока страшно (надо через боль), позанимайся со мной индивидуально. Разберём движения, которые не получаются, или повайбим под твой трек. Можно прийти с подружкой, так будет не так страшно.</p>
+            <p class="block__text">Индивы провожу в любом филиале студии:</p>
+            <ul class="places" aria-label="Филиалы студии">
+              <li>Динамо</li>
+              <li>Щукинская</li>
+              <li>Профсоюзная</li>
             </ul>
             <div class="block__actions">
               <a class="btn btn--wine" href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать мне в Telegram</a>
@@ -47,9 +52,9 @@
           </div>
         </div>
       </section>
-    </main>
 
-    <button class="again" type="button" hidden>топнуть ещё раз</button>
+      <button class="again" type="button" hidden>топнуть ещё раз</button>
+    </main>
 
     <script type="module" src="./dance.js"></script>
   </body>

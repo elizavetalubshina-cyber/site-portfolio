@@ -64,8 +64,9 @@ body {
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   padding-inline: 16px;
   padding-block: max(6vh, 32px) 40vh;
 }
@@ -73,7 +74,7 @@ body {
 /* The card is paper cut out and pinned over the drawing: a hand-drawn
    outline (the uneven radii make the corners wobble like a pencil line). */
 .card {
-  width: min(860px, 100%);
+  width: min(980px, 100%);
   background: var(--paper);
   border: 2px solid var(--graphite);
   border-radius: 22px 30px 18px 26px / 28px 18px 30px 20px;
@@ -91,16 +92,8 @@ body {
   to { opacity: 1; transform: none; }
 }
 
-.card__hand {
-  margin: 0;
-  font-family: var(--font-hand);
-  font-size: 26px;
-  font-weight: 500;
-  line-height: 1;
-  color: var(--wine);
-}
 .card__title {
-  margin: 4px 0 20px;
+  margin: 0 0 20px;
   font-family: var(--font-hand);
   font-size: clamp(52px, 8vw, 76px);
   font-weight: 700;
@@ -135,8 +128,51 @@ body {
 .block__text {
   margin: 0;
   color: var(--graphite-soft);
-  max-width: 34ch;
+  max-width: 44ch;
 }
+.slot {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+}
+.slot__when {
+  font-family: var(--font-hand);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--wine);
+}
+.slot__what { font-weight: 500; }
+
+/* Branches of the studio, marked like stops on a metro map. */
+.places {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.places li {
+  padding: 4px 12px 4px 26px;
+  position: relative;
+  border: 2px solid var(--graphite);
+  border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.places li::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: var(--wine);
+}
+
 .block__list {
   margin: 0;
   padding: 0;
@@ -161,7 +197,6 @@ body {
   transform: rotate(-45deg);
 }
 .block__actions {
-  margin-top: auto;
   padding-top: 8px;
   display: flex;
   flex-wrap: wrap;
@@ -206,10 +241,8 @@ body {
 }
 
 .again {
-  position: fixed;
-  z-index: 2;
-  right: 16px;
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  align-self: flex-end;
+  margin-right: 12px;
   padding: 6px 10px;
   font: 700 22px/1 var(--font-hand);
   color: var(--wine);

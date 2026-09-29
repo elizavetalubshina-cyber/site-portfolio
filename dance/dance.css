@@ -68,7 +68,7 @@ body {
   align-items: center;
   gap: 12px;
   padding-inline: 16px;
-  padding-block: max(6vh, 32px) 40vh;
+  padding-block: max(2.5vh, 16px) 40vh;
 }
 
 /* The card is paper cut out and pinned over the drawing: a hand-drawn

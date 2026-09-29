@@ -143,17 +143,8 @@ body {
   color: var(--wine);
 }
 .slot__what { font-weight: 500; }
-.slot__where {
-  justify-self: start;
-  margin-top: 2px;
-  color: var(--graphite);
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-color: var(--wine);
-  text-underline-offset: 4px;
-}
 
-/* Branches of the studio, marked like stops on a metro map. */
+/* Studio branches as chips with a map pin; each opens the place on the map. */
 .places {
   margin: 0;
   padding: 0;
@@ -174,25 +165,23 @@ body {
   font-weight: 500;
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
-.places a:focus-visible,
-.slot__where:focus-visible {
+.places a:focus-visible {
   outline: 3px solid var(--wine);
   outline-offset: 2px;
 }
 @media (hover: hover) and (pointer: fine) {
   .places a:hover { background: var(--wine-tint); transform: rotate(-1deg); }
-  .slot__where:hover { color: var(--wine); }
 }
 .places a::before {
+  /* A map pin: a drop with a dot in it. */
   content: '';
   position: absolute;
-  left: 9px;
+  left: 8px;
   top: 50%;
-  width: 9px;
-  height: 9px;
-  margin-top: -4.5px;
-  border-radius: 50%;
-  background: var(--wine);
+  width: 12px;
+  height: 16px;
+  margin-top: -8px;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 16'%3E%3Cpath fill='%237b1730' fill-rule='evenodd' d='M6 0C2.7 0 0 2.6 0 5.9 0 10.3 6 16 6 16s6-5.7 6-10.1C12 2.6 9.3 0 6 0Zm0 8.2a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6Z'/%3E%3C/svg%3E");
 }
 
 .block__list {

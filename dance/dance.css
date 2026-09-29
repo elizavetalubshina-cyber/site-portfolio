@@ -14,7 +14,7 @@
   --font-body: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   /* Matches the stomp in dance.js: the card comes in once the heel has left. */
-  --card-delay: 2.5s;
+  --card-delay: 2.75s;
 
   color-scheme: light;
 }

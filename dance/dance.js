@@ -1,12 +1,14 @@
 import rough from 'roughjs';
+import stripUrl from './img/strip.webp';
 
 // The drawing lives in scene units: the ground runs along y = GROUND, the
-// house and the heel sit around x = 300..800. The viewBox is fitted to the
+// heel and the house sit around x = 330..800. The viewBox is fitted to the
 // window so the drawing keeps a sensible size on a phone and on a monitor
 // and the ground stays at the bottom of the screen.
 const GROUND = 882;
-const CENTER_X = 545;
-const IMPACT_X = 540;
+const CENTER_X = 560;
+// Middle of the platform when the heel stands on the ground.
+const IMPACT_X = 545;
 
 const NS = 'http://www.w3.org/2000/svg';
 const svg = document.querySelector('.scene');
@@ -91,10 +93,12 @@ function tree(x, size) {
   );
   return g;
 }
-const trees = [tree(160, 110), tree(930, 130)];
+const trees = [tree(160, 110), tree(1010, 130)];
 
 // The house: jumps when the heel lands, and stays where it was.
-const house = group(world, { class: 'house' });
+// Drawn at x = 300..440 and moved right of the heel. The jump animates the
+// inner group so it keeps this offset.
+const house = group(group(world, { transform: 'translate(350 0)' }), { class: 'house' });
 add(
   house,
   rc.rectangle(300, 745, 140, 137, pencil()),
@@ -157,11 +161,12 @@ const shapes = {
 
 // [x, kind, height, lies down when it lands]
 const layout = [
-  [30, 'mushroom', 0, true], [80, 'grass'], [215, 'flower', 40, true], [250, 'stone'],
-  [270, 'grass'], [455, 'flower', 34, true], [462, 'grass'], [612, 'tulip', 38, true],
-  [650, 'grass'], [690, 'stone'], [728, 'flower', 50, true], [790, 'ball'],
-  [835, 'mushroom', 0, true], [870, 'grass'], [1000, 'tulip', 44, true], [1050, 'heart'],
-  [1090, 'grass'], [1140, 'flower', 44, true], [-60, 'flower', 42, true], [120, 'heart'],
+  [-60, 'flower', 42, true], [30, 'mushroom', 0, true], [80, 'grass'], [120, 'heart'],
+  [215, 'flower', 40, true], [250, 'stone'], [290, 'grass'], [335, 'flower', 38, true],
+  [440, 'grass'], [462, 'flower', 34, true], [622, 'tulip', 38, true], [640, 'grass'],
+  [830, 'stone'], [852, 'flower', 50, true], [884, 'ball'], [925, 'grass'],
+  [960, 'mushroom', 0, true], [1060, 'tulip', 44, true], [1100, 'heart'], [1150, 'grass'],
+  [1190, 'flower', 44, true],
 ];
 
 const bits = layout.map(([x, kind, h, lies]) => {
@@ -237,21 +242,17 @@ function settle(b) {
 
 // ---------- The heel ----------
 
-// Drawn toe to the left, ground at y = 0. Clean vector on purpose: the one
-// thing on the page that is not a pencil drawing.
+// The photo of the shoe: the one thing on the page that is not a pencil
+// drawing. strip.webp is 600 x 900 with the platform bottom on its last row
+// and the heel tip at x = 82; scaled so the whole shoe is about 430 units
+// tall and tilted a touch so the heel tip meets the ground as well.
+const SHOE_K = 0.48;
+const SHOE_X = IMPACT_X - 390 * SHOE_K;
 const shoe = group(svg, { class: 'shoe' });
-const shoeBody = group(shoe, { transform: `translate(468 ${GROUND}) scale(1.02)` });
-shoeBody.innerHTML = `
-  <path fill="${WINE_DEEP}" d="M312 -330 L352 -334 C342 -240 334 -120 332 -8 L318 -8 C318 -120 322 -236 312 -330 Z"/>
-  <rect x="316" y="-10" width="18" height="10" rx="2" fill="${INK}"/>
-  <path fill="${WINE_DEEP}" d="M12 0 C-2 -24 -2 -60 12 -84 L162 -84 C172 -58 172 -24 162 0 Z"/>
-  <path fill="none" stroke="#fff" stroke-opacity=".2" stroke-width="3" d="M18 -64 L156 -64"/>
-  <path fill="${WINE}" d="M12 -84 C-6 -112 10 -154 70 -160 C120 -164 162 -154 190 -170 C232 -202 282 -300 318 -384 C332 -396 354 -392 358 -374 C362 -360 358 -346 352 -334 L312 -330 C282 -296 214 -124 162 -84 Z"/>
-  <path fill="none" stroke="${WINE_DEEP}" stroke-width="7" stroke-linecap="round" d="M196 -168 C240 -204 286 -296 322 -376"/>
-  <path fill="none" stroke="${WINE_DEEP}" stroke-width="6" d="M14 -84 L162 -84 C214 -124 282 -296 312 -330 L352 -334"/>
-  <path fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="5" stroke-linecap="round" d="M30 -138 C52 -154 86 -156 116 -152"/>
-  <path fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="4" stroke-linecap="round" d="M340 -300 C336 -220 332 -140 330 -60"/>
-`;
+const shoeBody = group(shoe, {
+  transform: `translate(${SHOE_X} ${GROUND + 6}) rotate(-2.2 ${390 * SHOE_K} 0) scale(${SHOE_K})`,
+});
+el('image', { href: stripUrl, x: 0, y: -900, width: 600, height: 900 }, shoeBody);
 
 // Pencil dust and cracks around the platform.
 const fx = group(svg, { class: 'fx' });
@@ -269,7 +270,7 @@ function show(node) { node.style.visibility = 'visible'; }
 
 function puff() {
   fx.replaceChildren();
-  const spots = [[462, -1], [612, 1], [470, -1], [600, 1], [800, 1]];
+  const spots = [[398, -1], [484, -1], [606, 1], [492, -1], [598, 1]];
   for (const [x, side] of spots) {
     const g = group(fx, { transform: `translate(${x} ${GROUND - 10})` });
     add(g, rc.circle(0, 0, 26 + Math.random() * 14, pencil({ strokeWidth: 1.4, roughness: 2.2 })));
@@ -285,9 +286,9 @@ function puff() {
   const cracks = group(fx);
   add(
     cracks,
-    rc.linearPath([[480, GROUND + 4], [462, GROUND + 18], [470, GROUND + 30]], pencil({ strokeWidth: 1.6 })),
-    rc.linearPath([[600, GROUND + 4], [620, GROUND + 16], [614, GROUND + 32]], pencil({ strokeWidth: 1.6 })),
-    rc.linearPath([[540, GROUND + 4], [546, GROUND + 22]], pencil({ strokeWidth: 1.6 }))
+    rc.linearPath([[490, GROUND + 4], [472, GROUND + 18], [480, GROUND + 30]], pencil({ strokeWidth: 1.6 })),
+    rc.linearPath([[602, GROUND + 4], [622, GROUND + 16], [616, GROUND + 32]], pencil({ strokeWidth: 1.6 })),
+    rc.linearPath([[398, GROUND + 2], [392, GROUND + 18]], pencil({ strokeWidth: 1.6 }))
   );
 }
 
@@ -367,9 +368,16 @@ async function stomp({ first }) {
     await wait(350);
   }
   show(shoe);
+  shoe.style.transformBox = 'fill-box';
+  shoe.style.transformOrigin = '60% 100%';
+  // Flies in from the left along an arc and comes down on the platform.
   const fall = shoe.animate(
-    [{ transform: 'translateY(-1200px)' }, { transform: 'translateY(0)' }],
-    { duration: 480, easing: ease.fall, fill: 'forwards' }
+    [
+      { transform: 'translate(-1300px, -700px) rotate(-38deg)', easing: 'cubic-bezier(0.3, 0.2, 0.6, 1)' },
+      { transform: 'translate(-420px, -430px) rotate(-16deg)', offset: 0.55, easing: 'cubic-bezier(0.55, 0, 1, 0.5)' },
+      { transform: 'translate(0, 0) rotate(0)' },
+    ],
+    { duration: 760, fill: 'forwards' }
   );
   await fall.finished;
 
@@ -382,13 +390,12 @@ async function stomp({ first }) {
     try { navigator.vibrate(30); } catch (e) { /* not allowed here */ }
   }
 
-  shoeBody.parentNode.style.transformBox = 'fill-box';
   await wait(620);
   const lift = shoe.animate(
     [
-      { transform: 'translateY(0) rotate(0)' },
-      { transform: 'translateY(-26px) rotate(-2deg)', offset: 0.25 },
-      { transform: 'translateY(-1300px) rotate(-6deg)' },
+      { transform: 'translate(0, 0) rotate(0)' },
+      { transform: 'translate(-10px, -30px) rotate(-3deg)', offset: 0.25 },
+      { transform: 'translate(1100px, -1300px) rotate(24deg)' },
     ],
     { duration: 620, easing: ease.lift, fill: 'forwards' }
   );

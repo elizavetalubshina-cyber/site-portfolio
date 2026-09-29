@@ -93,11 +93,12 @@ body {
 }
 
 .card__title {
-  margin: 0 0 36px;
-  font-family: var(--font-hand);
-  font-size: clamp(52px, 8vw, 76px);
-  font-weight: 700;
-  line-height: 0.95;
+  /* A quiet opening line in the body face: the columns carry the page. */
+  margin: 0 0 24px;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
   text-wrap: balance;
 }
 
@@ -110,7 +111,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  /* Spacing, from loose to tight: 36 under the page title, 20 between the
+  /* Spacing, from loose to tight: 24 under the opening line, 20 between the
      groups of a column, 10 inside a group. */
   gap: 20px;
 }

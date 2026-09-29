@@ -533,6 +533,9 @@ if (reduce) {
   card.classList.add('is-waiting');
   hide(shoe);
   sketchIn();
-  setTimeout(() => stomp({ first: true }), 700);
+  // Whatever happens to the stomp, the card must not stay hidden.
+  const letIn = () => card.classList.replace('is-waiting', 'is-in');
+  setTimeout(() => stomp({ first: true }).catch(letIn), 700);
+  setTimeout(letIn, 6000);
   again.addEventListener('click', () => stomp({ first: false }));
 }

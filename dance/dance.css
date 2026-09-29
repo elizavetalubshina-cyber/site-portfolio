@@ -107,12 +107,14 @@ body {
 .page__title .ink {
   display: inline-block;
   white-space: pre;
-  clip-path: inset(-10% 100% -10% 0);
+  /* Generous margins: Caveat's letters reach past their boxes, and the tails
+     of у and ц hang well below the line. */
+  clip-path: inset(-60% 100% -60% -30%);
   animation: write 0.16s ease-out forwards;
   animation-delay: calc(0.35s + var(--i) * 0.075s);
 }
 @keyframes write {
-  to { clip-path: inset(-10% -10% -10% 0); }
+  to { clip-path: inset(-60% -60% -60% -30%); }
 }
 
 .card__cols {

@@ -92,14 +92,15 @@ body {
   to { opacity: 1; transform: none; }
 }
 
-.card__title {
-  /* A quiet opening line in the body face: the columns carry the page. */
-  margin: 0 0 24px;
+.page__title {
+  /* A quiet opening line over the card, in the body face. */
+  width: min(980px, 100%);
+  margin: 0;
+  padding-inline: 6px;
   font-family: var(--font-body);
   font-size: 20px;
   font-weight: 600;
   line-height: 1.3;
-  text-wrap: balance;
 }
 
 .card__cols {
@@ -111,7 +112,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  /* Spacing, from loose to tight: 24 under the opening line, 20 between the
+  /* Spacing, from loose to tight: 32 between the columns, 20 between the
      groups of a column, 10 inside a group. */
   gap: 20px;
 }

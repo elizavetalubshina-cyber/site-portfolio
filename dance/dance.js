@@ -15,10 +15,28 @@ const svg = document.querySelector('.scene');
 const again = document.querySelector('.again');
 const card = document.querySelector('.card');
 
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// "Потанцуем?" writes itself by hand: one span per letter, each with its
+// place in the line for the stagger. Screen readers keep the whole word.
+const title = document.querySelector('.page__title');
+if (title && !reduce) {
+  const text = title.textContent;
+  title.setAttribute('aria-label', text);
+  title.textContent = '';
+  [...text].forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'ink';
+    span.setAttribute('aria-hidden', 'true');
+    span.style.setProperty('--i', i);
+    span.textContent = ch;
+    title.appendChild(span);
+  });
+}
+
 // The studio app: App Store by default, RuStore on Android.
 const app = document.querySelector('.js-app');
 if (app && /android/i.test(navigator.userAgent)) app.href = app.dataset.android;
-const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const rc = rough.svg(svg);
 const INK = '#262428';

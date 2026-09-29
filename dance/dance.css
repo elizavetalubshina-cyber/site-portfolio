@@ -1,0 +1,322 @@
+/* Layout: a pencil drawing fixed to the bottom of the screen, a burgundy
+   platform heel stomps on it on arrival, then a paper card with the ways to
+   sign up settles in the empty sky above the house. One light look on
+   purpose: white paper and pencil. */
+:root {
+  --paper: #ffffff;
+  --graphite: #262428;
+  --graphite-soft: #625d66;
+  --wine: #7b1730;
+  --wine-deep: #5a0f22;
+  --wine-tint: #f7ebee;
+
+  --font-hand: 'Caveat', 'Segoe Print', 'Comic Sans MS', cursive;
+  --font-body: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Only used when dance.js does not run. */
+  --card-delay: 0.3s;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { background: var(--paper); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--graphite);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.shoe {
+  position: fixed;
+  z-index: 0;
+  display: block;
+  height: auto;
+  max-width: none;
+  pointer-events: none;
+  visibility: hidden;
+  /* The middle of the platform bottom: the shoe turns around where it lands. */
+  transform-origin: 65% 100%;
+  will-change: transform;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-inline: 16px;
+  padding-block: max(2.5vh, 16px) 40vh;
+}
+
+/* The card is paper cut out and pinned over the drawing: a hand-drawn
+   outline (the uneven radii make the corners wobble like a pencil line). */
+.card {
+  width: min(980px, 100%);
+  background: var(--paper);
+  border: 2px solid var(--graphite);
+  border-radius: 22px 30px 18px 26px / 28px 18px 30px 20px;
+  padding: 28px clamp(20px, 4vw, 44px) 32px;
+  box-shadow: 6px 7px 0 -1px var(--paper), 6px 7px 0 1px var(--graphite);
+  animation: card-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) var(--card-delay) both;
+}
+/* dance.js holds the card back while the heel is on screen and lets it in
+   as the heel leaves. Without the script the card simply comes in on the
+   delay above. */
+.card.is-waiting { animation: none; opacity: 0; }
+.card.is-in { animation: card-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(24px) rotate(-1.5deg) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.page__title {
+  /* The opening line over the card, handwritten like the drawing. */
+  width: min(980px, 100%);
+  margin: 0;
+  padding-inline: 6px;
+  font-family: var(--font-hand);
+  font-size: clamp(36px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.1;
+}
+/* dance.js splits the line into letters and writes them one by one, each
+   wiped in from the left like a pen stroke. */
+.page__title .ink {
+  display: inline-block;
+  white-space: pre;
+  /* The mask runs in em, not %: a narrow letter like ? has a tiny box and
+     a tail that reaches far out of it. */
+  clip-path: inset(-0.6em calc(100% + 0.4em) -0.6em -0.4em);
+  animation: write 0.16s ease-out forwards;
+  animation-delay: calc(0.35s + var(--i) * 0.075s);
+}
+.page__title .ink.is-written {
+  clip-path: none;
+  animation: none;
+}
+@keyframes write {
+  to { clip-path: inset(-0.6em -0.8em -0.6em -0.4em); }
+}
+
+.card__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 56px;
+}
+.block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  /* Spacing, from loose to tight: 32 between the columns, 20 between the
+     groups of a column, 10 inside a group. */
+  gap: 20px;
+}
+.block__title { margin-bottom: -6px; }
+/* The address belongs to the heading: it sits right under it. */
+.block__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.block__head .block__title { margin-bottom: 0; }
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.block + .block {
+  /* A pencil stroke in the middle of the gap between the columns. */
+  border-left: 2px dashed rgba(38, 36, 40, 0.25);
+  padding-left: 27px;
+  margin-left: -29px;
+}
+.block__title {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+}
+.block__text {
+  margin: 0;
+  color: var(--graphite-soft);
+  max-width: 44ch;
+}
+.slot {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+.slot__when {
+  font-family: var(--font-hand);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--wine);
+}
+.slot__what { font-weight: 500; }
+
+/* Studio branches as map links with a pin; each opens the place on the map. */
+.places {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+}
+.places a {
+  display: block;
+  position: relative;
+  padding: 2px 0 2px 18px;
+  color: var(--graphite);
+  font-size: 15px;
+  font-weight: 500;
+  /* No plate: a pin and a dashed underline say
+     "this opens the map". */
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--wine);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  transition: color 0.15s ease;
+}
+.places a:focus-visible {
+  outline: 3px solid var(--wine);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .places a:hover { color: var(--wine); text-decoration-thickness: 2px; }
+}
+.places a::before {
+  /* A map pin: a drop with a dot in it. */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  height: 16px;
+  margin-top: -9px;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 16'%3E%3Cpath fill='%237b1730' fill-rule='evenodd' d='M6 0C2.7 0 0 2.6 0 5.9 0 10.3 6 16 6 16s6-5.7 6-10.1C12 2.6 9.3 0 6 0Zm0 8.2a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6Z'/%3E%3C/svg%3E");
+}
+
+.block__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+.block__list li {
+  position: relative;
+  padding-left: 22px;
+}
+/* A little pencil tick before each point. */
+.block__list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 11px;
+  height: 6px;
+  border-left: 2px solid var(--wine);
+  border-bottom: 2px solid var(--wine);
+  transform: rotate(-45deg);
+}
+.block__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+.block__handle {
+  font-size: 14px;
+  color: var(--graphite-soft);
+  user-select: all;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 10px 20px;
+  font: 600 15px/1.2 var(--font-body);
+  text-decoration: none;
+  border-radius: 14px 22px 16px 24px / 22px 14px 24px 16px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.btn:focus-visible {
+  outline: 3px solid var(--wine);
+  outline-offset: 3px;
+}
+.btn:active { transform: translateY(1px) scale(0.98); }
+.btn--wine {
+  background: var(--wine);
+  color: var(--paper);
+  border: 2px solid var(--wine-deep);
+}
+.btn--pencil {
+  background: var(--paper);
+  color: var(--graphite);
+  border: 2px solid var(--graphite);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn--wine:hover { background: var(--wine-deep); transform: rotate(-1deg); }
+  .btn--pencil:hover { background: var(--wine-tint); transform: rotate(1deg); }
+}
+
+.again {
+  align-self: flex-end;
+  margin-right: 12px;
+  padding: 6px 10px;
+  font: 700 22px/1 var(--font-hand);
+  color: var(--wine);
+  background: var(--paper);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.again:focus-visible { outline: 3px solid var(--wine); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .card__cols { grid-template-columns: 1fr; }
+  .block + .block {
+    border-left: 0;
+    border-top: 2px dashed rgba(38, 36, 40, 0.25);
+    padding-left: 0;
+    margin-left: 0;
+    padding-top: 32px;
+  }
+  .btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; }
+}

@@ -52,10 +52,13 @@ function fit() {
   const s = Math.min(w / 560, h / 820, 1.25);
   const vw = w / s;
   const vh = h / s;
-  svg.setAttribute('viewBox', `${CENTER_X - vw / 2} ${GROUND + 62 - vh} ${vw} ${vh}`);
+  view.s = s;
+  view.x = CENTER_X - vw / 2;
+  view.y = GROUND + 62 - vh;
+  svg.setAttribute('viewBox', `${view.x} ${view.y} ${vw} ${vh}`);
+  if (typeof placeShoe === 'function') placeShoe();
 }
-fit();
-window.addEventListener('resize', fit);
+const view = { s: 1, x: 0, y: 0 };
 
 // ---------- The drawing ----------
 
@@ -258,11 +261,93 @@ function settle(b) {
 // tall, a giant next to the house and tilted a touch so the heel tip meets the ground as well.
 const SHOE_K = 0.8;
 const SHOE_X = IMPACT_X - 390 * SHOE_K;
-const shoe = group(svg, { class: 'shoe' });
-const shoeBody = group(shoe, {
-  transform: `translate(${SHOE_X} ${GROUND + 6}) rotate(-2.2 ${390 * SHOE_K} 0) scale(${SHOE_K})`,
-});
-el('image', { href: stripUrl, x: 0, y: -900, width: 600, height: 900 }, shoeBody);
+
+// An <img> over the drawing rather than an <image> inside it: moving it with
+// a CSS transform lets the browser slide the picture on the GPU instead of
+// repainting it every frame, which is what made the flight judder.
+const shoe = document.createElement('img');
+shoe.className = 'shoe';
+shoe.src = stripUrl;
+shoe.alt = '';
+shoe.decoding = 'async';
+document.body.insertBefore(shoe, svg.nextSibling);
+
+function placeShoe() {
+  const { s: k, x, y } = view;
+  shoe.style.left = `${(SHOE_X - x) * k}px`;
+  shoe.style.top = `${(GROUND + 6 - 900 * SHOE_K - y) * k}px`;
+  shoe.style.width = `${600 * SHOE_K * k}px`;
+}
+fit();
+window.addEventListener('resize', fit);
+
+// Moves the shoe by (x, y) scene units and r degrees from where it stands.
+function poseShoe(x, y, r) {
+  const k = view.s;
+  shoe.style.transform = `translate3d(${x * k}px, ${y * k}px, 0) rotate(${r - 2.2}deg)`;
+}
+
+// A point on a cubic Bezier curve.
+function bezier(p0, p1, p2, p3, u) {
+  const v = 1 - u;
+  return [
+    v * v * v * p0[0] + 3 * v * v * u * p1[0] + 3 * v * u * u * p2[0] + u * u * u * p3[0],
+    v * v * v * p0[1] + 3 * v * v * u * p1[1] + 3 * v * u * u * p2[1] + u * u * u * p3[1],
+  ];
+}
+
+// Progress along the flight over time: a Hermite spline through a few
+// (time, progress, speed) knots, so the speed never jumps. It comes in fast,
+// slows almost to a hang right above the roofs and then stamps down.
+const FLIGHT = [
+  [0, 0, 1.6],
+  [0.5, 0.7, 1.0],
+  [0.84, 0.88, 0.35],
+  [1, 1, 2.0],
+];
+function flightProgress(t) {
+  let i = 0;
+  while (i < FLIGHT.length - 2 && t > FLIGHT[i + 1][0]) i++;
+  const [t0, p0, m0] = FLIGHT[i];
+  const [t1, p1, m1] = FLIGHT[i + 1];
+  const d = t1 - t0;
+  const x = Math.min(1, Math.max(0, (t - t0) / d));
+  const x2 = x * x;
+  const x3 = x2 * x;
+  return (2 * x3 - 3 * x2 + 1) * p0 + (x3 - 2 * x2 + x) * d * m0 + (-2 * x3 + 3 * x2) * p1 + (x3 - x2) * d * m1;
+}
+
+function play(duration, frame) {
+  return new Promise((resolve) => {
+    const t0 = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / duration);
+      frame(t);
+      if (t < 1) requestAnimationFrame(tick);
+      else resolve();
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+const IN = [[-1500, -900], [-900, -980], [-120, -320], [0, 0]];
+const OUT = [[0, 0], [40, -150], [500, -900], [1300, -1500]];
+
+function flyIn() {
+  return play(1600, (t) => {
+    const u = flightProgress(t);
+    const [x, y] = bezier(...IN, u);
+    poseShoe(x, y, -38 * Math.pow(1 - u, 1.5));
+  });
+}
+
+function flyOut() {
+  return play(1000, (t) => {
+    const u = Math.pow(t, 2.2);
+    const [x, y] = bezier(...OUT, u);
+    poseShoe(x, y, 24 * u);
+  });
+}
 
 // Pencil dust and cracks around the platform.
 const fx = group(svg, { class: 'fx' });
@@ -270,8 +355,6 @@ const fx = group(svg, { class: 'fx' });
 // ---------- The stomp ----------
 
 const ease = {
-  fall: 'cubic-bezier(0.55, 0, 1, 0.45)',
-  lift: 'cubic-bezier(0.5, 0, 0.75, 0)',
   out: 'cubic-bezier(0.2, 0.8, 0.3, 1)',
 };
 
@@ -379,21 +462,10 @@ async function stomp({ first }) {
     resetBits();
     await wait(350);
   }
-  show(shoe);
-  shoe.style.transformBox = 'fill-box';
-  shoe.style.transformOrigin = '60% 100%';
   // Flies in from the left along an arc and comes down on the platform.
-  const fall = shoe.animate(
-    [
-      { transform: 'translate(-1500px, -900px) rotate(-38deg)', easing: 'cubic-bezier(0.25, 0.3, 0.5, 1)' },
-      { transform: 'translate(-300px, -260px) rotate(-12deg)', offset: 0.45, easing: 'cubic-bezier(0.3, 0, 0.7, 1)' },
-      // Hangs just above the roofs for a moment, in slow motion.
-      { transform: 'translate(-70px, -80px) rotate(-4deg)', offset: 0.82, easing: 'cubic-bezier(0.7, 0, 1, 0.6)' },
-      { transform: 'translate(0, 0) rotate(0)' },
-    ],
-    { duration: 1500, fill: 'forwards' }
-  );
-  await fall.finished;
+  poseShoe(...IN[0], -38);
+  show(shoe);
+  await flyIn();
 
   shake();
   puff();
@@ -407,16 +479,9 @@ async function stomp({ first }) {
   }
 
   await wait(900);
-  const lift = shoe.animate(
-    [
-      { transform: 'translate(0, 0) rotate(0)' },
-      { transform: 'translate(-10px, -30px) rotate(-3deg)', offset: 0.25 },
-      { transform: 'translate(1300px, -1500px) rotate(24deg)' },
-    ],
-    { duration: 900, easing: ease.lift, fill: 'forwards' }
-  );
-  if (first) setTimeout(() => card.classList.replace('is-waiting', 'is-in'), 650);
-  await lift.finished;
+  const lift = flyOut();
+  if (first) setTimeout(() => card.classList.replace('is-waiting', 'is-in'), 700);
+  await lift;
   hide(shoe);
   busy = false;
   again.hidden = false;

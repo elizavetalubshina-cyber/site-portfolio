@@ -45,6 +45,19 @@ body {
   pointer-events: none;
 }
 
+.shoe {
+  position: fixed;
+  z-index: 0;
+  display: block;
+  height: auto;
+  max-width: none;
+  pointer-events: none;
+  visibility: hidden;
+  /* The middle of the platform bottom: the shoe turns around where it lands. */
+  transform-origin: 65% 100%;
+  will-change: transform;
+}
+
 .page {
   position: relative;
   z-index: 1;

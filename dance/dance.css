@@ -93,7 +93,7 @@ body {
 }
 
 .card__title {
-  margin: 0 0 20px;
+  margin: 0 0 36px;
   font-family: var(--font-hand);
   font-size: clamp(52px, 8vw, 76px);
   font-weight: 700;
@@ -104,10 +104,18 @@ body {
 .card__cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px 40px;
+  gap: 32px 56px;
 }
 .block {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  /* Spacing, from loose to tight: 36 under the page title, 20 between the
+     groups of a column, 10 inside a group. */
+  gap: 20px;
+}
+.block__title { margin-bottom: -6px; }
+.group {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -115,13 +123,13 @@ body {
 .block + .block {
   /* A pencil stroke between the columns. */
   border-left: 2px dashed rgba(38, 36, 40, 0.25);
-  padding-left: 40px;
-  margin-left: -40px;
+  padding-left: 56px;
+  margin-left: -56px;
 }
 .block__title {
   margin: 0;
   font-family: var(--font-hand);
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 700;
   line-height: 1;
 }
@@ -133,11 +141,11 @@ body {
 .slot {
   margin: 0;
   display: grid;
-  gap: 2px;
+  gap: 4px;
 }
 .slot__when {
   font-family: var(--font-hand);
-  font-size: 40px;
+  font-size: 30px;
   font-weight: 700;
   line-height: 1;
   color: var(--wine);
@@ -208,7 +216,6 @@ body {
   transform: rotate(-45deg);
 }
 .block__actions {
-  padding-top: 8px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -271,7 +278,7 @@ body {
     border-top: 2px dashed rgba(38, 36, 40, 0.25);
     padding-left: 0;
     margin-left: 0;
-    padding-top: 20px;
+    padding-top: 32px;
   }
   .btn { width: 100%; }
 }

@@ -14,6 +14,10 @@ const NS = 'http://www.w3.org/2000/svg';
 const svg = document.querySelector('.scene');
 const again = document.querySelector('.again');
 const card = document.querySelector('.card');
+
+// The studio app: App Store by default, RuStore on Android.
+const app = document.querySelector('.js-app');
+if (app && /android/i.test(navigator.userAgent)) app.href = app.dataset.android;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const rc = rough.svg(svg);

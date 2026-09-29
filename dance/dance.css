@@ -13,8 +13,8 @@
   --font-hand: 'Caveat', 'Segoe Print', 'Comic Sans MS', cursive;
   --font-body: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  /* Matches the stomp in dance.js: the card comes in once the heel has left. */
-  --card-delay: 2.75s;
+  /* Only used when dance.js does not run. */
+  --card-delay: 0.3s;
 
   color-scheme: light;
 }
@@ -68,6 +68,11 @@ body {
   box-shadow: 6px 7px 0 -1px var(--paper), 6px 7px 0 1px var(--graphite);
   animation: card-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) var(--card-delay) both;
 }
+/* dance.js holds the card back while the heel is on screen and lets it in
+   as the heel leaves. Without the script the card simply comes in on the
+   delay above. */
+.card.is-waiting { animation: none; opacity: 0; }
+.card.is-in { animation: card-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
 @keyframes card-in {
   from { opacity: 0; transform: translateY(24px) rotate(-1.5deg) scale(0.96); }
   to { opacity: 1; transform: none; }

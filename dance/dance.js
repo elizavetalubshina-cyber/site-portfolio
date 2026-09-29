@@ -6,13 +6,14 @@ import stripUrl from './img/strip.webp';
 // window so the drawing keeps a sensible size on a phone and on a monitor
 // and the ground stays at the bottom of the screen.
 const GROUND = 882;
-const CENTER_X = 560;
+const CENTER_X = 590;
 // Middle of the platform when the heel stands on the ground.
-const IMPACT_X = 545;
+const IMPACT_X = 560;
 
 const NS = 'http://www.w3.org/2000/svg';
 const svg = document.querySelector('.scene');
 const again = document.querySelector('.again');
+const card = document.querySelector('.card');
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const rc = rough.svg(svg);
@@ -42,7 +43,9 @@ const add = (parent, ...nodes) => nodes.forEach((n) => parent.appendChild(n));
 function fit() {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const s = Math.min(w / 480, h / 820, 1.25);
+  // At least 560 units across, so on a phone the giant heel and the house
+  // both fit.
+  const s = Math.min(w / 560, h / 820, 1.25);
   const vw = w / s;
   const vh = h / s;
   svg.setAttribute('viewBox', `${CENTER_X - vw / 2} ${GROUND + 62 - vh} ${vw} ${vh}`);
@@ -93,12 +96,12 @@ function tree(x, size) {
   );
   return g;
 }
-const trees = [tree(160, 110), tree(1010, 130)];
+const trees = [tree(160, 110), tree(1090, 130)];
 
 // The house: jumps when the heel lands, and stays where it was.
 // Drawn at x = 300..440 and moved right of the heel. The jump animates the
 // inner group so it keeps this offset.
-const house = group(group(world, { transform: 'translate(350 0)' }), { class: 'house' });
+const house = group(group(world, { transform: 'translate(430 0)' }), { class: 'house' });
 add(
   house,
   rc.rectangle(300, 745, 140, 137, pencil()),
@@ -162,11 +165,10 @@ const shapes = {
 // [x, kind, height, lies down when it lands]
 const layout = [
   [-60, 'flower', 42, true], [30, 'mushroom', 0, true], [80, 'grass'], [120, 'heart'],
-  [215, 'flower', 40, true], [250, 'stone'], [290, 'grass'], [335, 'flower', 38, true],
-  [440, 'grass'], [462, 'flower', 34, true], [622, 'tulip', 38, true], [640, 'grass'],
-  [830, 'stone'], [852, 'flower', 50, true], [884, 'ball'], [925, 'grass'],
-  [960, 'mushroom', 0, true], [1060, 'tulip', 44, true], [1100, 'heart'], [1150, 'grass'],
-  [1190, 'flower', 44, true],
+  [215, 'flower', 40, true], [250, 'stone'], [290, 'grass'], [350, 'flower', 38, true],
+  [400, 'grass'], [430, 'flower', 30, true], [720, 'grass'], [890, 'stone'],
+  [905, 'flower', 50, true], [940, 'ball'], [975, 'grass'], [1035, 'mushroom', 0, true],
+  [1150, 'tulip', 44, true], [1190, 'heart'], [1230, 'grass'], [1270, 'flower', 44, true],
 ];
 
 const bits = layout.map(([x, kind, h, lies]) => {
@@ -196,6 +198,10 @@ function launch() {
 }
 
 const G = 1900;
+// Slow motion right after the stomp: time runs at a third of its speed and
+// comes back to normal over a second and a half.
+let slowmoAt = 0;
+const timeScale = () => Math.min(1, 0.3 + ((performance.now() - slowmoAt) / 1500) * 0.7);
 function stepBits(dt) {
   let moving = false;
   for (const b of bits) {
@@ -244,9 +250,9 @@ function settle(b) {
 
 // The photo of the shoe: the one thing on the page that is not a pencil
 // drawing. strip.webp is 600 x 900 with the platform bottom on its last row
-// and the heel tip at x = 82; scaled so the whole shoe is about 430 units
-// tall and tilted a touch so the heel tip meets the ground as well.
-const SHOE_K = 0.48;
+// and the heel tip at x = 82; scaled so the whole shoe is about 720 units
+// tall, a giant next to the house and tilted a touch so the heel tip meets the ground as well.
+const SHOE_K = 0.8;
 const SHOE_X = IMPACT_X - 390 * SHOE_K;
 const shoe = group(svg, { class: 'shoe' });
 const shoeBody = group(shoe, {
@@ -270,7 +276,7 @@ function show(node) { node.style.visibility = 'visible'; }
 
 function puff() {
   fx.replaceChildren();
-  const spots = [[398, -1], [484, -1], [606, 1], [492, -1], [598, 1]];
+  const spots = [[314, -1], [450, -1], [712, 1], [470, -1], [690, 1], [580, 1]];
   for (const [x, side] of spots) {
     const g = group(fx, { transform: `translate(${x} ${GROUND - 10})` });
     add(g, rc.circle(0, 0, 26 + Math.random() * 14, pencil({ strokeWidth: 1.4, roughness: 2.2 })));
@@ -286,9 +292,9 @@ function puff() {
   const cracks = group(fx);
   add(
     cracks,
-    rc.linearPath([[490, GROUND + 4], [472, GROUND + 18], [480, GROUND + 30]], pencil({ strokeWidth: 1.6 })),
-    rc.linearPath([[602, GROUND + 4], [622, GROUND + 16], [616, GROUND + 32]], pencil({ strokeWidth: 1.6 })),
-    rc.linearPath([[398, GROUND + 2], [392, GROUND + 18]], pencil({ strokeWidth: 1.6 }))
+    rc.linearPath([[460, GROUND + 4], [436, GROUND + 20], [446, GROUND + 38]], pencil({ strokeWidth: 1.6 })),
+    rc.linearPath([[704, GROUND + 4], [730, GROUND + 18], [722, GROUND + 40]], pencil({ strokeWidth: 1.6 })),
+    rc.linearPath([[316, GROUND + 2], [306, GROUND + 22]], pencil({ strokeWidth: 1.6 }))
   );
 }
 
@@ -296,13 +302,15 @@ function shake() {
   world.animate(
     [
       { transform: 'translate(0, 0)' },
-      { transform: 'translate(-7px, 5px)' },
-      { transform: 'translate(6px, -4px)' },
+      { transform: 'translate(-16px, 12px)' },
+      { transform: 'translate(14px, -9px)' },
+      { transform: 'translate(-10px, 7px)' },
+      { transform: 'translate(7px, -4px)' },
       { transform: 'translate(-4px, 3px)' },
       { transform: 'translate(2px, -1px)' },
       { transform: 'translate(0, 0)' },
     ],
-    { duration: 340, easing: 'linear' }
+    { duration: 620, easing: 'ease-out' }
   );
 }
 
@@ -312,12 +320,12 @@ function jumpHouse() {
   house.animate(
     [
       { transform: 'translateY(0) scale(1, 1)', easing: 'cubic-bezier(0.2, 0.8, 0.4, 1)' },
-      { transform: 'translateY(-70px) scale(0.97, 1.04) rotate(-3deg)', offset: 0.4, easing: 'cubic-bezier(0.6, 0, 0.9, 0.5)' },
+      { transform: 'translateY(-110px) scale(0.97, 1.04) rotate(-5deg)', offset: 0.4, easing: 'cubic-bezier(0.6, 0, 0.9, 0.5)' },
       { transform: 'translateY(0) scale(1.07, 0.9)', offset: 0.75 },
       { transform: 'translateY(0) scale(0.98, 1.02)', offset: 0.88 },
       { transform: 'translateY(0) scale(1, 1)' },
     ],
-    { duration: 720, delay: 40 }
+    { duration: 1300, delay: 60 }
   );
   for (const t of trees) {
     t.style.transformBox = 'fill-box';
@@ -341,7 +349,7 @@ function runPhysics() {
   physicsRunning = true;
   let last = performance.now();
   const loop = (now) => {
-    const dt = Math.min(0.033, (now - last) / 1000);
+    const dt = Math.min(0.033, (now - last) / 1000) * timeScale();
     last = now;
     if (stepBits(dt)) requestAnimationFrame(loop);
     else physicsRunning = false;
@@ -373,11 +381,13 @@ async function stomp({ first }) {
   // Flies in from the left along an arc and comes down on the platform.
   const fall = shoe.animate(
     [
-      { transform: 'translate(-1300px, -700px) rotate(-38deg)', easing: 'cubic-bezier(0.3, 0.2, 0.6, 1)' },
-      { transform: 'translate(-420px, -430px) rotate(-16deg)', offset: 0.55, easing: 'cubic-bezier(0.55, 0, 1, 0.5)' },
+      { transform: 'translate(-1500px, -900px) rotate(-38deg)', easing: 'cubic-bezier(0.25, 0.3, 0.5, 1)' },
+      { transform: 'translate(-300px, -260px) rotate(-12deg)', offset: 0.45, easing: 'cubic-bezier(0.3, 0, 0.7, 1)' },
+      // Hangs just above the roofs for a moment, in slow motion.
+      { transform: 'translate(-70px, -80px) rotate(-4deg)', offset: 0.82, easing: 'cubic-bezier(0.7, 0, 1, 0.6)' },
       { transform: 'translate(0, 0) rotate(0)' },
     ],
-    { duration: 760, fill: 'forwards' }
+    { duration: 1500, fill: 'forwards' }
   );
   await fall.finished;
 
@@ -385,20 +395,23 @@ async function stomp({ first }) {
   puff();
   jumpHouse();
   launch();
+  slowmoAt = performance.now();
   runPhysics();
-  if (navigator.vibrate) {
+  // Phones only buzz after a tap, so only on "топнуть ещё раз".
+  if (!first && navigator.vibrate) {
     try { navigator.vibrate(30); } catch (e) { /* not allowed here */ }
   }
 
-  await wait(620);
+  await wait(900);
   const lift = shoe.animate(
     [
       { transform: 'translate(0, 0) rotate(0)' },
       { transform: 'translate(-10px, -30px) rotate(-3deg)', offset: 0.25 },
-      { transform: 'translate(1100px, -1300px) rotate(24deg)' },
+      { transform: 'translate(1300px, -1500px) rotate(24deg)' },
     ],
-    { duration: 620, easing: ease.lift, fill: 'forwards' }
+    { duration: 900, easing: ease.lift, fill: 'forwards' }
   );
+  if (first) setTimeout(() => card.classList.replace('is-waiting', 'is-in'), 650);
   await lift.finished;
   hide(shoe);
   busy = false;
@@ -430,6 +443,7 @@ if (reduce) {
   // The card comes in without waiting for the stomp.
   document.documentElement.style.setProperty('--card-delay', '0s');
 } else {
+  card.classList.add('is-waiting');
   hide(shoe);
   sketchIn();
   setTimeout(() => stomp({ first: true }), 700);

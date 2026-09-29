@@ -135,16 +135,23 @@ body {
   gap: 20px;
 }
 .block__title { margin-bottom: -6px; }
+/* The address belongs to the heading: it sits right under it. */
+.block__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.block__head .block__title { margin-bottom: 0; }
 .group {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 .block + .block {
-  /* A pencil stroke between the columns. */
+  /* A pencil stroke in the middle of the gap between the columns. */
   border-left: 2px dashed rgba(38, 36, 40, 0.25);
-  padding-left: 56px;
-  margin-left: -56px;
+  padding-left: 27px;
+  margin-left: -29px;
 }
 .block__title {
   margin: 0;

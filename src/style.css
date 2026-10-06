@@ -2095,15 +2095,6 @@ html.sheet-lock, html.sheet-lock body { overflow: hidden; }
   color: #f7d9f5;
 }
 
-/* A cover whose screens run to its bottom edge (Gym Bro's case page): the
-   chips would sit on the last screen, so they drop out of the corner to a
-   row under the picture instead. */
-.case-cover.chips-below { overflow: visible; }
-.chips-below .case-chips {
-  position: static;
-  margin-top: var(--space-2);
-}
-
 /* The tunnel crops every cover to 16:10 from the top; Gym Bro's is taller,
    and the crop cut off the bottom of its phones. Fit it whole instead. */
 .tunnel--flight .tunnel__cover.cover-fit img { object-fit: contain; }

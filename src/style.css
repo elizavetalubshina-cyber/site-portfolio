@@ -2094,6 +2094,9 @@ html.sheet-lock, html.sheet-lock body { overflow: hidden; }
    the picture instead. */
 .case-cover.chips-below,
 .tunnel__cover.chips-below { overflow: visible; }
+/* In the corner the chips were absolutely positioned, which keeps the
+   link's underline off them; in the flow they would inherit it. */
+.tunnel__cover.chips-below { text-decoration: none; }
 .chips-below .case-chips {
   position: static;
   margin-top: var(--space-2);

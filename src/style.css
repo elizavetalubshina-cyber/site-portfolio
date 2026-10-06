@@ -2088,3 +2088,13 @@ html.sheet-lock, html.sheet-lock body { overflow: hidden; }
   line-height: 1.4;
   color: #f7d9f5;
 }
+
+/* A cover whose screens run to its bottom edge (Gym Bro): the chips would
+   sit on the last screen, so they drop out of the corner to a row under
+   the picture instead. */
+.case-cover.chips-below,
+.tunnel__cover.chips-below { overflow: visible; }
+.chips-below .case-chips {
+  position: static;
+  margin-top: var(--space-2);
+}

@@ -441,6 +441,14 @@
 }
 /* A cover drawn on a transparent ground (the design system's) keeps it. */
 .case-cover.cover-cutout { box-shadow: none; }
+/* Screens exported on a transparent ground (Gym Bro) sit straight on the
+   night background: no frame, no lift. */
+.case-figure--cutout img,
+.short-ref--cutout img { box-shadow: none; }
+.short-ref--cutout { background: transparent; }
+.short-ref--phone img { max-width: 240px; margin: 0 auto; }
+/* A single small component reads better at its own size than stretched. */
+.case-figure img.case-figure__img--narrow { max-width: 440px; margin: 0 auto; }
 .case-figure figcaption {
   margin-top: var(--space-1);
   font-size: 13px;

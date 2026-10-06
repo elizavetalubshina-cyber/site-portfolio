@@ -63,10 +63,8 @@
       <h1 class="case-hero__title">Gym Bro</h1>
       <p class="case-hero__subtitle">Трекер силовых тренировок для iPhone, где подход записывается в одно нажатие, а подруга видит, ходишь ли ты в зал.</p>
 
-      <!-- TODO картинка 1, обложка: четыре экрана в ряд.
-           Figma: Splash / Art, Home / Default, ActiveWorkout / ThirdExercise, Bro / Default. -->
-      <figure class="case-cover">
-        <img src="/src/assets/cases/gym-bro/cover.webp" alt="Экраны Gym Bro: заставка, главная, тренировка и вкладка бро" width="2000" height="1250" fetchpriority="high" />
+      <figure class="case-cover cover-cutout chips-below">
+        <img src="/src/assets/cases/gym-bro/cover.webp" alt="Экраны Gym Bro: заставка, главная, упражнение и итог тренировки" width="2000" height="1038" fetchpriority="high" />
         <span class="case-chips"><span class="tunnel__tag">Pet-проект</span><span class="tunnel__tag">Mobile</span></span>
       </figure>
     </section>
@@ -133,12 +131,12 @@
 
         <div class="short__refs">
           <figure>
-            <div class="short-ref"><span>Картинка 2. Тренировка от начала до итога</span></div>
-            <figcaption>Тренировка от начала до итога</figcaption>
+            <div class="short-ref short-ref--cutout short-ref--phone"><img src="/src/assets/cases/gym-bro/home-screen.webp" alt="Главная Gym Bro: неделя, шаблоны, последние тренировки и кнопка «Начать»" width="470" height="980" loading="lazy" decoding="async" /></div>
+            <figcaption>Главная</figcaption>
           </figure>
           <figure>
-            <div class="short-ref"><span>Картинка 6. Вкладка бро</span></div>
-            <figcaption>Неделя подруги на вкладке бро</figcaption>
+            <div class="short-ref short-ref--cutout"><img src="/src/assets/cases/gym-bro/set-card.webp" alt="Карточка упражнения с подходами" width="882" height="766" loading="lazy" decoding="async" /></div>
+            <figcaption>Подход записывается одним нажатием</figcaption>
           </figure>
         </div>
       </div>
@@ -158,10 +156,8 @@
         <p>В конце итог: длительность, подходы по группам мышц и новые рекорды.</p>
         <p>Подруга в это время видит у себя «тренируется сейчас», а потом мою тренировку в списке. На неё можно поставить реакцию.</p>
 
-        <!-- TODO картинка 2. Figma: Home / Default, Sheet / ExercisePicker / Selected,
-             ActiveWorkout / ThirdExercise, WorkoutSummary / Default. -->
-        <figure class="case-figure">
-          <div class="case-figure__frame"><span class="case-figure__label">Картинка 2. Главная → выбор упражнений → тренировка → итог</span></div>
+        <figure class="case-figure case-figure--cutout">
+          <img src="/src/assets/cases/gym-bro/workout-flow.webp" alt="Главная, выбор упражнений, экран тренировки и итог" width="2000" height="991" loading="lazy" decoding="async" />
           <figcaption>Тренировка от начала до итога.</figcaption>
         </figure>
 
@@ -227,9 +223,8 @@
         <p><strong>У Safari и у установленного приложения разные хранилища.</strong> Если войти по ссылке из письма, ссылка откроется в Safari, и человек окажется залогинен не в том приложении. Поэтому вход сделан кодом из 6 цифр: его вводишь там, где уже находишься.</p>
         <p><strong>Регистрация не стоит на пути к первому подходу.</strong> Сначала человек записывает тренировку анонимно, а почту привязывает уже после неё. Цель из PRD: от первого открытия до первого подхода меньше 90 секунд.</p>
 
-        <!-- TODO картинка 3. Figma: Splash / Art, Welcome / Install, Onboarding / Name, Home / Empty. -->
-        <figure class="case-figure">
-          <div class="case-figure__frame"><span class="case-figure__label">Картинка 3. Заставка → установка на домашний экран → имя → пустая главная</span></div>
+        <figure class="case-figure case-figure--cutout">
+          <img src="/src/assets/cases/gym-bro/first-launch.webp" alt="Заставка, инструкция по установке на домашний экран, ввод имени и пустая главная" width="2000" height="991" loading="lazy" decoding="async" />
           <figcaption>Первый запуск.</figcaption>
         </figure>
 
@@ -244,10 +239,8 @@
           <p>Пока открытый вопрос: поймут ли другие люди, что серые цифры это подсказка из прошлого раза, и что подход записан, только когда стоит галочка. Проверю на прототипе: дам пяти знакомым записать первый подход и посмотрю, где они споткнутся.</p>
         </div>
 
-        <!-- TODO картинка 4. Figma: карточка упражнения из ActiveWorkout / SetDone
-             или ActiveWorkout / Expanded. -->
-        <figure class="case-figure">
-          <div class="case-figure__frame"><span class="case-figure__label">Картинка 4. Карточка упражнения: первый подход с галочкой, остальные с серыми подставленными цифрами</span></div>
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--narrow" src="/src/assets/cases/gym-bro/set-card.webp" alt="Карточка жима лёжа: первый подход отмечен галочкой, у остальных серые цифры из прошлого раза" width="882" height="766" loading="lazy" decoding="async" />
           <figcaption>Подход в одно нажатие.</figcaption>
         </figure>
 
@@ -264,10 +257,8 @@
         <p>Календарь недели и последние тренировки стоят на своих местах всегда.</p>
         <p><strong>Гибкий график.</strong> Сначала план был набором конкретных дней. Но я сама хожу в разные дни, и тренировка в четверг вместо среды давала красный «пропуск», хотя норма недели была выполнена. Поэтому по умолчанию план стал числом: «3 раза в неделю». Дни выбираются на неделю вперёд, а пропуск считается по неделе.</p>
 
-        <!-- TODO картинка 5. Figma: Home / WorkoutInProgress, Home / TomorrowPlan,
-             Home / KickReceived, Home / Default. -->
-        <figure class="case-figure">
-          <div class="case-figure__frame"><span class="case-figure__label">Картинка 5. Идёт тренировка, завтра тренировка, пришёл пинок, обычный день</span></div>
+        <figure class="case-figure case-figure--cutout">
+          <img src="/src/assets/cases/gym-bro/home-states.webp" alt="Главная в четырёх ситуациях: идёт тренировка, завтра тренировка, пришёл пинок, обычный день" width="2000" height="1038" loading="lazy" decoding="async" />
           <figcaption>Главная в разных ситуациях.</figcaption>
         </figure>
 

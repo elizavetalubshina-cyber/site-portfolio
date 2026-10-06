@@ -449,6 +449,8 @@
 .short-ref--phone img { max-width: 240px; margin: 0 auto; }
 /* A single small component reads better at its own size than stretched. */
 .case-figure img.case-figure__img--narrow { max-width: 440px; margin: 0 auto; }
+/* Two phones side by side: past this width the screens outgrow the text. */
+.case-figure img.case-figure__img--pair { max-width: 560px; margin: 0 auto; }
 .case-figure figcaption {
   margin-top: var(--space-1);
   font-size: 13px;

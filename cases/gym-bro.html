@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gym Bro | Елизавета Любшина</title>
+  <meta name="description" content="Трекер силовых тренировок для iPhone, где подход записывается в одно нажатие, а подруга видит, ходишь ли ты в зал. Pet-проект продуктового дизайнера." />
+
+  <link rel="canonical" href="https://dizlik.ru/cases/gym-bro.html" />
+
+  <!-- Link preview: what Telegram, LinkedIn, Slack and search results show.
+       The image lives in public/og/ and is a plain file — replace it with
+       your own 1200x630 to change the preview, no code change needed. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Елизавета Любшина, Product Designer" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:url" content="https://dizlik.ru/cases/gym-bro.html" />
+  <meta property="og:title" content="Gym Bro | Елизавета Любшина" />
+  <meta property="og:description" content="Трекер силовых тренировок для iPhone, где подход записывается в одно нажатие, а подруга видит, ходишь ли ты в зал. Pet-проект продуктового дизайнера." />
+  <meta property="og:image" content="https://dizlik.ru/og/gym-bro.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Gym Bro | Елизавета Любшина" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/case.css" />
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="case-page">
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <header class="nav">
+    <div class="nav__shell">
+      <div class="nav__inner">
+        <button class="nav__toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navMenu">
+          <span></span>
+        </button>
+        <nav class="nav__links nav__links--left">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+        </nav>
+        <a class="logo" href="/#top">Любшина Е.А.</a>
+        <nav class="nav__links nav__links--right">
+          <a href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать в TG</a>
+        </nav>
+      </div>
+      <nav class="nav__menu" id="navMenu">
+        <div class="nav__menu-panel">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+          <a href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать в TG</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <a class="case-back" href="/#cases" aria-label="Все кейсы">←</a>
+
+    <section class="case-hero container">
+      <h1 class="case-hero__title">Gym Bro</h1>
+      <p class="case-hero__subtitle">Трекер силовых тренировок для iPhone, где подход записывается в одно нажатие, а подруга видит, ходишь ли ты в зал.</p>
+
+      <figure class="case-cover cover-cutout">
+        <img src="/src/assets/cases/gym-bro/cover.webp" alt="Экраны Gym Bro: главная, упражнение и итог тренировки" width="2000" height="1376" fetchpriority="high" />
+        <span class="case-chips"><span class="tunnel__tag">Pet-проект</span><span class="tunnel__tag">Mobile</span></span>
+      </figure>
+    </section>
+
+    <!-- ============ Коротко (STAR) ============ -->
+    <section class="short container">
+      <h2 id="short">Коротко</h2>
+      <div class="short__grid">
+        <div class="short__text">
+          <h3>О проекте</h3>
+          <p>Gym Bro я делаю для себя. Я хожу в зал и записываю тренировки в заметки и таблицы на айфоне. Таблицы лагают, а чтобы увидеть прогресс, приходится листать десятки строк.</p>
+          <p>Готовые приложения мне не подошли. Одни перегружены, другие недоделаны, и почти все продают программы тренировок. А программы я составляю себе сама. Мне нужно одно: быстро записать подход и потом найти, что было в прошлый раз.</p>
+          <p>Ещё я хожу в зал с подругой. Я ей не тренер, просто хочу видеть, сколько раз в неделю она ходит, пнуть, если пропала, и порадоваться, если всё сделала. Такой функции я не встречала ни в одном спортивном приложении, и мне захотелось её сделать.</p>
+
+          <h3>Контекст</h3>
+          <p>Пользоваться приложением будут прямо в зале, между подходами. Руки заняты, отдых длится минуту, телефон приходится доставать на секунды. Любое лишнее действие в такой момент раздражает.</p>
+
+          <h3>Задача</h3>
+          <p>Спроектировать мобильное приложение, которое:</p>
+          <ul>
+            <li>записывает подход быстрее, чем заметки в айфоне;</li>
+            <li>работает в подвальном зале без интернета;</li>
+            <li>добавляет напарника так, чтобы он мотивировал и не превращал трекер в соцсеть;</li>
+            <li>укладывается в ограничения PWA на iOS, потому что разрабатывать его буду я одна с помощью ИИ.</li>
+          </ul>
+
+          <h3>Что сделала</h3>
+          <ul>
+            <li>Разобрала ограничения PWA на iPhone и перестроила под них порядок экранов и вход</li>
+            <li>Спроектировала запись подхода в одно нажатие с подстановкой прошлого результата</li>
+            <li>Придумала механику напарника из трёх слоёв: видимость, реакции, пинок</li>
+            <li>Сформулировала правило пинка, которое опирается на цифры недели</li>
+            <li>Собрала визуальный стиль: лаймовый акцент только для действий, пиксельный шрифт в шапках, персонажи в стилистике PS1</li>
+            <li>Собрала компонентную базу и прототип</li>
+            <li>Вела PRD и план разработки так, чтобы по ним можно было собирать приложение с ИИ</li>
+          </ul>
+
+          <h3>Роль и сроки</h3>
+          <p>Всё сама: продукт, проектирование, визуальный дизайн, документы. Персонажей генерировала в ChatGPT по своим референсам и правилам стиля. В Figma и с документами работала в паре с ИИ-агентом: решения принимала я, а агент помогал с рутиной по компонентам, проверкой связей и отступов. Код тоже пишу с ИИ, план разработки разбит на шаги под это.</p>
+          <p>С сентября 2026 года, работа продолжается.</p>
+
+          <h3>Результат</h3>
+          <p>Дизайн готов, приложение в разработке. Метрик пока нет, приложение ещё не запущено. Как буду проверять результат, описано в конце.</p>
+
+          <div class="short__stats">
+            <div class="short-stat short-stat--accent">
+              <div class="short-stat__value">114</div>
+              <div class="short-stat__label">экранов с состояниями</div>
+            </div>
+            <div class="short-stat">
+              <div class="short-stat__value">433</div>
+              <div class="short-stat__label">связи в прототипе, 8 сценариев от установки до итога тренировки</div>
+            </div>
+            <div class="short-stat">
+              <div class="short-stat__value">31</div>
+              <div class="short-stat__label">набор компонентов и 16 отдельных компонентов</div>
+            </div>
+            <div class="short-stat">
+              <div class="short-stat__value">15</div>
+              <div class="short-stat__label">текстовых стилей и 19 цветовых, контраст по AA</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="short__refs">
+          <figure>
+            <div class="short-ref short-ref--cutout short-ref--phone"><img src="/src/assets/cases/gym-bro/bro-screen.webp" alt="Вкладка бро: неделя Саши, подходы по группам мышц и её последние тренировки" width="790" height="1708" loading="lazy" decoding="async" /></div>
+            <figcaption>Вкладка бро</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Detailed case ============ -->
+    <section class="case-detail container">
+     <div class="case-detail__layout">
+      <div class="case-detail__content">
+      <!-- Подробнее о процессе -->
+      <div class="case-block">
+        <h2 id="process">Подробнее о процессе</h2>
+
+        <h3 id="workout-flow">Как будет устроена тренировка</h3>
+        <p>Я прихожу в зал и нажимаю круглую кнопку «Начать» внизу экрана. Даю тренировке название, выбираю упражнения из справочника или повторяю прошлую тренировку.</p>
+        <p>Дальше рабочий экран. Упражнения раскрываются по одному, строки подходов уже созданы, а вес и повторы подставлены из прошлого раза. Сделала так же, как в прошлый раз, значит, нажимаю галочку. Сделала больше, значит, меняю число.</p>
+        <p>В конце итог: длительность, подходы по группам мышц и новые рекорды.</p>
+        <p>Подруга в это время видит у себя «тренируется сейчас», а потом мою тренировку в списке. На неё можно поставить реакцию.</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/gym-bro/workout-flow.webp" alt="Экран тренировки с отмеченными подходами и итог тренировки" width="1884" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Тренировка от начала до итога.</figcaption>
+        </figure>
+
+        <h3 id="start">С чего я начинала</h3>
+        <p>Исследований с пользователями я не проводила. Главный пользователь здесь я сама, и у меня было три наблюдения из собственных тренировок.</p>
+
+        <div class="case-finding">
+          <span class="case-finding__num">1</span>
+          <p><strong>Самое частое действие повторяет прошлое.</strong> В большинстве подходов вес и повторы такие же, как неделю назад. Значит, ввод должен начинаться с прошлого значения.</p>
+        </div>
+        <div class="case-finding">
+          <span class="case-finding__num">2</span>
+          <p><strong>В зале нет интернета.</strong> Многие залы в подвалах. Приложение, которое ждёт сеть, чтобы сохранить подход, в зале просто не работает.</p>
+        </div>
+        <div class="case-finding">
+          <span class="case-finding__num">3</span>
+          <p><strong>Вдвоём ходить проще.</strong> Когда мы с подругой договорились пойти, пропустить уже неловко. Хотелось, чтобы приложение давало это чувство и в те дни, когда мы тренируемся по отдельности.</p>
+        </div>
+
+        <h3 id="problem">Как я сформулировала задачу</h3>
+        <p>Из этих наблюдений получились три задачи проектирования.</p>
+
+        <div class="case-finding">
+          <span class="case-finding__num">1</span>
+          <p><strong>Записать подход быстрее, чем открыть заметки.</strong> Цель из PRD: подход без изменений записывается одним нажатием и быстрее чем за 2 секунды.</p>
+        </div>
+        <div class="case-finding">
+          <span class="case-finding__num">2</span>
+          <p><strong>Работать без сети.</strong> Всё пишется на телефон, синхронизация идёт сама, когда появляется связь.</p>
+        </div>
+        <div class="case-finding">
+          <span class="case-finding__num">3</span>
+          <p><strong>Видеть неделю подруги и реагировать на неё.</strong> Сколько раз она сходила, когда собирается следующий раз, и кнопка, чтобы поддержать или пнуть. Переписки и ленты нет.</p>
+        </div>
+
+        <h3 id="constraints">В каких рамках я работала</h3>
+        <p><strong>PWA на iPhone.</strong> Приложение ставится с сайта на домашний экран. Это бесплатно и не требует App Store, но у Safari много ограничений, и они сильно повлияли на сценарии. Подробнее в <a href="#platform">первом ключевом решении</a>.</p>
+        <p><strong>Один разработчик.</strong> Приложение собираю я с помощью ИИ. Поэтому каждая функция в PRD оценена по сложности, а план разработки разбит на шаги, которые можно отдать ИИ по одному.</p>
+
+        <h3 id="scope">Что решила не делать в первой версии</h3>
+        <p>В Figma спроектировано всё приложение, включая напарника. А разработка начинается только с ведения тренировки.</p>
+        <p>Механика напарника стоит около 14,5 дней работы. Если строить её поверх записи, которая ещё не проверена на реальных тренировках, любая ошибка в ядре ломает и напарника. Поэтому первая версия кода только про тренировку, а напарник выйдет следующим этапом.</p>
+        <p>Ещё я убрала из первой версии:</p>
+        <ul>
+          <li><strong>Индикатор офлайна.</strong> Синхронизация идёт сама, пользователю незачем о ней знать.</li>
+          <li><strong>Графики прогресса.</strong> Осмысленный график требует хотя бы 8 недель данных.</li>
+          <li><strong>Кнопки ±2,5 кг над клавиатурой.</strong> Вес уже подставлен, а меняется он не всегда на один шаг.</li>
+        </ul>
+
+        <div class="case-callout">
+          <span class="case-callout__icon">💡</span>
+          <p>Таймер отдыха и совместную тренировку в реальном времени я не делаю совсем. Таймер мне не нужен. Общий лог сложно синхронизировать, а паре, которая стоит в одном зале, он ни к чему.</p>
+        </div>
+      </div>
+
+      <!-- Ключевые решения -->
+      <div class="case-block">
+        <h2 id="decisions">Ключевые решения</h2>
+
+        <h3 id="platform">1. Платформа диктует порядок экранов</h3>
+        <p>Я начала с привычной схемы: вход, потом главная. Потом разобралась, что умеет PWA на айфоне, и схему пришлось поменять.</p>
+        <p><strong>Пуши работают только после установки на домашний экран.</strong> У вкладки в Safari их нет. А на пушах держатся напоминания и весь напарник. Поэтому установка стала первым экраном: короткая инструкция «Поделиться → На экран Домой» до всего остального.</p>
+        <p><strong>У Safari и у установленного приложения разные хранилища.</strong> Если войти по ссылке из письма, ссылка откроется в Safari, и человек окажется залогинен не в том приложении. Поэтому вход сделан кодом из 6 цифр: его вводишь там, где уже находишься.</p>
+        <p><strong>Регистрация не стоит на пути к первому подходу.</strong> Сначала человек записывает тренировку анонимно, а почту привязывает уже после неё. Цель из PRD: от первого открытия до первого подхода меньше 90 секунд.</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/gym-bro/first-launch.webp" alt="Инструкция по установке на домашний экран и ввод имени" width="1884" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Первый запуск.</figcaption>
+        </figure>
+
+        <h3 id="one-tap">2. Подход записывается одним нажатием</h3>
+        <p>Это самый частый сценарий в приложении, и на нём я проверяла каждое решение.</p>
+        <p><strong>Строки подходов создаются заранее.</strong> Вес и повторы подставлены из прошлого раза и набраны серым. Если всё как в прошлый раз, достаточно нажать галочку, и цифры становятся белыми. Если нет, меняю только нужное число.</p>
+        <p><strong>Клавиатура открывается сразу,</strong> когда раскрываешь упражнение. Над ней панель с переходом между полями и «Готово». Кнопки шага веса я убрала: вес уже подставлен, и чаще его вообще не трогают.</p>
+        <p><strong>Рекорд показывается в итоге.</strong> Во время тренировки тост с рекордом перекрывал бы следующий подход, а два рекорда подряд накладывались бы друг на друга. В итоге рекорд виден спокойно, рядом с прошлым значением.</p>
+
+        <div class="case-callout">
+          <span class="case-callout__icon">💡</span>
+          <p>Пока открытый вопрос: поймут ли другие люди, что серые цифры это подсказка из прошлого раза, и что подход записан, только когда стоит галочка. Проверю на прототипе: дам пяти знакомым записать первый подход и посмотрю, где они споткнутся.</p>
+        </div>
+
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--narrow" src="/src/assets/cases/gym-bro/set-card.webp" alt="Карточка жима лёжа: первый подход отмечен галочкой, у остальных серые цифры из прошлого раза" width="882" height="766" loading="lazy" decoding="async" />
+          <figcaption>Подход в одно нажатие.</figcaption>
+        </figure>
+
+        <h3 id="home">3. Главная подсказывает, что делать сейчас</h3>
+        <p>Главную открывают в разных ситуациях: в первый раз, посреди тренировки, накануне тренировочного дня, после пропуска, когда пришёл пинок. Я выписала все такие ситуации, их получилось тринадцать.</p>
+        <p>Сначала я хотела держать на главной все блоки сразу: план, напарника, предупреждения, последние тренировки. Но почти в любой ситуации половина блоков оказывалась пустой, а нужная кнопка терялась среди остальных.</p>
+        <p>Поэтому на главной всегда одна подсказка с одной кнопкой, и она меняется по ситуации:</p>
+        <ul>
+          <li>тренировка идёт → «Продолжить»;</li>
+          <li>завтра тренировка, а упражнения не выбраны → «Собрать тренировку»;</li>
+          <li>пришёл пинок от подруги → карточка с пинком;</li>
+          <li>ничего особенного → просто «Начать».</li>
+        </ul>
+        <p>Календарь недели и последние тренировки стоят на своих местах всегда.</p>
+        <p><strong>Гибкий график.</strong> Сначала план был набором конкретных дней. Но я сама хожу в разные дни, и тренировка в четверг вместо среды давала красный «пропуск», хотя норма недели была выполнена. Поэтому по умолчанию план стал числом: «3 раза в неделю». Дни выбираются на неделю вперёд, а пропуск считается по неделе.</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/gym-bro/home-states.webp" alt="Главная в двух ситуациях: сегодня тренировка по плану и тренировка идёт" width="1828" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Главная в разных ситуациях.</figcaption>
+        </figure>
+
+        <h3 id="bro">4. Напарник без ленты</h3>
+        <p>Напарник это фича, которую я раньше не встречала в спортивных приложениях. И её легко испортить: стоит добавить комментарии и список активности, и получится маленькая соцсеть, в которую заходят вместо тренировки.</p>
+        <p>Поэтому механика держится на трёх слоях.</p>
+        <p><strong>Видимость.</strong> Только факты: неделя подруги, её подходы по группам мышц, последние тренировки, статус «тренируется сейчас». Что из этого видно, каждый настраивает сам. Скрытое просто не показывается, без пояснений.</p>
+        <p><strong>Реакции.</strong> Двойной тап по тренировке ставит сердечко, долгое нажатие открывает выбор реакций, как в Telegram. Реакция появляется прямо в строке тренировки. Отдельного списка уведомлений нет, потому что реакция относится к конкретной тренировке.</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/gym-bro/bro-reactions.webp" alt="Вкладка бро: неделя Саши и выбор реакции по долгому нажатию" width="1828" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Вкладка бро.</figcaption>
+        </figure>
+
+        <p><strong>Пинок.</strong> Его нельзя отправить, когда захотелось.</p>
+        <p>Первая версия правила была такой: кнопка появляется, когда подруга уже не успевает выполнить норму недели. Потом я поняла, что пинок в этот момент бесполезен: неделя потеряна, и пинать каждый день человека, который ничего не может исправить, обидно.</p>
+        <p>Новое правило: <strong>кнопка появляется, когда у подруги не осталось ни одного дня запаса.</strong> Дней до конца недели ровно столько, сколько тренировок не хватает. Пропустит сегодня, значит, норму не выполнит.</p>
+
+        <table class="case-kbd-table case-table">
+          <thead>
+            <tr><th>Норма 3 в неделю</th><th>Сделано</th><th>Дней осталось</th><th>Кнопка</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Среда</td><td>0</td><td>5</td><td>нет, запас есть</td></tr>
+            <tr><td>Пятница</td><td>0</td><td>3</td><td><strong>да, последний шанс</strong></td></tr>
+            <tr><td>Суббота</td><td>0</td><td>2</td><td>нет, уже не успеть</td></tr>
+          </tbody>
+        </table>
+
+        <p>Плюс не чаще раза в день и не в первую неделю после того, как вы связались.</p>
+        <p>На такой пинок нечего обижаться: за ним стоят цифры недели.</p>
+        <p><strong>Чтобы пинок чувствовался.</strong> По нажатию в аватар подруги влетает кошачья лапа, а у неё на главной появляется карточка с моим котом и сердитой мордой. Несколько секунд можно отменить, если нажала случайно.</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/gym-bro/kick.webp" alt="Лапа влетает в аватар Саши, а у Лизы на главной появляется карточка «Саша напоминает про зал»" width="1884" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Пинок.</figcaption>
+        </figure>
+
+        <p><strong>Что убрала.</strong> «Я тоже иду сегодня» была расписана полностью. Но кнопка передаёт намерение, а всё остальное в механике опирается на факты. Настоящее действие уже есть на экране: кнопка «Начать». Кто пошёл, тот начал тренировку, и подруга видит «тренируется сейчас».</p>
+
+        <h3 id="visual">5. Визуал работает на сценарий</h3>
+        <p><strong>Лайм значит «можно нажать».</strong> Яркий лаймовый закреплён за действиями: кнопки, ссылки, круглая «Начать». Состояния вроде выполненного дня набраны приглушённым лаймом. Когда лайм был везде, на главной было пять акцентных пятен, и главное действие терялось.</p>
+        <p><strong>Круглая «Начать» в центре панели.</strong> Это самое частое действие, и до него большой палец дотягивается не глядя. Во время тренировки кнопка меняется на «Продолжить».</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img src="/src/assets/cases/gym-bro/palette.webp" alt="Палитра: фон, карточка, действие, состояние, текст, подписи, и нижняя панель с кнопкой «Начать»" width="1760" height="880" loading="lazy" decoding="async" />
+          <figcaption>Цвет и кнопка.</figcaption>
+        </figure>
+
+        <p><strong>Пиксельный шрифт только в шапках.</strong> Заголовки вкладок и логотип набраны точечным шрифтом Handjet, он даёт характер. Всё остальное набрано узким гротеском: в зале текст читают на бегу.</p>
+        <p><strong>Персонажи там, где нужна эмоция.</strong> Меня вдохновила инстаграм-история «Зазеркалье» (@zazer.kalye): автор рассказывает её через персонажей в стиле старых игр на PS1. Мне понравилась рисовка, плюс сейчас все ностальгируют по старым временам, а ещё я очень люблю котов. Я взяла стилистику и переделала её под спорт: у меня свои четыре кота с повязками, со своими окрасами, в своём зале.</p>
+        <p>Коты стоят на установке, на пустой главной, на пустой вкладке напарника, в приглашении и на заставке. Это места, где человек ещё ничего не сделал, и пустой экран без характера выглядит мёртвым. На экранах с данными картинок нет совсем.</p>
+        <p><strong>Аватар с настроением.</strong> Вместо фото можно выбрать кота и одну из шести эмоций: спокойный, довольный, уставший и так далее.</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img src="/src/assets/cases/gym-bro/cats.webp" alt="Экран выбора аватара и четыре кота по шесть эмоций" width="2000" height="1634" loading="lazy" decoding="async" />
+          <figcaption>Коты.</figcaption>
+        </figure>
+
+        <p><strong>Карта мышц нарисована своим кодом.</strong> Здесь я отказалась от генерации. Карта бывает от 24 до 150 пикселей, подсвечивать надо конкретные мышцы, а цвет должен быть точным. Поэтому человек векторный, собран из граней в духе PS1, и каждую мышцу можно подсветить отдельно: основную лаймом, второстепенные приглушённым. Это совпадает с тем, как приложение считает подходы: жим лёжа идёт в грудь целиком и по половине в трицепс и плечи.</p>
+
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/gym-bro/empty-and-exercise.webp" alt="Пустая главная с котом и экран упражнения с картой мышц" width="1828" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Персонажи и карта мышц на экранах.</figcaption>
+        </figure>
+
+        <h3 id="ai">Как я работала с ИИ</h3>
+        <p>ИИ был моим инструментом на всех этапах, но решения принимала я.</p>
+        <ul>
+          <li><strong>Персонажи.</strong> Я сгенерировала их в ChatGPT по своим референсам и правилам стиля: один лист персонажей, по нему эмоции и сцены. Каждую картинку проверяла на то, как она читается в реальном размере.</li>
+          <li><strong>Figma.</strong> Рутину по компонентам, проверку связей прототипа и отступов делал ИИ-агент через плагин.</li>
+          <li><strong>Иллюстрации упражнений.</strong> Генератор ломал позы, поэтому иллюстрации собраны кодом из тех же граней, что и карта мышц.</li>
+          <li><strong>Документы и код.</strong> PRD и план ведутся вместе с макетом. План разработки разбит на шаги с готовыми заданиями для ИИ.</li>
+        </ul>
+      </div>
+
+      <!-- Результат -->
+      <div class="case-block">
+        <h2 id="result">Результат</h2>
+        <p>Дизайн готов: экраны, состояния, переходы, компоненты, PRD и план разработки. Приложение в разработке.</p>
+
+        <h3 id="result-metrics">Как буду оценивать после запуска</h3>
+        <p>Цели из PRD:</p>
+        <ul>
+          <li>второй и следующие подходы записываются одним нажатием;</li>
+          <li>подход без изменений быстрее 2 секунд;</li>
+          <li>от первого открытия до первого подхода меньше 90 секунд;</li>
+          <li>ноль потерянных тренировок за 4 недели.</li>
+        </ul>
+        <p>Первый круг пользователей: я, подруга и 5–10 знакомых из зала.</p>
+
+        <p class="case-badge">Приложение скоро</p>
+      </div>
+      </div>
+
+      <nav class="case-toc case-toc--badge" aria-label="Навигация по кейсу">
+        <div class="case-toc__head">
+          <p class="case-toc__title">По кейсу</p>
+          <a class="case-toc__next" href="/cases/vs-ecosystem.html" title="Следующий кейс: VS Ecosystem" aria-label="Следующий кейс: VS Ecosystem">→</a>
+        </div>
+        <ol>
+          <li><a href="#short">Коротко</a></li>
+          <li class="case-toc__group">
+            <span class="case-toc__row"><a href="#process">Подробнее о процессе</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
+            <ol>
+              <li><a href="#workout-flow">Как будет устроена тренировка</a></li>
+              <li><a href="#start">С чего я начинала</a></li>
+              <li><a href="#problem">Как я сформулировала задачу</a></li>
+              <li><a href="#constraints">В каких рамках я работала</a></li>
+              <li><a href="#scope">Что решила не делать в первой версии</a></li>
+            </ol>
+          </li>
+          <li class="case-toc__group">
+            <span class="case-toc__row"><a href="#decisions">Ключевые решения</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
+            <ol>
+              <li><a href="#platform">1. Платформа диктует порядок экранов</a></li>
+              <li><a href="#one-tap">2. Подход одним нажатием</a></li>
+              <li><a href="#home">3. Главная подсказывает, что делать</a></li>
+              <li><a href="#bro">4. Напарник без ленты</a></li>
+              <li><a href="#visual">5. Визуал работает на сценарий</a></li>
+              <li><a href="#ai">Как я работала с ИИ</a></li>
+            </ol>
+          </li>
+          <li><a href="#result">Результат</a></li>
+        </ol>
+      </nav>
+     </div>
+    </section>
+
+    <!-- ============ Другие проекты ============ -->
+    <section class="related container">
+      <h2>Другие проекты</h2>
+      <div class="related__grid">
+        <a class="case case--media-subtitles" href="/cases/vs-subtitles.html">
+          <div class="case__media"><img src="/src/assets/cases/vs-subtitles/cover.webp" alt="Интерфейс VS Subtitles" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body">
+            <h3>VS Subtitles</h3>
+            <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
+            <div class="case__meta">
+              <p class="case__stats">−35% времени подготовки, −25% на сравнение версий</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-satellite" href="/cases/satellite.html">
+          <div class="case__media"><img src="/src/assets/cases/satellite/cover.webp" alt="Интерфейс Satellite" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Satellite</h3>
+            <p class="case__desc">Демо мониторинга группировок КА для выставки</p>
+            <div class="case__meta">
+              <p class="case__stats">работало на стенде выставки</p>
+              <p class="case__company">Sofikom</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-tracktice" href="/cases/tracktice.html">
+          <div class="case__media"><img src="/src/assets/cases/tracktice/cover.webp" alt="Интерфейс Tracktice Flow" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Tracktice Flow</h3>
+            <p class="case__desc">Админка настройки пассажиропотока</p>
+            <div class="case__meta">
+              <p class="case__stats">внедрён и работает в эксплуатации</p>
+              <p class="case__company">Tracktice</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-design-system cover-cutout" href="/cases/design-system.html">
+          <div class="case__media"><img src="/src/assets/cases/design-system/Cover.webp" alt="Обложка дизайн-системы Vidau" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">Дизайн-система</span><span class="tag">Enterprise</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Дизайн-система</h3>
+            <p class="case__desc">UI-kit, компоненты и правила консистентности</p>
+            <div class="case__meta">
+              <p class="case__stats">≈30 компонентов, общая основа для всей линейки</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© 2026 Елизавета Любшина, Product Designer</div>
+  </footer>
+</body>
+</html>

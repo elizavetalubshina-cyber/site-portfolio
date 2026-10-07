@@ -1206,9 +1206,15 @@ if (document.body.classList.contains('home-page')) {
   if (new URLSearchParams(location.search).has('y')) dropParams('y');
 }
 
-// Pictures marked data-zoom open full size on a click. The page shows the
-// Gym Bro screens at about 60% of a real phone, too small for their fine
-// print; here the original fills the screen.
+// Every picture in a case opens full size on a click: the cover, the
+// "Коротко" pictures and the figures in the body. The page shows screens
+// smaller than they were drawn, too small for their fine print; here the
+// original fills the screen. Cards under "Другие проекты" stay links.
+if (document.body.classList.contains('case-page')) {
+  document
+    .querySelectorAll('.case-cover img, .short-ref img, .case-figure img, .case-figure-row img')
+    .forEach((img) => img.setAttribute('data-zoom', ''));
+}
 const zoomable = document.querySelectorAll('img[data-zoom]');
 if (zoomable.length) {
   const box = document.createElement('div');

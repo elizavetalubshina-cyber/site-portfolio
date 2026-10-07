@@ -8,10 +8,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "images": "node scripts/optimize-images.mjs",
-    "predev": "npm run images",
-    "prebuild": "npm run images",
+    "predev": "npm run images && npm run screens",
+    "prebuild": "npm run images && npm run screens",
     "weight": "node scripts/check-weight.mjs",
-    "postbuild": "npm run weight"
+    "postbuild": "npm run weight",
+    "screens": "node scripts/screen-sizes.mjs"
   },
   "devDependencies": {
     "sharp": "^0.35.3",

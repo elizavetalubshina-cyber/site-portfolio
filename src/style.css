@@ -731,6 +731,21 @@ h1, h2, h3 {
   color: var(--text);
 }
 
+/* One line of positioning between the name and the role: secondary text,
+   lighter than the role chips so the name still leads. */
+.hero__lead {
+  margin: var(--space-2) auto 0;
+  max-width: 36em;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  text-wrap: balance;
+}
+/* A forced line break in the role, used only where five parts do not fit
+   on one line (see the phone rules), so no rule ever starts a line. */
+.hero__role-br { display: none; }
+
 /* Sized to the width, not to a fixed step: "Елизавета Любшина" in Unbounded
    800 is 13.9 em wide, so this makes the name span the full column at any
    window size between a laptop and a 1920px monitor. */
@@ -997,6 +1012,13 @@ h1, h2, h3 {
   line-height: 1.6;
   color: var(--text-secondary);
 }
+.about__intro a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--purple);
+  text-underline-offset: 3px;
+}
+.about__intro a:hover { color: var(--purple); }
 .about__intro:last-of-type {
   margin-bottom: 0;
 }
@@ -1451,6 +1473,7 @@ main,
      never pass behind the letters. Sized off the same radius main.js draws
      the ring with, min(30vw, 42vh): the name is 13.9em wide, so 0.125 of
      the radius keeps it to ~1.75 radii, inside the circle with air to spare. */
+  .hero__lead { max-width: calc(var(--ring) * 1.74); }
   .hero__title {
     font-size: calc(var(--ring) * 0.125);
     line-height: 1;
@@ -1640,10 +1663,12 @@ main,
     line-height: 1.45;
     color: var(--text);
   }
+  /* The case's result, in the accent so it reads before the company. */
   .tunnel__stats {
     margin: 0 0 var(--space-3);
     font-size: 15px;
-    color: var(--text-secondary);
+    font-weight: 600;
+    color: var(--purple);
   }
   .tunnel__company {
     margin: var(--space-2) 0 0;
@@ -1700,7 +1725,7 @@ main,
   @media (min-width: 901px) {
     .tunnel--flight .tunnel__case,
     .tunnel--flight .tunnel__case--right {
-      width: min(1320px, 88vw, calc((100vh - 345px) * 1.6));
+      width: min(1320px, 88vw, calc((100vh - 375px) * 1.6));
       top: calc(50% + 42px);
     }
   }
@@ -1712,8 +1737,13 @@ main,
     object-fit: cover;
     object-position: top;
   }
-  .tunnel--flight .tunnel__index,
-  .tunnel--flight .tunnel__stats { display: none; }
+  .tunnel--flight .tunnel__index { display: none; }
+  /* The result sits between the description and the company. */
+  .tunnel--flight .tunnel__stats {
+    margin: var(--space-2) auto 0;
+    max-width: 560px;
+    text-align: center;
+  }
   /* Name with its tag chips to the right, then the description, then the
      company. */
   .tunnel--flight .tunnel__company { text-align: center; }
@@ -1772,9 +1802,20 @@ main,
   }
 }
 
+/* Five role parts take ~360px on one line; below ~390px they would wrap on
+   their own and could start the second line with a rule. Here the break is
+   set by hand after "Mobile", and the part that opens the line drops its
+   rule. The 16px side gutter comes from the container. */
+@media (max-width: 420px) {
+  .hero__role-br { display: block; flex-basis: 100%; height: 0; }
+  .hero__role-br::before,
+  .hero__role .hero__role-br + span::before { display: none; }
+}
+
 /* Phones and tablets: the same sky, fitted to the narrow screen. */
 @media (max-width: 900px) {
   .hero__role { font-size: 13px; margin-top: var(--space-2); column-gap: var(--space-1); }
+  .hero__lead { font-size: 13px; margin-top: var(--space-1); }
   .hero__role span + span::before { margin-right: var(--space-1); }
   /* No hover on touch: a tap on a topic opens its case straight away. */
   .hero__orbit-preview { display: none; }
@@ -2021,6 +2062,13 @@ main,
   font-size: 13px;
   color: var(--text-muted);
 }
+.case-sheet__stats {
+  margin: 0 var(--space-1) var(--space-1);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--purple);
+}
+.case-sheet__stats:empty { display: none; }
 .case-sheet__desc {
   margin: 0 var(--space-1) var(--space-1);
   font-size: 16px;

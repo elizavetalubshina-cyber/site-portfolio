@@ -731,15 +731,15 @@ h1, h2, h3 {
   color: var(--text);
 }
 
-/* One line of positioning between the name and the role: secondary text,
-   lighter than the role chips so the name still leads. */
+/* One line of positioning under the role, in the accent: grey on the
+   starfield read poorly. */
 .hero__lead {
   margin: var(--space-2) auto 0;
   max-width: 36em;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.45;
-  color: var(--text-secondary);
+  color: var(--purple);
   text-wrap: balance;
 }
 /* A forced line break in the role, used only where five parts do not fit

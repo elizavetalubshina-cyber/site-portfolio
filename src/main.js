@@ -1205,3 +1205,50 @@ if (document.body.classList.contains('home-page')) {
   }
   if (new URLSearchParams(location.search).has('y')) dropParams('y');
 }
+
+// Pictures marked data-zoom open full size on a click. The page shows the
+// Gym Bro screens at about 60% of a real phone, too small for their fine
+// print; here the original fills the screen.
+const zoomable = document.querySelectorAll('img[data-zoom]');
+if (zoomable.length) {
+  const box = document.createElement('div');
+  box.className = 'zoom';
+  box.hidden = true;
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  box.setAttribute('aria-label', 'Картинка целиком');
+  box.innerHTML = '<img class="zoom__img" alt="" /><button class="zoom__close" type="button" aria-label="Закрыть">×</button>';
+  document.body.appendChild(box);
+  const big = box.querySelector('.zoom__img');
+  const closeBtn = box.querySelector('.zoom__close');
+  let opener = null;
+
+  const open = (img) => {
+    opener = img;
+    big.sizes = '100vw';
+    big.srcset = img.srcset;
+    big.src = img.src;
+    big.alt = img.alt;
+    box.hidden = false;
+    document.documentElement.classList.add('zoom-lock');
+    closeBtn.focus();
+  };
+  const close = () => {
+    box.hidden = true;
+    document.documentElement.classList.remove('zoom-lock');
+    if (opener) opener.focus();
+  };
+
+  zoomable.forEach((img) => {
+    img.tabIndex = 0;
+    img.setAttribute('role', 'button');
+    img.addEventListener('click', () => open(img));
+    img.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(img); }
+    });
+  });
+  box.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !box.hidden) close();
+  });
+}

@@ -731,17 +731,6 @@ h1, h2, h3 {
   color: var(--text);
 }
 
-/* One line of positioning under the role, in the accent: grey on the
-   starfield read poorly. */
-.hero__lead {
-  margin: var(--space-2) auto 0;
-  max-width: 36em;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--purple);
-  text-wrap: balance;
-}
 /* A forced line break in the role, used only where five parts do not fit
    on one line (see the phone rules), so no rule ever starts a line. */
 .hero__role-br { display: none; }
@@ -1473,7 +1462,6 @@ main,
      never pass behind the letters. Sized off the same radius main.js draws
      the ring with, min(30vw, 42vh): the name is 13.9em wide, so 0.125 of
      the radius keeps it to ~1.75 radii, inside the circle with air to spare. */
-  .hero__lead { max-width: calc(var(--ring) * 1.74); }
   .hero__title {
     font-size: calc(var(--ring) * 0.125);
     line-height: 1;
@@ -1815,7 +1803,6 @@ main,
 /* Phones and tablets: the same sky, fitted to the narrow screen. */
 @media (max-width: 900px) {
   .hero__role { font-size: 13px; margin-top: var(--space-2); column-gap: var(--space-1); }
-  .hero__lead { font-size: 13px; margin-top: var(--space-1); }
   .hero__role span + span::before { margin-right: var(--space-1); }
   /* No hover on touch: a tap on a topic opens its case straight away. */
   .hero__orbit-preview { display: none; }

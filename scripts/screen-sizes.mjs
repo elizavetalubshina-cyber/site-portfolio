@@ -32,7 +32,6 @@ const SHOWN = {
   'flow-4': 560,
   'flow-5': 560,
   'first-launch': 560,
-  'exercise-picker': 560,
   'start-template': 560,
   'home-plan': 560,
   'bro-reactions': 560,

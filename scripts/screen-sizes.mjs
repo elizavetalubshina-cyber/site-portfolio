@@ -4,9 +4,13 @@
  *
  * A two-phone picture is ~1884px wide and shows at 560px, so the browser
  * squeezes it 3.4 times on the fly and the screens' fine print goes soft.
- * Resizing here, with Lanczos and a light sharpen, keeps that text crisper;
- * the pages list these copies in srcset and the browser picks the 1x or the
- * 2x one. The full-size original stays for the click-to-zoom view.
+ * Resizing here with Lanczos keeps that text crisper; the pages list these
+ * copies in srcset and the browser picks the 1x or the 2x one. The full-size
+ * original stays for the click-to-zoom view.
+ *
+ * Lossless on purpose, no sharpening: lossy WebP stores colour at half the
+ * resolution and moved the thin lime lines and small coloured text by up to
+ * 90 levels. The mockups' colours have to stay exactly as designed.
  */
 
 import { stat } from 'node:fs/promises';
@@ -46,9 +50,10 @@ for (const [name, shown] of Object.entries(SHOWN)) {
     const out = path.join(DIR, `${name}-${w}w.webp`);
     if (existsSync(out) && (await stat(out)).mtimeMs > srcTime) continue;
     await sharp(src)
-      .resize({ width: w, kernel: 'lanczos3' })
-      .sharpen({ sigma: 0.5 })
-      .webp({ quality: 90, effort: 6 })
+      // fastShrinkOnLoad would let libwebp pre-shrink the original on read,
+      // a cruder scaler that moved edge colours by up to 50 levels.
+      .resize({ width: w, kernel: 'lanczos3', fastShrinkOnLoad: false })
+      .webp({ lossless: true, effort: 6 })
       .toFile(out);
     console.log(`  ${name}-${w}w.webp`);
   }

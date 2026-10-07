@@ -456,6 +456,8 @@ function startSpace() {
       .find((c) => path(c.querySelector('.tunnel__title a').href) === path(tag.href));
     const tagsEl = same && same.querySelector('.tunnel__tags');
     const companyEl = same && same.querySelector('.tunnel__company');
+    const statsEl = same && same.querySelector('.tunnel__stats');
+    sheet.querySelector('.case-sheet__stats').textContent = statsEl ? statsEl.textContent : '';
     sheet.querySelector('.case-sheet__tags').innerHTML = tagsEl ? tagsEl.innerHTML : '';
     sheet.querySelector('.case-sheet__company').textContent = companyEl ? companyEl.textContent : '';
     sheet.hidden = false;

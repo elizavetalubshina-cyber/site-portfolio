@@ -748,13 +748,19 @@ h1, h2, h3 {
   will-change: transform;
 }
 
+/* Each part is a small flex row, so its rule is centred on the text box
+   itself. Hung off the baseline (vertical-align), the 1px rule rounded to a
+   different height next to different words and looked like it jumped. */
+.hero__role > span:not(.hero__role-br) {
+  display: inline-flex;
+  align-items: center;
+}
 .hero__role span + span::before {
   content: '';
-  display: inline-block;
+  flex: none;
   width: 1px;
   height: 0.9em;
   margin-right: var(--space-2);
-  vertical-align: -0.1em;
   background: var(--purple);
   opacity: 0.8;
 }
@@ -1790,8 +1796,9 @@ main,
   }
 }
 
-/* Five role parts take ~360px on one line; below ~390px they would wrap on
-   their own and could start the second line with a rule. Here the break is
+/* Five role parts take ~350px on one line, wider than the ring on a phone
+   (~315px across at 375px), so there they go on two lines. Left to wrap on
+   their own they could start the second line with a rule; here the break is
    set by hand after "Mobile", and the part that opens the line drops its
    rule. The 16px side gutter comes from the container. */
 @media (max-width: 420px) {

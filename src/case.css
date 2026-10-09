@@ -484,6 +484,15 @@
   gap: var(--space-2);
   margin: var(--space-3) 0;
 }
+.case-stats-row--2 { grid-template-columns: repeat(2, 1fr); }
+/* «Задача N» над решением: связывает его с задачей из «Как я сформулировала задачу». */
+.case-task-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
 /* Same volumetric pink-accent card as .short-stat--accent in Коротко. */
 .case-stat {
   background: rgba(214, 107, 208, 0.14);

@@ -1,0 +1,224 @@
+/* The team page shares the look of /dance/: white paper, pencil drawings
+   and one burgundy accent. A road drawn in pencil runs to the prize, the
+   rats run along it, and a list below says who is where. */
+:root {
+  --paper: #ffffff;
+  --graphite: #262428;
+  --graphite-soft: #625d66;
+  --wine: #7b1730;
+  --wine-deep: #5a0f22;
+  --wine-tint: #f7ebee;
+
+  --font-hand: 'Caveat', 'Segoe Print', 'Comic Sans MS', cursive;
+  --font-body: 'Onest', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { background: var(--paper); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--graphite);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: max(2.5vh, 16px) 16px 48px;
+}
+
+.head {
+  width: min(980px, 100%);
+  padding-inline: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.head__team {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--wine);
+}
+.head__title {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: clamp(44px, 7vw, 64px);
+  font-weight: 700;
+  line-height: 1;
+}
+.head__lead {
+  margin: 4px 0 0;
+  max-width: 52ch;
+  color: var(--graphite-soft);
+}
+.head__dates {
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--wine);
+}
+
+/* Paper cut out and pinned: the same wobbly outline as on /dance/. */
+.card {
+  width: min(980px, 100%);
+  background: var(--paper);
+  border: 2px solid var(--graphite);
+  border-radius: 22px 30px 18px 26px / 28px 18px 30px 20px;
+  padding: 24px clamp(16px, 4vw, 40px) 28px;
+  box-shadow: 6px 7px 0 -1px var(--paper), 6px 7px 0 1px var(--graphite);
+}
+.card--road { padding: clamp(8px, 2vw, 20px); }
+.card__title {
+  margin: 0 0 16px;
+  font-family: var(--font-hand);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+}
+.card__note {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: var(--graphite-soft);
+}
+
+.road {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.road text { font-family: var(--font-hand); }
+
+/* A rat on the road. krysky.js moves the outer group; the inner ones bob
+   and move the legs while it runs. */
+.rat { cursor: default; }
+.rat__bob { transform-box: fill-box; transform-origin: 50% 100%; }
+.rat.is-running .rat__bob { animation: bob 0.22s ease-in-out infinite alternate; }
+.rat .legs-b { opacity: 0; }
+.rat.is-running .legs-a { animation: legs 0.22s steps(1) infinite; }
+.rat.is-running .legs-b { animation: legs 0.22s steps(1) infinite reverse; }
+@keyframes bob {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
+@keyframes legs {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+}
+/* Whoever reached the prize keeps hopping next to it. */
+.rat.is-home .rat__hop {
+  animation: hop 1.4s ease-in-out infinite;
+  animation-delay: var(--hop-delay, 0s);
+}
+@keyframes hop {
+  0%, 60%, 100% { transform: translateY(0); }
+  75% { transform: translateY(-12px); }
+}
+.rat__avatar { transition: transform 0.15s ease; transform-box: fill-box; transform-origin: 50% 100%; }
+.rat.is-lit .rat__avatar { transform: scale(1.25); }
+
+/* The list: avatar, name, a box per routine and the count. */
+.board {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+.board__row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-areas: 'ava name count' 'ava steps steps';
+  align-items: center;
+  gap: 2px 12px;
+  padding: 8px 10px;
+  border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px;
+  transition: background-color 0.15s ease;
+}
+.board__row.is-lit { background: var(--wine-tint); }
+.board__ava {
+  grid-area: ava;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--wine);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--wine-tint);
+  font: 700 22px/1 var(--font-hand);
+  color: var(--wine);
+}
+.board__ava img { width: 100%; height: 100%; object-fit: cover; }
+.board__name {
+  grid-area: name;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.board__count {
+  grid-area: count;
+  font-family: var(--font-hand);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--wine);
+  white-space: nowrap;
+}
+.board__steps {
+  grid-area: steps;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+/* One box per routine, filled with pencil hatching once sent. A wider gap
+   splits the weeks. */
+.board__step {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--graphite);
+  border-radius: 5px 7px 4px 6px / 6px 4px 7px 5px;
+}
+.board__step.is-done {
+  border-color: var(--wine);
+  background: repeating-linear-gradient(-45deg, var(--wine) 0 2px, transparent 2px 5px);
+}
+.board__step.is-week-end:not(:last-child) { margin-right: 8px; }
+
+@media (min-width: 640px) {
+  .board__row {
+    grid-template-columns: 40px minmax(120px, 1fr) auto auto;
+    grid-template-areas: 'ava name steps count';
+  }
+  .board__count { min-width: 64px; text-align: right; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rat.is-running .rat__bob,
+  .rat.is-running .legs-a,
+  .rat.is-running .legs-b,
+  .rat.is-home .rat__hop { animation: none; }
+}

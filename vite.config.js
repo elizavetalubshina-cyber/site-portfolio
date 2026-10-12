@@ -17,6 +17,8 @@ export default defineConfig({
         gymBro: resolve(__dirname, 'cases/gym-bro.html'),
         // A separate page for dance classes: no links to or from the portfolio.
         dance: resolve(__dirname, 'dance/index.html'),
+        // The frame up team challenge, also on its own.
+        krysky: resolve(__dirname, 'krysky/index.html'),
       },
     },
   },

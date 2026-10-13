@@ -221,7 +221,7 @@
       <nav class="case-toc case-toc--badge" aria-label="Навигация по кейсу">
         <div class="case-toc__head">
           <p class="case-toc__title">По кейсу</p>
-          <a class="case-toc__next" href="/cases/satellite.html" title="Следующий кейс: Satellite" aria-label="Следующий кейс: Satellite">→</a>
+          <a class="case-toc__next" href="/cases/design-system.html" title="Следующий кейс: Дизайн-система" aria-label="Следующий кейс: Дизайн-система">→</a>
         </div>
         <ol>
           <li><a href="#short">Коротко</a></li>
@@ -250,8 +250,38 @@
 
     <!-- ============ Другие проекты ============ -->
     <section class="related container">
-      <h2>Другие проекты</h2>
+      <div class="related__head">
+        <h2>Другие проекты</h2>
+        <div class="related__nav">
+          <button type="button" class="related__arrow" data-dir="-1" aria-label="Предыдущие проекты" disabled>←</button>
+          <button type="button" class="related__arrow" data-dir="1" aria-label="Следующие проекты">→</button>
+        </div>
+      </div>
       <div class="related__grid">
+        <a class="case case--media-design-system cover-cutout" href="/cases/design-system.html">
+          <div class="case__media"><img src="/src/assets/cases/design-system/Cover.webp" alt="Обложка дизайн-системы Vidau" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">Дизайн-система</span><span class="tag">Enterprise</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Дизайн-система</h3>
+            <p class="case__desc">UI-kit, компоненты и правила консистентности</p>
+            <div class="case__meta">
+              <p class="case__stats">85 компонентов, общая основа для пяти продуктов</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-satellite" href="/cases/satellite.html">
+          <div class="case__media"><img src="/src/assets/cases/satellite/cover.webp" alt="Интерфейс Satellite" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Satellite</h3>
+            <p class="case__desc">Демо мониторинга группировок КА для выставки</p>
+            <div class="case__meta">
+              <p class="case__stats">работало на стенде выставки</p>
+              <p class="case__company">Sofikom</p>
+            </div>
+          </div>
+        </a>
+
         <a class="case case--media-subtitles" href="/cases/vs-subtitles.html">
           <div class="case__media"><img src="/src/assets/cases/vs-subtitles/cover.webp" alt="Интерфейс VS Subtitles" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
           <div class="case__body">
@@ -272,18 +302,6 @@
             <div class="case__meta">
               <p class="case__stats">116 экранов, приложение в разработке</p>
               <p class="case__company">Pet-проект</p>
-            </div>
-          </div>
-        </a>
-
-        <a class="case case--media-satellite" href="/cases/satellite.html">
-          <div class="case__media"><img src="/src/assets/cases/satellite/cover.webp" alt="Интерфейс Satellite" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
-          <div class="case__body case__body--bottom">
-            <h3>Satellite</h3>
-            <p class="case__desc">Демо мониторинга группировок КА для выставки</p>
-            <div class="case__meta">
-              <p class="case__stats">работало на стенде выставки</p>
-              <p class="case__company">Sofikom</p>
             </div>
           </div>
         </a>

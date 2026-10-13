@@ -1260,3 +1260,25 @@ if (zoomable.length) {
     if (e.key === 'Escape' && !box.hidden) close();
   });
 }
+
+// "Другие проекты": the arrows page the card row by what is visible, and
+// switch off at either end so they never point at nothing.
+const relatedGrid = document.querySelector('.related__grid');
+if (relatedGrid) {
+  const arrows = [...document.querySelectorAll('.related__arrow')];
+  const update = () => {
+    const max = relatedGrid.scrollWidth - relatedGrid.clientWidth - 1;
+    arrows.forEach((btn) => {
+      btn.disabled = btn.dataset.dir === '-1' ? relatedGrid.scrollLeft <= 0 : relatedGrid.scrollLeft >= max;
+    });
+  };
+  arrows.forEach((btn) => btn.addEventListener('click', () => {
+    const card = relatedGrid.querySelector('.case');
+    const step = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(relatedGrid).columnGap || 0) : relatedGrid.clientWidth;
+    const perView = Math.max(1, Math.floor((relatedGrid.clientWidth + 1) / step));
+    relatedGrid.scrollBy({ left: Number(btn.dataset.dir) * step * perView });
+  }));
+  relatedGrid.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+}

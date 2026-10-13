@@ -756,13 +756,54 @@ kbd {
 }
 .related h2 {
   font-size: 32px;
+  margin: 0;
+}
+.related__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
   margin-bottom: var(--space-3);
 }
+.related__nav { display: flex; gap: var(--space-1); }
+.related__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+.related__arrow:hover:not(:disabled) {
+  color: var(--purple);
+  border-color: rgba(214, 107, 208, 0.5);
+}
+.related__arrow:disabled { opacity: 0.3; cursor: default; }
 
+/* One row of cards that scrolls sideways: four fit on a desktop, two on a
+   tablet, one and a bit on a phone so the next card peeks in. The arrows
+   in the head page through it; a swipe or trackpad works too. */
 .related__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-2);
+  --related-gap: var(--space-2);
+  --related-per-view: 4;
+  display: flex;
+  gap: var(--related-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.related__grid::-webkit-scrollbar { display: none; }
+.related__grid > .case {
+  flex: 0 0 calc((100% - (var(--related-per-view) - 1) * var(--related-gap)) / var(--related-per-view));
+  scroll-snap-align: start;
 }
 
 /* The cover sits whole on top of the card, 16:10 like the file, with the
@@ -812,7 +853,7 @@ kbd {
   .short__refs { position: static; flex-direction: row; flex-wrap: wrap; }
   .short-ref { flex: 1 1 240px; }
   .case-stats-row { grid-template-columns: 1fr; }
-  .related__grid { grid-template-columns: 1fr 1fr; }
+  .related__grid { --related-per-view: 2; }
   .related .case__stats { min-height: calc(2 * 1.35em); }
   /* No room for a sidebar once the text column itself has to shrink below
      --measure; the TOC drops out and the content retakes the full width. */
@@ -840,7 +881,7 @@ kbd {
      ~366px wide — wider than a 320px screen, which is what made the page
      scroll sideways. In a column these want full width and natural height. */
   .short-ref { flex: none; width: 100%; }
-  .related__grid { grid-template-columns: 1fr; }
+  .related__grid { --related-per-view: 1.15; }
   /* One card per row: nothing to line up with. */
   .related .case__desc,
   .related .case__stats { min-height: 0; }

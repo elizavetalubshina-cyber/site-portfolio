@@ -67,6 +67,21 @@
       <button class="again" type="button" hidden>топнуть ещё раз</button>
     </main>
 
+    <!-- The shoe guide. No link to it on the page: it opens only from a direct
+         link to /dance/#pokupochki, as a window over the page. guide.js puts
+         the pages in when it opens, so the page itself does not load them. -->
+    <dialog class="guide" id="pokupochki" aria-labelledby="guide-title">
+      <div class="guide__bar">
+        <h2 id="guide-title" class="guide__title">Покупочки</h2>
+        <a class="btn btn--wine guide__download" href="/dance/pokupochki/pokupochki.pdf" download="Покупочки - Frame up strip.pdf">Скачать PDF</a>
+        <button class="guide__close" type="button" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 5.5 19 18.5M18.5 5 5.5 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="guide__pages"></div>
+    </dialog>
+
     <script type="module" src="./dance.js"></script>
+    <script type="module" src="./guide.js"></script>
   </body>
 </html>

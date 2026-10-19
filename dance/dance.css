@@ -320,3 +320,105 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .card { animation: none; }
 }
+
+/* The shoe guide (guide.js): a paper sheet over the dimmed page with the PDF
+   pages one under another and a bar with the download button on top. */
+.is-locked,
+.is-locked body { overflow: hidden; }
+
+.guide {
+  width: min(760px, calc(100% - 32px));
+  height: calc(100% - 32px);
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--graphite);
+  border: 2px solid var(--graphite);
+  border-radius: 22px 30px 18px 26px / 28px 18px 30px 20px;
+}
+.guide[open] {
+  display: flex;
+  animation: card-in 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.guide::backdrop {
+  background: rgba(38, 36, 40, 0.55);
+}
+
+.guide__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 22px;
+  border-bottom: 2px dashed rgba(38, 36, 40, 0.25);
+}
+.guide__title {
+  margin: 0 auto 0 0;
+  font-family: var(--font-hand);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+}
+.guide__download { min-height: 42px; padding: 8px 18px; }
+.guide__close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: var(--graphite);
+  background: var(--paper);
+  border: 2px solid var(--graphite);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.guide__close:focus-visible { outline: 3px solid var(--wine); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .guide__close:hover { background: var(--wine-tint); transform: rotate(6deg); }
+}
+
+.guide__pages {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--wine-tint);
+}
+.guide__page {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--paper);
+  border: 1px solid rgba(38, 36, 40, 0.15);
+  border-radius: 6px;
+}
+
+@media (max-width: 720px) {
+  /* On a phone the sheet takes the whole screen. */
+  .guide {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+  .guide__bar {
+    padding: 10px 10px 10px 16px;
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
+  .guide__title { font-size: 30px; }
+  .guide__download { width: auto; }
+  .guide__pages { gap: 10px; padding: 10px 10px max(10px, env(safe-area-inset-bottom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide[open] { animation: none; }
+}

@@ -12,7 +12,7 @@ const PAGES = 12;
 // The size the pictures are made at, so the window keeps its height while
 // they load.
 const W = 1200;
-const H = 1697;
+const H = 1703;
 
 const dialog = document.getElementById('pokupochki');
 const pages = dialog.querySelector('.guide__pages');

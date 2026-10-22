@@ -14,6 +14,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const svg = document.querySelector('.scene');
 const again = document.querySelector('.again');
 const card = document.querySelector('.card');
+const page = document.querySelector('.page');
 
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -479,15 +480,38 @@ function resetBits() {
   }
 }
 
+// The card covers the bottom of the drawing on a short screen. Before a
+// repeat stomp it moves up just enough to open the house and the ground
+// (scene y = SCENE_TOP and below), and slowly comes back down afterwards.
+const SCENE_TOP = 520;
+function liftPage() {
+  const line = view.top + (SCENE_TOP - view.y) * view.s;
+  const shift = Math.max(0, card.getBoundingClientRect().bottom + 16 - line);
+  if (!shift) return wait(0);
+  page.style.transition = 'transform 0.5s cubic-bezier(0.3, 0, 0.2, 1)';
+  page.style.transform = `translateY(${-shift}px)`;
+  return wait(500);
+}
+function lowerPage() {
+  if (!page.style.transform) return wait(0);
+  page.style.transition = 'transform 1.6s cubic-bezier(0.45, 0, 0.25, 1)';
+  page.style.transform = '';
+  return wait(1600);
+}
+
+// Hidden by visibility, not display: the button keeps its place, so the
+// page does not get shorter and jump while the heel is on screen.
+const showAgain = (on) => { again.style.visibility = on ? 'visible' : 'hidden'; };
+
 let busy = false;
 async function stomp({ first }) {
   if (busy) return;
   busy = true;
-  again.hidden = true;
+  showAgain(false);
   if (!first) {
     fx.replaceChildren();
     resetBits();
-    await wait(350);
+    await Promise.all([wait(350), liftPage()]);
   }
   // Flies in from the left along an arc and comes down on the platform.
   poseShoe(...IN[0], -38);
@@ -510,8 +534,9 @@ async function stomp({ first }) {
   if (first) setTimeout(() => card.classList.replace('is-waiting', 'is-in'), 700);
   await lift;
   hide(shoe);
+  if (!first) await lowerPage();
   busy = false;
-  again.hidden = false;
+  showAgain(true);
 }
 
 function wait(ms) {
@@ -526,6 +551,8 @@ if (reduce) {
 } else {
   card.classList.add('is-waiting');
   hide(shoe);
+  again.hidden = false;
+  showAgain(false);
   // Whatever happens to the stomp, the card must not stay hidden.
   const letIn = () => card.classList.replace('is-waiting', 'is-in');
   setTimeout(() => stomp({ first: true }).catch(letIn), 700);

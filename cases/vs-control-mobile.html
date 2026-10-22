@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VS Control Mobile | Елизавета Любшина</title>
+  <meta name="description" content="Мобильное приложение, в котором дежурный инженер телеканала узнаёт об авариях оборудования и реагирует на них с телефона. Кейс продуктового дизайнера." />
+
+  <link rel="canonical" href="https://dizlik.ru/cases/vs-control-mobile.html" />
+
+  <!-- Link preview: what Telegram, LinkedIn, Slack and search results show.
+       The image lives in public/og/ and is a plain file — replace it with
+       your own 1200x630 to change the preview, no code change needed. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Елизавета Любшина, Product Designer" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:url" content="https://dizlik.ru/cases/vs-control-mobile.html" />
+  <meta property="og:title" content="VS Control Mobile | Елизавета Любшина" />
+  <meta property="og:description" content="Мобильное приложение, в котором дежурный инженер телеканала узнаёт об авариях оборудования и реагирует на них с телефона. Кейс продуктового дизайнера." />
+  <meta property="og:image" content="https://dizlik.ru/og/vs-control-mobile.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="VS Control Mobile | Елизавета Любшина" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/case.css" />
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body class="case-page">
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <header class="nav">
+    <div class="nav__shell">
+      <div class="nav__inner">
+        <button class="nav__toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navMenu">
+          <span></span>
+        </button>
+        <nav class="nav__links nav__links--left">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+        </nav>
+        <a class="logo" href="/#top">Любшина Е.А.</a>
+        <nav class="nav__links nav__links--right">
+          <a href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать в TG</a>
+        </nav>
+      </div>
+      <nav class="nav__menu" id="navMenu">
+        <div class="nav__menu-panel">
+          <a href="/#cases">Кейсы</a>
+          <a href="/#about">Обо мне</a>
+          <a href="https://t.me/dizzzlik" target="_blank" rel="noopener">Написать в TG</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <a class="case-back" href="/#cases" aria-label="Все кейсы">←</a>
+
+    <section class="case-hero container">
+      <h1 class="case-hero__title">VS Control Mobile</h1>
+      <p class="case-hero__subtitle">Мобильное приложение, в котором дежурный инженер телеканала узнаёт об авариях оборудования и реагирует на них с телефона</p>
+
+      <!-- ФОТО cover.webp: 2-3 главных экрана рядом: пуш на экране блокировки, лента событий, карточка события -->
+      <figure class="case-cover">
+        <img src="/src/assets/cases/vs-control-mobile/cover.webp" alt="Экраны VS Control Mobile: пуш об аварии, лента событий и карточка события" width="2000" height="1250" fetchpriority="high" />
+        <span class="case-chips"><span class="tunnel__tag">Mobile</span></span>
+      </figure>
+    </section>
+
+    <!-- ============ Коротко (STAR) ============ -->
+    <section class="short container">
+      <h2 id="short">Коротко</h2>
+      <div class="short__grid">
+        <div class="short__text">
+          <h3>О компании</h3>
+          <p>Vidau Systems делает B2B-софт для телеканалов. Продукты ставятся в инфраструктуру заказчика.</p>
+
+          <h3>Контекст</h3>
+          <p>VS Control следит за оборудованием телевизионного производства и сообщает о сбоях. У системы была только веб-версия для компьютера.</p>
+          <p>Дежурный инженер большую часть смены ходит между студиями и аппаратными. Если авария случалась, пока он был у оборудования, он узнавал о ней, только когда возвращался к компьютеру.</p>
+
+          <h3>Задача</h3>
+          <p>Заказчик попросил мобильное приложение, чтобы инженер сразу узнавал о сбоях и реагировал на них с телефона. Оповещения должны были приходить в собственное приложение продукта. Вариант с Telegram заказчик отклонил.</p>
+
+          <h3>Что сделала</h3>
+          <ul>
+            <li>Спроектировала мобильное приложение для дежурных инженеров. С телефона инженер получает оповещение об аварии, разбирается в событии, подтверждает его и запускает профилактику</li>
+            <li>Выбрала из веб-версии то, что инженер делает на ходу. Настройка системы осталась в вебе</li>
+            <li>Продумала оповещения так, чтобы аварию нельзя было пропустить</li>
+            <li>Собрала мобильный UI-кит на основе дизайн-системы веб-версии с учётом гайдлайнов iOS и Android</li>
+          </ul>
+
+          <h3>Роль и команда</h3>
+          <p>Product Designer. Приложение и его логика полностью на мне. Юзкейсы описывал продакт, лид-дизайнер проводил финальное ревью.</p>
+
+          <h3>Результат</h3>
+          <p>Приложение запущено, инженеры им пользуются.</p>
+
+          <div class="short__stats">
+            <div class="short-stat short-stat--accent">
+              <div class="short-stat__value">1-2 минуты</div>
+              <div class="short-stat__label">вместо 10-15, чтобы узнать об аварии, по отзывам инженеров</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="short__refs">
+          <!-- ФОТО short-ref-events.webp: один экран, лента событий -->
+          <figure>
+            <div class="short-ref short-ref--phone"><img src="/src/assets/cases/vs-control-mobile/short-ref-events.webp" alt="Лента событий" width="790" height="1708" loading="lazy" decoding="async" /></div>
+            <figcaption>Лента событий</figcaption>
+          </figure>
+          <!-- ФОТО short-ref-event-card.webp: один экран, карточка события -->
+          <figure>
+            <div class="short-ref short-ref--phone"><img src="/src/assets/cases/vs-control-mobile/short-ref-event-card.webp" alt="Карточка события" width="790" height="1708" loading="lazy" decoding="async" /></div>
+            <figcaption>Карточка события</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Подробнее о процессе ============ -->
+    <section class="case-detail container">
+     <div class="case-detail__layout">
+      <div class="case-detail__content">
+      <div class="case-block">
+        <h2 id="process">Подробнее о процессе</h2>
+
+        <h3 id="process-user">Кто пользователь</h3>
+        <p>Дежурный инженер телеканала. Он отвечает за оборудование нескольких студий и аппаратных и почти не сидит у монитора.</p>
+        <p>С телефона ему нужно сразу узнать о сбое, понять, что случилось, и отметить, что он этим занимается.</p>
+
+        <h3 id="process-broken">Что было не так</h3>
+        <div class="case-finding">
+          <span class="case-finding__num">1</span>
+          <p><strong>Об аварии сообщал только звук.</strong> Веб-версия играет звук в открытой вкладке. Если инженера нет рядом с компьютером, он его не услышит.</p>
+        </div>
+        <div class="case-finding">
+          <span class="case-finding__num">2</span>
+          <p><strong>Реагировать можно только за компьютером.</strong> Подтвердить событие или перевести устройство на профилактику получалось только с рабочего места. При этом профилактику инженер обычно запускает, когда стоит у самого оборудования.</p>
+        </div>
+
+        <h3 id="process-channel">Свой канал оповещений</h3>
+        <p>Заказчику было важно, чтобы оповещения приходили в приложение продукта. Telegram предлагали, но заказчик от него отказался.</p>
+        <p>Приложение сделали как PWA. Это веб-приложение, которое устанавливают на главный экран телефона, публиковать его в App Store и Google Play не нужно.</p>
+        <p>Пуши доставляют сервисы Apple и Google, поэтому в пуше только уровень события. Подробности инженер смотрит в самом приложении.</p>
+
+        <h3 id="process-role">Моя роль</h3>
+        <p>Продакт описал юзкейсы, веб-интерфейс к тому времени уже был. Я спроектировала мобильное приложение по аналогии с вебом и решала, что из него перенести на телефон и как это будет устроено. Лид-дизайнер смотрел макеты на финальном ревью.</p>
+      </div>
+
+      <!-- ============ Ключевые решения ============ -->
+      <div class="case-block">
+        <h2 id="decisions">Ключевые решения</h2>
+
+        <h3 id="decisions-1">Решение 1. Лента событий</h3>
+        <p>События идут лентой, как уведомления: новые сверху. В строке уровень (Авария, Ошибка, Внимание, Норма), название события, устройство, контур и время.</p>
+        <p>Под каждым событием есть чип со статусом подтверждения: «Требует подтверждения», «Подтверждено» или «Подтверждение не требуется». Непросмотренные события выделены фоном, а их число видно на бейдже вкладки.</p>
+
+        <!-- ФОТО events-feed.webp: лента с разными уровнями, непросмотренным событием на фоне, чипами подтверждения и бейджем на вкладке -->
+        <figure class="case-figure">
+          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/events-feed.webp" alt="Лента событий с непросмотренными событиями и чипами подтверждения" width="790" height="1708" loading="lazy" decoding="async" />
+          <figcaption>Лента событий. Непросмотренные выделены фоном.</figcaption>
+        </figure>
+
+        <p>Искать можно по названию события и устройства. Фильтровать можно по контуру, периоду, уровню, подтверждению и типу события, есть сортировка и показ завершённых. Применённые фильтры видны чипами над списком.</p>
+
+        <!-- ФОТО events-filters.webp: два экрана, открытые фильтры и список с применёнными фильтрами-чипами -->
+        <figure class="case-figure">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/events-filters.webp" alt="Экран фильтров и список событий с применёнными фильтрами" width="1884" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Применённые фильтры видны над списком.</figcaption>
+        </figure>
+
+        <h3 id="decisions-2">Решение 2. Подтверждение с комментарием для коллег</h3>
+        <p>Из пуша инженер попадает в карточку события. Там уровень события, сколько прошло времени, устройство, метрика с её значением и время начала. Ниже написано, что случилось и что проверить. Этот текст берётся из правила оповещения в драйвере устройства.</p>
+
+        <!-- ФОТО event-card.webp: карточка события целиком -->
+        <figure class="case-figure">
+          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/event-card.webp" alt="Карточка события: уровень, устройство, метрика и что проверить" width="790" height="1708" loading="lazy" decoding="async" />
+        </figure>
+
+        <p>Событие подтверждается в модальном окне, к подтверждению можно добавить комментарий. Так следующая смена знает, что уже сделано. После подтверждения в карточке видно, кто подтвердил, когда и с каким комментарием.</p>
+
+        <!-- ФОТО event-confirm.webp: два экрана, модальное окно подтверждения с комментарием и карточка после подтверждения -->
+        <figure class="case-figure">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/event-confirm.webp" alt="Модальное окно подтверждения с комментарием и карточка события после подтверждения" width="1884" height="1864" loading="lazy" decoding="async" />
+          <figcaption>После подтверждения коллеги видят имя, время и комментарий.</figcaption>
+        </figure>
+
+        <h3 id="decisions-3">Решение 3. Профилактика с телефона</h3>
+        <p>В карточку устройства инженер попадает из события или из вкладки «Устройства». Во вкладке есть сводка: сколько устройств в аварии, ошибке, внимании и на профилактике. Статус устройства равен самому тяжёлому из его активных событий.</p>
+
+        <!-- ФОТО devices.webp: вкладка «Устройства», сводка по статусам и список -->
+        <figure class="case-figure">
+          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/devices.webp" alt="Вкладка «Устройства»: сводка по статусам и список устройств" width="790" height="1708" loading="lazy" decoding="async" />
+        </figure>
+
+        <!-- ФОТО device-card.webp: два экрана карточки устройства, вкладки «Мониторинг» и «События» -->
+        <figure class="case-figure">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/device-card.webp" alt="Карточка устройства: вкладки «Мониторинг» и «События»" width="1884" height="1864" loading="lazy" decoding="async" />
+        </figure>
+
+        <p>Профилактику запускают у самого оборудования, поэтому кнопка для неё есть в карточке устройства. Запустить можно сразу или по расписанию. К запуску можно оставить комментарий для коллег.</p>
+        <p>Пока идут работы, устройство стоит в статусе «Профилактика», и все видят, кто его обслуживает и с какого времени. Завершает профилактику инженер вручную. Если какая-то метрика ещё не в норме, приложение об этом предупреждает. Начало и конец профилактики записываются в журнал событий с именем инженера.</p>
+
+        <!-- ФОТО maintenance.webp: 3-4 экрана: запуск, запланированная, идущая профилактика, предупреждение при завершении -->
+        <figure class="case-figure">
+          <img src="/src/assets/cases/vs-control-mobile/maintenance.webp" alt="Запуск профилактики, запланированная профилактика и предупреждение при завершении" width="2000" height="1250" loading="lazy" decoding="async" />
+          <figcaption>Профилактику можно запустить сразу или по расписанию.</figcaption>
+        </figure>
+
+        <h3 id="decisions-4">Решение 4. Аварии нельзя пропустить</h3>
+        <p>В профиле инженер настраивает оповещения: уровни событий, контуры, тихие часы, отдельный звук для аварий. Аварии отключить нельзя, они приходят даже в тихие часы.</p>
+        <p>Оповещения приходят только по контурам инженера, то есть по студиям и аппаратным, за которые он отвечает. Контуры он выбирает в модальном окне с поиском из тех, куда его добавил администратор.</p>
+
+        <!-- ФОТО notification-settings.webp: два экрана, настройки оповещений и выбор контуров -->
+        <figure class="case-figure">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/notification-settings.webp" alt="Настройки оповещений и выбор контуров с поиском" width="1884" height="1864" loading="lazy" decoding="async" />
+          <figcaption>Аварии в настройках отключить нельзя.</figcaption>
+        </figure>
+
+        <h3 id="decisions-ui">Интерфейс как в вебе</h3>
+        <p>Цвета статусов, шрифт, тёмная тема и названия взяты из дизайн-системы веб-версии, поэтому переучиваться инженерам не нужно. На её основе я собрала мобильный UI-кит, из него сделаны все экраны.</p>
+        <p>Подтверждение, профилактика и выбор контуров открываются в модальных окнах, которые нельзя смахнуть. Так важное действие не закроется случайно.</p>
+        <p>Зоны нажатия не меньше 44 px, текст не мельче 11 px, снизу учтена безопасная зона, контраст текста соответствует WCAG.</p>
+        <p>Для пустых экранов есть отдельные состояния. Без связи плашка под заголовком показывает, на какое время актуальны данные. Когда активных событий нет, приложение прямо пишет, что всё в норме. Если поиск ничего не нашёл, есть подсказка, по каким полям он ищет.</p>
+
+        <!-- ФОТО states.webp: три экрана: нет связи, нет активных событий, ничего не найдено -->
+        <figure class="case-figure">
+          <img src="/src/assets/cases/vs-control-mobile/states.webp" alt="Состояния: нет связи, нет активных событий, ничего не найдено" width="2000" height="1250" loading="lazy" decoding="async" />
+        </figure>
+
+        <h3 id="decisions-web">Что осталось в вебе</h3>
+        <p>В приложении только то, что инженер делает за пару минут на ходу. Настройка системы осталась в вебе: устройства и драйверы, права доступа, контуры и категории, лицензии, редактор дашбордов.</p>
+      </div>
+
+      <!-- ============ Результат ============ -->
+      <div class="case-block">
+        <h2 id="result">Результат</h2>
+        <p>Приложение запущено, инженеры им пользуются. По их отзывам, об аварии теперь узнают за 1-2 минуты, раньше на это уходило 10-15.</p>
+        <div class="case-stats-row case-stats-row--2">
+          <div class="case-stat">
+            <div class="case-stat__value">работает</div>
+            <div class="case-stat__label">приложение запущено</div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <nav class="case-toc case-toc--badge" aria-label="Навигация по кейсу">
+        <div class="case-toc__head">
+          <p class="case-toc__title">По кейсу</p>
+          <a class="case-toc__next" href="/cases/vs-ecosystem.html" title="Следующий кейс: VS Ecosystem" aria-label="Следующий кейс: VS Ecosystem">→</a>
+        </div>
+        <ol>
+          <li><a href="#short">Коротко</a></li>
+          <li class="case-toc__group">
+            <span class="case-toc__row"><a href="#process">Подробнее о процессе</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
+            <ol>
+              <li><a href="#process-user">Кто пользователь</a></li>
+              <li><a href="#process-broken">Что было не так</a></li>
+              <li><a href="#process-channel">Свой канал оповещений</a></li>
+              <li><a href="#process-role">Моя роль</a></li>
+            </ol>
+          </li>
+          <li class="case-toc__group">
+            <span class="case-toc__row"><a href="#decisions">Ключевые решения</a><button type="button" class="case-toc__toggle" aria-expanded="false" aria-label="Показать подпункты"></button></span>
+            <ol>
+              <li><a href="#decisions-1">1. Лента событий</a></li>
+              <li><a href="#decisions-2">2. Подтверждение с комментарием</a></li>
+              <li><a href="#decisions-3">3. Профилактика с телефона</a></li>
+              <li><a href="#decisions-4">4. Аварии нельзя пропустить</a></li>
+              <li><a href="#decisions-ui">Интерфейс как в вебе</a></li>
+              <li><a href="#decisions-web">Что осталось в вебе</a></li>
+            </ol>
+          </li>
+          <li><a href="#result">Результат</a></li>
+        </ol>
+      </nav>
+     </div>
+    </section>
+
+    <!-- ============ Другие проекты ============ -->
+    <section class="related container">
+      <div class="related__head">
+        <h2>Другие проекты</h2>
+        <div class="related__nav">
+          <button type="button" class="related__arrow" data-dir="-1" aria-label="Предыдущие проекты" disabled>←</button>
+          <button type="button" class="related__arrow" data-dir="1" aria-label="Следующие проекты">→</button>
+        </div>
+      </div>
+      <div class="related__grid">
+        <a class="case case--media-ecosystem" href="/cases/vs-ecosystem.html">
+          <div class="case__media"><img src="/src/assets/cases/vs-ecosystem/Cover.webp" alt="Интерфейс VS Ecosystem" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>VS Ecosystem</h3>
+            <p class="case__desc">Лицензирование ПО в закрытом контуре</p>
+            <div class="case__meta">
+              <p class="case__stats">сверка запроса за 13 минут вместо 4 часов</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-design-system cover-cutout" href="/cases/design-system.html">
+          <div class="case__media"><img src="/src/assets/cases/design-system/Cover.webp" alt="Обложка дизайн-системы Vidau" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">Дизайн-система</span><span class="tag">Enterprise</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Дизайн-система</h3>
+            <p class="case__desc">UI-kit, компоненты и правила консистентности</p>
+            <div class="case__meta">
+              <p class="case__stats">85 компонентов, общая основа для пяти продуктов</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-satellite" href="/cases/satellite.html">
+          <div class="case__media"><img src="/src/assets/cases/satellite/cover.webp" alt="Интерфейс Satellite" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Satellite</h3>
+            <p class="case__desc">Демо мониторинга группировок КА для выставки</p>
+            <div class="case__meta">
+              <p class="case__stats">работало на стенде выставки</p>
+              <p class="case__company">Sofikom</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-subtitles" href="/cases/vs-subtitles.html">
+          <div class="case__media"><img src="/src/assets/cases/vs-subtitles/cover.webp" alt="Интерфейс VS Subtitles" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body">
+            <h3>VS Subtitles</h3>
+            <p class="case__desc">Субтитры и телетекст для прямого эфира</p>
+            <div class="case__meta">
+              <p class="case__stats">в 2 раза быстрее подготовка субтитров</p>
+              <p class="case__company">Vidau Systems</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-gym-bro cover-cutout" href="/cases/gym-bro.html">
+          <div class="case__media"><img src="/src/assets/cases/gym-bro/cover.webp" alt="Экраны Gym Bro" width="2000" height="1376" loading="lazy" decoding="async" /><div class="tags"><span class="tag">Pet-проект</span><span class="tag">Mobile</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Gym Bro</h3>
+            <p class="case__desc">Трекер силовых тренировок с напарником</p>
+            <div class="case__meta">
+              <p class="case__stats">116 экранов, приложение в разработке</p>
+              <p class="case__company">Pet-проект</p>
+            </div>
+          </div>
+        </a>
+
+        <a class="case case--media-tracktice" href="/cases/tracktice.html">
+          <div class="case__media"><img src="/src/assets/cases/tracktice/cover.webp" alt="Интерфейс Tracktice Flow" width="2000" height="1250" loading="lazy" decoding="async" /><div class="tags"><span class="tag">B2B</span><span class="tag">Web</span></div></div>
+          <div class="case__body case__body--bottom">
+            <h3>Tracktice Flow</h3>
+            <p class="case__desc">Админка настройки пассажиропотока</p>
+            <div class="case__meta">
+              <p class="case__stats">ускорение работы с 30 до 15 минут</p>
+              <p class="case__company">Tracktice</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© 2026 Елизавета Любшина, Product Designer</div>
+  </footer>
+</body>
+</html>

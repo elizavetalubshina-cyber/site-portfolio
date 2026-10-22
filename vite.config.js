@@ -11,6 +11,7 @@ export default defineConfig({
         notFound: resolve(__dirname, '404.html'),
         vsSubtitles: resolve(__dirname, 'cases/vs-subtitles.html'),
         vsEcosystem: resolve(__dirname, 'cases/vs-ecosystem.html'),
+        vsControlMobile: resolve(__dirname, 'cases/vs-control-mobile.html'),
         satellite: resolve(__dirname, 'cases/satellite.html'),
         tracktice: resolve(__dirname, 'cases/tracktice.html'),
         designSystem: resolve(__dirname, 'cases/design-system.html'),

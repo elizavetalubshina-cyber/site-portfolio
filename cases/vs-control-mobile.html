@@ -62,10 +62,8 @@
     <section class="case-hero container">
       <h1 class="case-hero__title">VS Control Mobile</h1>
       <p class="case-hero__subtitle">Мобильное приложение, в котором дежурный инженер телеканала узнаёт об авариях оборудования и реагирует на них с телефона</p>
-
-      <!-- ФОТО cover.webp: 2-3 главных экрана рядом: пуш на экране блокировки, лента событий, карточка события -->
-      <figure class="case-cover">
-        <img src="/src/assets/cases/vs-control-mobile/cover.webp" alt="Экраны VS Control Mobile: пуш об аварии, лента событий и карточка события" width="2000" height="1250" fetchpriority="high" />
+      <figure class="case-cover cover-cutout">
+        <img src="/src/assets/cases/vs-control-mobile/cover.webp" alt="Экраны VS Control Mobile: пуш об аварии, лента событий и карточка события" width="2304" height="1440" fetchpriority="high" />
         <span class="case-chips"><span class="tunnel__tag">Mobile</span></span>
       </figure>
     </section>
@@ -108,14 +106,12 @@
         </div>
 
         <div class="short__refs">
-          <!-- ФОТО short-ref-events.webp: один экран, лента событий -->
           <figure>
-            <div class="short-ref short-ref--phone"><img src="/src/assets/cases/vs-control-mobile/short-ref-events.webp" alt="Лента событий" width="790" height="1708" loading="lazy" decoding="async" /></div>
+            <div class="short-ref short-ref--cutout short-ref--phone"><img src="/src/assets/cases/vs-control-mobile/short-ref-events.webp" alt="Лента событий" width="585" height="1266" loading="lazy" decoding="async" /></div>
             <figcaption>Лента событий</figcaption>
           </figure>
-          <!-- ФОТО short-ref-event-card.webp: один экран, карточка события -->
           <figure>
-            <div class="short-ref short-ref--phone"><img src="/src/assets/cases/vs-control-mobile/short-ref-event-card.webp" alt="Карточка события" width="790" height="1708" loading="lazy" decoding="async" /></div>
+            <div class="short-ref short-ref--cutout short-ref--phone"><img src="/src/assets/cases/vs-control-mobile/short-ref-event-card.webp" alt="Карточка события" width="585" height="1266" loading="lazy" decoding="async" /></div>
             <figcaption>Карточка события</figcaption>
           </figure>
         </div>
@@ -159,66 +155,50 @@
         <h3 id="decisions-1">Решение 1. Лента событий</h3>
         <p>События идут лентой, как уведомления: новые сверху. В строке уровень (Авария, Ошибка, Внимание, Норма), название события, устройство, контур и время.</p>
         <p>Под каждым событием есть чип со статусом подтверждения: «Требует подтверждения», «Подтверждено» или «Подтверждение не требуется». Непросмотренные события выделены фоном, а их число видно на бейдже вкладки.</p>
-
-        <!-- ФОТО events-feed.webp: лента с разными уровнями, непросмотренным событием на фоне, чипами подтверждения и бейджем на вкладке -->
-        <figure class="case-figure">
-          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/events-feed.webp" alt="Лента событий с непросмотренными событиями и чипами подтверждения" width="790" height="1708" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/events-feed.webp" alt="Лента событий с непросмотренными событиями и чипами подтверждения" width="585" height="1266" loading="lazy" decoding="async" />
           <figcaption>Лента событий. Непросмотренные выделены фоном.</figcaption>
         </figure>
 
         <p>Искать можно по названию события и устройства. Фильтровать можно по контуру, периоду, уровню, подтверждению и типу события, есть сортировка и показ завершённых. Применённые фильтры видны чипами над списком.</p>
-
-        <!-- ФОТО events-filters.webp: два экрана, открытые фильтры и список с применёнными фильтрами-чипами -->
-        <figure class="case-figure">
-          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/events-filters.webp" alt="Экран фильтров и список событий с применёнными фильтрами" width="1884" height="1864" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/events-filters.webp" alt="Экран фильтров и список событий с применёнными фильтрами" width="1266" height="1266" loading="lazy" decoding="async" />
           <figcaption>Применённые фильтры видны над списком.</figcaption>
         </figure>
 
         <h3 id="decisions-2">Решение 2. Подтверждение с комментарием для коллег</h3>
         <p>Из пуша инженер попадает в карточку события. Там уровень события, сколько прошло времени, устройство, метрика с её значением и время начала. Ниже написано, что случилось и что проверить. Этот текст берётся из правила оповещения в драйвере устройства.</p>
-
-        <!-- ФОТО event-card.webp: карточка события целиком -->
-        <figure class="case-figure">
-          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/event-card.webp" alt="Карточка события: уровень, устройство, метрика и что проверить" width="790" height="1708" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/event-card.webp" alt="Карточка события: уровень, устройство, метрика и что проверить" width="585" height="1266" loading="lazy" decoding="async" />
         </figure>
 
         <p>Событие подтверждается в модальном окне, к подтверждению можно добавить комментарий. Так следующая смена знает, что уже сделано. После подтверждения в карточке видно, кто подтвердил, когда и с каким комментарием.</p>
-
-        <!-- ФОТО event-confirm.webp: два экрана, модальное окно подтверждения с комментарием и карточка после подтверждения -->
-        <figure class="case-figure">
-          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/event-confirm.webp" alt="Модальное окно подтверждения с комментарием и карточка события после подтверждения" width="1884" height="1864" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/event-confirm.webp" alt="Модальное окно подтверждения с комментарием и карточка события после подтверждения" width="1266" height="1266" loading="lazy" decoding="async" />
           <figcaption>После подтверждения коллеги видят имя, время и комментарий.</figcaption>
         </figure>
 
         <h3 id="decisions-3">Решение 3. Профилактика с телефона</h3>
         <p>В карточку устройства инженер попадает из события или из вкладки «Устройства». Во вкладке есть сводка: сколько устройств в аварии, ошибке, внимании и на профилактике. Статус устройства равен самому тяжёлому из его активных событий.</p>
-
-        <!-- ФОТО devices.webp: вкладка «Устройства», сводка по статусам и список -->
-        <figure class="case-figure">
-          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/devices.webp" alt="Вкладка «Устройства»: сводка по статусам и список устройств" width="790" height="1708" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--phone" src="/src/assets/cases/vs-control-mobile/devices.webp" alt="Вкладка «Устройства»: сводка по статусам и список устройств" width="585" height="1266" loading="lazy" decoding="async" />
         </figure>
-
-        <!-- ФОТО device-card.webp: два экрана карточки устройства, вкладки «Мониторинг» и «События» -->
-        <figure class="case-figure">
-          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/device-card.webp" alt="Карточка устройства: вкладки «Мониторинг» и «События»" width="1884" height="1864" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/device-card.webp" alt="Карточка устройства: вкладки «Мониторинг» и «События»" width="1266" height="1266" loading="lazy" decoding="async" />
         </figure>
 
         <p>Профилактику запускают у самого оборудования, поэтому кнопка для неё есть в карточке устройства. Запустить можно сразу или по расписанию. К запуску можно оставить комментарий для коллег.</p>
         <p>Пока идут работы, устройство стоит в статусе «Профилактика», и все видят, кто его обслуживает и с какого времени. Завершает профилактику инженер вручную. Если какая-то метрика ещё не в норме, приложение об этом предупреждает. Начало и конец профилактики записываются в журнал событий с именем инженера.</p>
-
-        <!-- ФОТО maintenance.webp: 3-4 экрана: запуск, запланированная, идущая профилактика, предупреждение при завершении -->
-        <figure class="case-figure">
-          <img src="/src/assets/cases/vs-control-mobile/maintenance.webp" alt="Запуск профилактики, запланированная профилактика и предупреждение при завершении" width="2000" height="1250" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img src="/src/assets/cases/vs-control-mobile/maintenance.webp" alt="Запуск профилактики, запланированная профилактика и предупреждение при завершении" width="2304" height="1110" loading="lazy" decoding="async" />
           <figcaption>Профилактику можно запустить сразу или по расписанию.</figcaption>
         </figure>
 
         <h3 id="decisions-4">Решение 4. Аварии нельзя пропустить</h3>
         <p>В профиле инженер настраивает оповещения: уровни событий, контуры, тихие часы, отдельный звук для аварий. Аварии отключить нельзя, они приходят даже в тихие часы.</p>
         <p>Оповещения приходят только по контурам инженера, то есть по студиям и аппаратным, за которые он отвечает. Контуры он выбирает в модальном окне с поиском из тех, куда его добавил администратор.</p>
-
-        <!-- ФОТО notification-settings.webp: два экрана, настройки оповещений и выбор контуров -->
-        <figure class="case-figure">
-          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/notification-settings.webp" alt="Настройки оповещений и выбор контуров с поиском" width="1884" height="1864" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img class="case-figure__img--pair" src="/src/assets/cases/vs-control-mobile/notification-settings.webp" alt="Настройки оповещений и выбор контуров с поиском" width="1266" height="1266" loading="lazy" decoding="async" />
           <figcaption>Аварии в настройках отключить нельзя.</figcaption>
         </figure>
 
@@ -227,10 +207,8 @@
         <p>Подтверждение, профилактика и выбор контуров открываются в модальных окнах, которые нельзя смахнуть. Так важное действие не закроется случайно.</p>
         <p>Зоны нажатия не меньше 44 px, текст не мельче 11 px, снизу учтена безопасная зона, контраст текста соответствует WCAG.</p>
         <p>Для пустых экранов есть отдельные состояния. Без связи плашка под заголовком показывает, на какое время актуальны данные. Когда активных событий нет, приложение прямо пишет, что всё в норме. Если поиск ничего не нашёл, есть подсказка, по каким полям он ищет.</p>
-
-        <!-- ФОТО states.webp: три экрана: нет связи, нет активных событий, ничего не найдено -->
-        <figure class="case-figure">
-          <img src="/src/assets/cases/vs-control-mobile/states.webp" alt="Состояния: нет связи, нет активных событий, ничего не найдено" width="2000" height="1250" loading="lazy" decoding="async" />
+        <figure class="case-figure case-figure--cutout">
+          <img src="/src/assets/cases/vs-control-mobile/states.webp" alt="Состояния: нет связи, нет активных событий, ничего не найдено" width="1947" height="1266" loading="lazy" decoding="async" />
         </figure>
 
         <h3 id="decisions-web">Что осталось в вебе</h3>

@@ -68,7 +68,9 @@ body {
   align-items: center;
   gap: 12px;
   padding-inline: 16px;
-  padding-block: max(2.5vh, 16px) 40vh;
+  /* The page ends right under the card: to see the drawing behind it,
+     "топнуть ещё раз" lifts the card up for the stomp. */
+  padding-block: max(2.5vh, 16px) max(16px, env(safe-area-inset-bottom));
 }
 
 /* The card is paper cut out and pinned over the drawing: a hand-drawn

@@ -37,10 +37,6 @@ if (title && !reduce) {
   });
 }
 
-// The studio app: App Store by default, RuStore on Android.
-const app = document.querySelector('.js-app');
-if (app && /android/i.test(navigator.userAgent)) app.href = app.dataset.android;
-
 const rc = rough.svg(svg);
 const INK = '#262428';
 const WINE = '#7b1730';

@@ -281,6 +281,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
 
   function prepare(options) {
     reset({ firstWorkout: state.firstWorkout, goals: state.goals, ...options });
+    draftTitle = options.title || '';
   }
 
   function backButton() {

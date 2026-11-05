@@ -362,7 +362,7 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
     if (token !== revision) return;
     workoutDemo.unmount();
     el.hotspots.replaceChildren();
-    el.screen.querySelectorAll('.reaction-badge, .kick-feedback, .workout-progress, .workout-picker-title, .workout-progress-title, .workout-recent-label').forEach(item => item.remove());
+    el.screen.querySelectorAll('.reaction-badge, .kick-feedback, .workout-progress, .workout-picker-title, .workout-progress-title, .workout-recent-label, .placeholder-clear-mask').forEach(item => item.remove());
     el['screen-image'].src = image.src;
     const renderedHeight = workoutLayer ? 852 : next.height;
     el['screen-image'].height = renderedHeight;
@@ -378,6 +378,12 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
       if (hotspot.events.some(event => event.trigger !== 'AFTER_TIMEOUT')) el.hotspots.append(makeHotspot(hotspot, index));
     });
     if (workoutLayer) workoutDemo.mount(el.screen, workoutSummary ? 'summary' : workoutNaming ? 'naming' : workoutPreview ? 'preview' : 'active', { templates: id !== '143:15564' && !workoutDemo.firstWorkout });
+    if (id === '80:21147') {
+      const mask = document.createElement('div');
+      mask.className = 'placeholder-clear-mask';
+      mask.setAttribute('aria-hidden', 'true');
+      el.screen.append(mask);
+    }
     if (next.name.startsWith('Sheet / ExercisePicker /')) {
       const title = document.createElement('div');
       title.className = 'workout-picker-title';

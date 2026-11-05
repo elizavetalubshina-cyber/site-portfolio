@@ -34,6 +34,8 @@ markers for their actual selected state. The highlight toggle uses this marker
 as well. The app inside the phone keeps its own green design.
 The main home image omits the sample Bro fire reaction on the latest workout;
 its separate filename avoids reusing the previous image from a browser cache.
+The initial email field keeps `you@mail.ru` as a placeholder and omits the
+clear icon; entering the example email still opens the source typing state.
 
 On mobile, the phone and controls fill a stable small viewport from the first
 render. The scenario selector opens in a native dialog above the phone; opening,

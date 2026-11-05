@@ -84,6 +84,7 @@ h1 { font-size: 48px; line-height: 1.1; letter-spacing: -.065em; margin: 0 0 16p
 .hotspot[data-backdrop=true] { border-radius: 0; }
 .show-hotspots .hotspot[data-backdrop=true], .flash-hotspots .hotspot[data-backdrop=true] { outline: 0; background: transparent; }
 .reaction-badge { position: absolute; width: 32px; height: 32px; background: #20241b; pointer-events: none; }
+.placeholder-clear-mask { position:absolute;left:334px;top:233px;width:24px;height:24px;background:#0b0c0a;pointer-events:none; }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; background: #0b0c0ae8; border-radius: inherit; font-size: 13px; color: #a2a88f; }
 .player-tools { flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 8px; max-width: 100%; }
 .player-tools button { font-size: 11px; }

@@ -36,6 +36,10 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
   let catalogChoice = null;
   let templatesAvailable = false;
   let draftTitle = '';
+  let nameKeyboardOpen = true;
+  let nameLanguage = 'ru';
+  let nameSymbols = false;
+  let nameShift = true;
   let scrollPositions = { active: 0, catalog: 0, summary: 0, preview: 0, naming: 0 };
 
   function unmount() {
@@ -50,6 +54,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
     unmount();
     view = nextView;
     templatesAvailable = Boolean(options.templates);
+    if (view === 'naming') nameKeyboardOpen = true;
     if (view === 'active') {
       state.finished = false;
       state.finishedAt = null;
@@ -59,6 +64,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
     parent.append(root);
     window.addEventListener('keydown', keydown, true);
     render();
+    if (view === 'naming') root.querySelector('.wk-name-input')?.focus({ preventScroll: true });
   }
 
   function reveal(target) {
@@ -126,6 +132,13 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
 
   function keydown(event) {
     if (!root || root.inert || document.querySelector('#scenario-menu')?.open || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (view === 'naming' && nameKeyboardOpen && event.key === 'Escape') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      nameKeyboardOpen = false;
+      refreshNameKeyboard();
+      return;
+    }
     if (warning && event.key === 'Escape') {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -277,6 +290,9 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
     scrollPositions = { active: 0, catalog: 0, summary: 0, preview: 0, naming: 0 };
     warning = false;
     draftTitle = '';
+    nameLanguage = 'ru';
+    nameSymbols = false;
+    nameShift = true;
   }
 
   function prepare(options) {
@@ -290,6 +306,89 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
     return back;
   }
 
+  function syncNameInput() {
+    const input = root.querySelector('.wk-name-input');
+    draftTitle = input.value;
+    root.querySelector('.wk-naming>.wk-primary').disabled = !draftTitle.trim();
+    const enter = root.querySelector('.wk-name-enter');
+    if (enter) enter.disabled = !draftTitle.trim();
+  }
+
+  function enterNameKey(text, erase = false) {
+    const input = root.querySelector('.wk-name-input');
+    if (!input) return;
+    let start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? start;
+    if (erase && start === end) {
+      const previous = Array.from(input.value.slice(0, start));
+      previous.pop();
+      start = previous.join('').length;
+    }
+    const insert = erase ? '' : text;
+    const next = input.value.slice(0, start) + insert + input.value.slice(end);
+    if (next.length > input.maxLength) return;
+    input.value = next;
+    input.focus({ preventScroll: true });
+    input.setSelectionRange(start + insert.length, start + insert.length);
+    syncNameInput();
+    if (nameShift && !erase && /[a-zа-яё]/i.test(text)) {
+      nameShift = false;
+      refreshNameKeyboard();
+    }
+  }
+
+  function refreshNameKeyboard() {
+    if (!root || view !== 'naming') return;
+    root.querySelector('.wk-name-keyboard')?.remove();
+    root.querySelector('.wk-name-input')?.classList.toggle('is-editing', nameKeyboardOpen);
+    if (nameKeyboardOpen) {
+      root.append(nameKeyboard());
+      root.querySelector('.wk-name-input')?.focus({ preventScroll: true });
+    }
+  }
+
+  function nameKeyboard() {
+    const keyboard = element('div', 'wk-name-keyboard');
+    keyboard.setAttribute('role', 'group');
+    keyboard.setAttribute('aria-label', 'Буквенная клавиатура');
+    // Keep the text caret when clicking with a mouse.
+    keyboard.addEventListener('mousedown', event => event.preventDefault());
+    const bar = element('div', 'wk-keyboard-bar');
+    bar.append(element('span', 'wk-name-keyboard-label', 'Название тренировки'));
+    bar.append(button('ГОТОВО', 'wk-keyboard-done', () => {
+      nameKeyboardOpen = false;
+      refreshNameKeyboard();
+    }, 'Скрыть буквенную клавиатуру'));
+    const rows = element('div', 'wk-name-rows');
+    const layout = nameSymbols ? ['1234567890', '-/:;()₽&@"', '.,?!\''] : nameLanguage === 'ru' ? ['йцукенгшщзхъ', 'фывапролджэ', 'ячсмитьбюё'] : ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+    layout.forEach((letters, index) => {
+      const row = element('div', `wk-name-row${index === 1 ? ' is-inset' : ''}`);
+      if (index === 2 && !nameSymbols) {
+        const shift = button('⇧', `wk-name-key wk-name-modifier${nameShift ? ' is-on' : ''}`, () => { nameShift = !nameShift; refreshNameKeyboard(); }, 'Заглавные буквы');
+        shift.setAttribute('aria-pressed', String(nameShift));
+        row.append(shift);
+      }
+      for (const letter of letters) {
+        const visible = nameShift && !nameSymbols ? letter.toUpperCase() : letter;
+        const key = button(visible, 'wk-name-key', () => enterNameKey(visible), `${nameSymbols ? 'Символ' : 'Буква'} ${visible}`);
+        key.dataset.nameKey = letter;
+        row.append(key);
+      }
+      if (index === 2) row.append(button('⌫', 'wk-name-key wk-name-modifier', () => enterNameKey('', true), 'Стереть букву'));
+      rows.append(row);
+    });
+    const bottom = element('div', 'wk-name-row wk-name-bottom');
+    bottom.append(button(nameSymbols ? nameLanguage === 'ru' ? 'АБВ' : 'ABC' : '123', 'wk-name-key wk-name-mode', () => { nameSymbols = !nameSymbols; refreshNameKeyboard(); }, nameSymbols ? 'Вернуться к буквам' : 'Цифры и символы'));
+    bottom.append(button(nameLanguage === 'ru' ? 'ABC' : 'АБВ', 'wk-name-key wk-name-mode', () => { nameLanguage = nameLanguage === 'ru' ? 'en' : 'ru'; nameSymbols = false; refreshNameKeyboard(); }, nameLanguage === 'ru' ? 'Английская раскладка' : 'Русская раскладка'));
+    bottom.append(button('пробел', 'wk-name-key wk-name-space', () => enterNameKey(' '), 'Пробел'));
+    const enter = button('Ввод', 'wk-name-key wk-name-enter', () => root.querySelector('.wk-naming>.wk-primary').click(), 'Продолжить с этим названием');
+    enter.disabled = !draftTitle.trim();
+    bottom.append(enter);
+    rows.append(bottom);
+    keyboard.append(bar, rows);
+    return keyboard;
+  }
+
   function naming() {
     const panel = element('form', 'wk-naming');
     panel.append(element('h2', '', 'НАЧАТЬ ТРЕНИРОВКУ'), element('p', '', 'Как назовём? Потом можно изменить'));
@@ -297,9 +396,17 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
     input.type = 'text';
     input.maxLength = 50;
     input.autocomplete = 'off';
+    input.inputMode = 'none';
+    input.spellcheck = false;
     input.placeholder = 'Например, Верх';
     input.setAttribute('aria-label', 'Название тренировки');
     input.value = draftTitle;
+    input.classList.toggle('is-editing', nameKeyboardOpen);
+    const openKeyboard = () => {
+      if (!nameKeyboardOpen) { nameKeyboardOpen = true; refreshNameKeyboard(); }
+    };
+    input.addEventListener('focus', openKeyboard);
+    input.addEventListener('click', openKeyboard);
     panel.append(input);
     if (templatesAvailable) {
       const templates = element('div', 'wk-template-options');
@@ -318,7 +425,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
       onChooseExercises();
     });
     next.disabled = !draftTitle.trim();
-    input.addEventListener('input', () => { draftTitle = input.value; next.disabled = !draftTitle.trim(); });
+    input.addEventListener('input', syncNameInput);
     panel.addEventListener('submit', event => { event.preventDefault(); next.click(); });
     input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); next.click(); } });
     panel.append(next, button('ОТМЕНИТЬ', 'wk-naming-cancel', onBack));
@@ -413,7 +520,10 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
         root.querySelector('.wk-confirm').focus({ preventScroll: true });
       }
     } else if (view === 'naming') {
-      root.append(naming());
+      const content = element('div', 'wk-naming-scroll');
+      content.append(naming());
+      root.append(content);
+      if (nameKeyboardOpen) root.append(nameKeyboard());
     } else if (view === 'preview') {
       nav.append(backButton(), element('strong', 'wk-nav-title', state.title.toUpperCase()), element('span'));
       const content = element('div', 'wk-scroll');

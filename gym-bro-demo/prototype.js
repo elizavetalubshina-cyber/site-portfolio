@@ -1,5 +1,6 @@
 import data from './screens.json';
 import { mountSky } from '../src/sky.js';
+import { createWorkoutDemo } from './workout.js';
 
 mountSky();
 
@@ -33,6 +34,11 @@ let kickSent = false;
 let kickAssetsReady;
 const KICK_AVAILABLE = '80:14956';
 const KICK_SENT = '134:10599';
+const workoutDemo = createWorkoutDemo({
+  onMinimize: () => navigate('80:12868'),
+  onFinish: () => navigate(scenario.key === 'first' ? '80:20785' : '80:20888'),
+  onHome: () => navigate(scenario.key === 'first' ? '80:12357' : '80:12474'),
+});
 const picture = id => {
   const screenId = id === KICK_SENT ? KICK_AVAILABLE : id;
   const filename = screenId === '80:12474' ? '80-12474-clean' : screenId.replace(':', '-');
@@ -85,7 +91,7 @@ function fit() {
   const scale = Math.max(.1, Math.min(1, el.preview.clientWidth / 393, room / 852));
   const previousScale = Number(document.documentElement.style.getPropertyValue('--scale'));
   if (Math.abs(scale - previousScale) > .00001) document.documentElement.style.setProperty('--scale', scale);
-  if (current) el.screen.style.marginBottom = `${current.height * (scale - 1)}px`;
+  if (current) el.screen.style.marginBottom = `${(parseFloat(el.screen.style.height) || current.height) * (scale - 1)}px`;
 }
 
 function openMenu() {
@@ -150,6 +156,9 @@ function resolveDestination(destination) {
 function act(action, { record = true } = {}) {
   if (action.type === 'BACK') return goBack();
   if (action.type !== 'NODE') return;
+  if (current?.id === '80:12868' && action.to === '80:20580' && workoutDemo.inProgress) {
+    return navigate('80:16684', { record }).then(() => workoutDemo.requestFinish());
+  }
   if (current?.id === KICK_AVAILABLE && action.to === KICK_SENT) {
     if (kickSent) return;
     kickSent = true;
@@ -264,7 +273,7 @@ function hintFor(screen) {
   if (screen.id === KICK_SENT) return 'Пинок отправлен. Можно посмотреть прогресс бро или продолжить свою тренировку.';
   if (screen.id === '127:15243') return 'Выбери реакцию. Двойной тап по тренировке сразу ставит сердце.';
   if (screen.name.startsWith('Bro /') && !/Empty|Invite/.test(screen.name)) return 'Двойной тап по тренировке ставит сердце, удержание открывает реакции. По аватару доступны настройки бро.';
-  if (screen.id === '80:17619') return 'Ввод разыгрывается на примере: нажми «Готово» на клавиатуре, чтобы записать подход.';
+  if (screen.name.startsWith('ActiveWorkout /')) return 'Введи вес и повторы. Отметь каждый подход отдельно. Когда все подходы упражнения выполнены, раскроется следующее.';
   if (screen.id === '80:16555') return 'Добавь выбранные упражнения. Удерживай строку жима лёжа, чтобы посмотреть описание.';
   if (screen.name.startsWith('Auth /')) return 'Это пример входа. Почта и код подставляются в макете, отправки писем нет.';
   if (screen.id === '88:9901') return 'Посмотри итог прошлой тренировки, сохрани шаблон или повтори её.';
@@ -295,6 +304,10 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
   if (id === KICK_AVAILABLE && kickSent) id = KICK_SENT;
   const next = screens.get(id);
   if (!next) return;
+  const activeWorkout = next.name.startsWith('ActiveWorkout /');
+  const workoutSummary = workoutDemo.finished && ['80:20785', '80:20888'].includes(id);
+  const workoutLayer = activeWorkout || workoutSummary;
+  if (activeWorkout && workoutDemo.finished && record) workoutDemo.reset();
   clearTimers();
   const token = ++revision;
   if (record && current && current.id !== id) trail.push({ id: current.id, scroll: el.viewport.scrollTop });
@@ -304,31 +317,43 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
   el.screen.dataset.screenName = next.name;
   el.screen.setAttribute('aria-busy', 'true');
   el.hotspots.inert = true;
+  const previousWorkout = el.screen.querySelector('.workout-demo');
+  if (previousWorkout) previousWorkout.inert = true;
   el.loading.hidden = true;
   const loadingTimer = setTimeout(() => {
     if (token === revision) el.loading.hidden = false;
   }, 180);
   try {
     const image = new Image();
-    image.src = picture(id);
+    image.src = picture(workoutLayer ? '80:16684' : id);
     await image.decode();
     if (id === KICK_SENT) await prepareKickAssets();
     if (token !== revision) return;
+    workoutDemo.unmount();
     el.hotspots.replaceChildren();
-    el.screen.querySelectorAll('.reaction-badge, .kick-feedback').forEach(item => item.remove());
+    el.screen.querySelectorAll('.reaction-badge, .kick-feedback, .workout-progress').forEach(item => item.remove());
     el['screen-image'].src = image.src;
-    el['screen-image'].height = next.height;
+    const renderedHeight = workoutLayer ? 852 : next.height;
+    el['screen-image'].height = renderedHeight;
     el['screen-image'].alt = `Gym Bro: ${scenarios.find(item => item.key === scenario.key).label}`;
-    el.screen.style.height = `${next.height}px`;
+    el.screen.style.height = `${renderedHeight}px`;
     // Transform changes visual size; margin also updates the scroll extent.
     const scale = Number(getComputedStyle(document.documentElement).getPropertyValue('--scale'));
-    el.screen.style.marginBottom = `${next.height * (scale - 1)}px`;
+    el.screen.style.marginBottom = `${renderedHeight * (scale - 1)}px`;
     el.viewport.scrollTop = scroll;
-    next.hotspots.forEach((hotspot, index) => {
+    if (!workoutLayer) next.hotspots.forEach((hotspot, index) => {
       const timed = hotspot.events.filter(event => event.trigger === 'AFTER_TIMEOUT');
       timed.forEach(event => timers.push(setTimeout(() => act(event.action, { record: false }), event.delay * 1000)));
       if (hotspot.events.some(event => event.trigger !== 'AFTER_TIMEOUT')) el.hotspots.append(makeHotspot(hotspot, index));
     });
+    if (workoutLayer) workoutDemo.mount(el.screen, workoutSummary ? 'summary' : 'active');
+    if (id === '80:12868' && workoutDemo.inProgress) {
+      const progress = document.createElement('div');
+      progress.className = 'workout-progress';
+      progress.textContent = workoutDemo.progressText;
+      el.screen.append(progress);
+      el.hotspots.querySelector('[data-hotspot="143:18368"]')?.setAttribute('aria-label', `Идёт сейчас Фулл бади. ${workoutDemo.progressText}. Продолжить тренировку`);
+    }
     if (id === KICK_SENT) renderKickFeedback(animateKick);
     if (id === KICK_AVAILABLE) prepareKickAssets();
     if (next.name.startsWith('Bro /') && !/Empty|Invite|ReactionPicker|History/.test(next.name)) {
@@ -360,12 +385,15 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
       el.loading.hidden = true;
       el.screen.setAttribute('aria-busy', 'false');
       el.hotspots.inert = false;
+      const layer = el.screen.querySelector('.workout-demo');
+      if (layer) layer.inert = false;
     }
   }
 }
 
 function chooseScenario(next) {
   closeMenu();
+  workoutDemo.reset();
   scenario = next;
   trail = [];
   current = undefined;

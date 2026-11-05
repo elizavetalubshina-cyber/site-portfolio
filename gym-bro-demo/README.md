@@ -15,6 +15,17 @@ the kick. Double tap and long press on Bro workout cards run locally; reactions
 use the original Figma icons. Restart clears the current scenario's state.
 
 The page uses the same night-sky renderer and background as the portfolio.
+Its controls use the portfolio's glass pill buttons and purple accent. The app
+inside the phone keeps its own green design.
+
+On mobile, the phone and controls fill a stable small viewport from the first
+render. The scenario selector opens in a native dialog above the phone; opening,
+closing and selecting a scenario do not resize or scroll the player. On desktop,
+the title, scenario grid and phone occupy fixed areas; only the details below the
+scenario grid scroll if needed. The external back button returns to the previous
+screen, or is explicitly labelled as a return to the case when there is no screen
+history. Internal back arrows without history lead to the demo home screen.
+
 Sending a kick animates the original paw and avatar layers, then leaves the
 disabled sent button. There is no cancellation toast or undo transition.
 Returning to the kick within the scenario preserves its sent state; only
@@ -34,3 +45,10 @@ Validation: `npm run build` includes the existing site page-weight checks. Brows
 checks cover the workout through summary, Bro acceptance, double-tap and held
 reactions, kick animation and sent-state persistence, scenario reset, long-page scrolling, mobile layout and the
 link from the case. Browser-size checks do not establish real-device behavior.
+
+Mobile-player regression checks use 390×844 and 320×568 viewports: the initial
+menu is closed, the document does not scroll, dialog open/close/selection leaves
+the phone bounds unchanged, internal scroll survives the dialog, root and step
+back actions work, and resizing an open mobile menu restores the desktop guide.
+Desktop checks compare title, subtitle, scenario grid and phone bounds across all
+six scenario selections; their positions and sizes remain unchanged.

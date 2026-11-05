@@ -65,8 +65,9 @@ h1 { font-size: 48px; line-height: 1.1; letter-spacing: -.065em; margin: 0 0 16p
 }
 .scenario-detail { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
 .hint { font-size: 13px; line-height: 1.7; margin: 0; color: var(--secondary); }
-.variants { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.variants { display: flex; flex-wrap: wrap; gap: 8px; }
 .variants:empty { display: none; }
+.variants:not(:empty) + .hint { margin-top: 16px; }
 .variant { gap: 8px; min-height: 36px; padding: 7px 8px; font-size: 11px; }
 .demo-note { font-size: 11px; line-height: 1.8; color: var(--muted); margin: 0; }
 .preview { height: 100%; min-height: 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -116,6 +117,7 @@ h1 { font-size: 48px; line-height: 1.1; letter-spacing: -.065em; margin: 0 0 16p
   .scenario-menu .guide { height: auto; overflow: visible; gap: 20px; }
   .scenario-menu .intro { display: none; }
   .scenario-menu .scenario-detail { flex: none; overflow: visible; }
+  .scenario-menu .hint { min-height: 6.8em; }
   .scenario-menu .scenario { min-height: 48px; }
   .scenario-menu .variant { min-height: 44px; }
   .scenario-menu .demo-note { font-size: 11px; line-height: 1.7; }

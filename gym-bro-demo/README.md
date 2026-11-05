@@ -20,6 +20,12 @@ from the empty home (`#workout/first`), creation without a plan or templates
 text, all three template chips open their own previews, and creation from scratch
 uses the original Figma exercise-picker states and their three selected exercises.
 Restart preserves the selected sub-scenario while clearing entered values.
+Naming opens a clickable letter keyboard automatically, using the source
+keyboard's colors, rounded keys and height. Russian/English letters, case,
+numbers, spaces, deletion and caret insertion work; physical typing still works.
+The inline keyboard avoids invoking a second mobile keyboard. The hint appears
+below the variant buttons; mobile hints reserve four lines to keep the workout
+selectors in place across their entry variants.
 
 The page uses the same night-sky renderer and background as the portfolio.
 Action controls use the portfolio's glass pill buttons and purple accent.

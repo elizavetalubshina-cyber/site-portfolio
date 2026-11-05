@@ -16,7 +16,8 @@ const broVariants = [
   ['Пригласить', '80:13982'], ['Принять', '80:14136'], ['Прогресс', '80:14179'],
   ['Сейчас в зале', '80:14503'], ['Пинок', '80:14956'],
 ];
-const el = Object.fromEntries(['screen', 'screen-image', 'hotspots', 'device', 'viewport', 'hint', 'variants', 'scenarios', 'back', 'restart', 'show-hotspots', 'status', 'loading'].map(id => [id, document.getElementById(id)]));
+const el = Object.fromEntries(['screen', 'screen-image', 'hotspots', 'device', 'viewport', 'hint', 'variants', 'scenarios', 'back', 'restart', 'show-hotspots', 'status', 'loading', 'preview', 'player-tools', 'guide', 'guide-slot', 'scenario-menu', 'menu-content', 'menu-toggle', 'menu-close'].map(id => [id, document.getElementById(id)]));
+const mobileLayout = matchMedia('(max-width:760px)');
 let scenario = scenarios.find(item => item.key === location.hash.slice(1)) || scenarios[0];
 let current;
 let trail = [];
@@ -76,26 +77,59 @@ function renderKickFeedback(animate) {
 }
 
 function fit() {
-  const mobile = matchMedia('(max-width:760px)').matches;
-  const expanded = document.body.classList.contains('immersive');
-  const width = document.documentElement.clientWidth;
-  const scale = mobile
-    ? Math.min(1, (width - 24) / 393, expanded ? (innerHeight - 70) / 852 : 1)
-    : Math.max(.35, Math.min(1, (innerHeight - 150) / 852, (innerWidth - 440) / 393));
-  document.documentElement.style.setProperty('--scale', scale);
+  const room = el.preview.clientHeight - el['player-tools'].offsetHeight - 12;
+  const scale = Math.max(.1, Math.min(1, el.preview.clientWidth / 393, room / 852));
+  const previousScale = Number(document.documentElement.style.getPropertyValue('--scale'));
+  if (Math.abs(scale - previousScale) > .00001) document.documentElement.style.setProperty('--scale', scale);
   if (current) el.screen.style.marginBottom = `${current.height * (scale - 1)}px`;
 }
+
+function openMenu() {
+  if (!mobileLayout.matches || el['scenario-menu'].open) return;
+  el['scenario-menu'].showModal();
+  el['menu-toggle'].setAttribute('aria-expanded', 'true');
+  el.scenarios.querySelector('[aria-current="true"]')?.focus({ preventScroll: true });
+}
+
+function closeMenu() {
+  if (!el['scenario-menu'].open) return;
+  el['scenario-menu'].close();
+  el['menu-toggle'].setAttribute('aria-expanded', 'false');
+  if (mobileLayout.matches) el['menu-toggle'].focus({ preventScroll: true });
+}
+
+function syncLayout() {
+  const parent = mobileLayout.matches ? el['menu-content'] : el['guide-slot'];
+  if (el.guide.parentElement !== parent) {
+    closeMenu();
+    parent.append(el.guide);
+  }
+  fit();
+}
+
+function updateBackButton() {
+  const hasPrevious = trail.length > 0;
+  el.back.textContent = hasPrevious ? '← Назад' : '← К кейсу';
+  el.back.setAttribute('aria-label', hasPrevious ? 'Назад' : 'Вернуться к кейсу');
+}
+
+mobileLayout.addEventListener('change', syncLayout);
 addEventListener('resize', fit);
-fit();
+const playerResize = new ResizeObserver(fit);
+playerResize.observe(el.preview);
+playerResize.observe(el['player-tools']);
 
 function clearTimers() {
   timers.forEach(clearTimeout);
   timers = [];
 }
 
-function goBack() {
+function goBack({ leaveAtRoot = false } = {}) {
+  if (el['scenario-menu'].open) return closeMenu();
   const previous = trail.pop();
-  if (previous) navigate(previous.id, { record: false, scroll: previous.scroll });
+  if (previous) return navigate(previous.id, { record: false, scroll: previous.scroll });
+  if (!leaveAtRoot && current?.id !== '80:12474') return navigate('80:12474', { record: false });
+  location.assign('/cases/gym-bro.html');
 }
 
 function resolveDestination(destination) {
@@ -109,7 +143,7 @@ function resolveDestination(destination) {
   return destination;
 }
 
-function act(action) {
+function act(action, { record = true } = {}) {
   if (action.type === 'BACK') return goBack();
   if (action.type !== 'NODE') return;
   if (current?.id === KICK_AVAILABLE && action.to === KICK_SENT) {
@@ -124,7 +158,7 @@ function act(action) {
     reactions = {};
     lastBroScreen = '80:14179';
   }
-  navigate(resolveDestination(action.to));
+  navigate(resolveDestination(action.to), { record });
 }
 
 function cleanLabel(hotspot) {
@@ -230,7 +264,7 @@ function hintFor(screen) {
   if (screen.id === '80:16555') return 'Добавь выбранные упражнения. Удерживай строку жима лёжа, чтобы посмотреть описание.';
   if (screen.name.startsWith('Auth /')) return 'Это пример входа. Почта и код подставляются в макете, отправки писем нет.';
   if (screen.id === '88:9901') return 'Посмотри итог прошлой тренировки, сохрани шаблон или повтори её.';
-  if (screen.height > 852) return 'Экран можно прокручивать внутри телефона. Кнопка «Назад» вернёт на предыдущий шаг.';
+  if (screen.height > 852) return 'Экран можно прокручивать внутри телефона.';
   if (screen.name.startsWith('WorkoutSummary /')) return 'Тренировка записана. Можно сохранить шаблон или вернуться на главную.';
   return scenario.hint;
 }
@@ -246,6 +280,7 @@ function renderVariants() {
     button.setAttribute('aria-pressed', String(id === current.id || id === KICK_AVAILABLE && current.id === KICK_SENT));
     button.addEventListener('click', () => {
       broConnected = !['80:13982', '80:14136'].includes(id);
+      closeMenu();
       navigate(id);
     });
     el.variants.append(button);
@@ -260,17 +295,23 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
   const token = ++revision;
   if (record && current && current.id !== id) trail.push({ id: current.id, scroll: el.viewport.scrollTop });
   current = next;
+  updateBackButton();
   el.screen.dataset.screen = id;
   el.screen.dataset.screenName = next.name;
-  el.hotspots.replaceChildren();
-  el.screen.querySelectorAll('.reaction-badge, .kick-feedback').forEach(item => item.remove());
-  el.loading.hidden = false;
+  el.screen.setAttribute('aria-busy', 'true');
+  el.hotspots.inert = true;
+  el.loading.hidden = true;
+  const loadingTimer = setTimeout(() => {
+    if (token === revision) el.loading.hidden = false;
+  }, 180);
   try {
     const image = new Image();
     image.src = picture(id);
     await image.decode();
     if (id === KICK_SENT) await prepareKickAssets();
     if (token !== revision) return;
+    el.hotspots.replaceChildren();
+    el.screen.querySelectorAll('.reaction-badge, .kick-feedback').forEach(item => item.remove());
     el['screen-image'].src = image.src;
     el['screen-image'].height = next.height;
     el['screen-image'].alt = `Gym Bro: ${scenarios.find(item => item.key === scenario.key).label}`;
@@ -281,7 +322,7 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
     el.viewport.scrollTop = scroll;
     next.hotspots.forEach((hotspot, index) => {
       const timed = hotspot.events.filter(event => event.trigger === 'AFTER_TIMEOUT');
-      timed.forEach(event => timers.push(setTimeout(() => act(event.action), event.delay * 1000)));
+      timed.forEach(event => timers.push(setTimeout(() => act(event.action, { record: false }), event.delay * 1000)));
       if (hotspot.events.some(event => event.trigger !== 'AFTER_TIMEOUT')) el.hotspots.append(makeHotspot(hotspot, index));
     });
     if (id === KICK_SENT) renderKickFeedback(animateKick);
@@ -300,7 +341,7 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
       });
     }
     el.hint.textContent = hintFor(next);
-    el.back.disabled = trail.length === 0;
+    updateBackButton();
     el.status.textContent = `Сценарий «${scenario.label}». ${el.hint.textContent}`;
     renderVariants();
     // Fetch only likely next steps, never the whole collection of screens.
@@ -310,11 +351,17 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
     if (token !== revision) return;
     el.hint.textContent = 'Не удалось загрузить экран. Попробуй выбрать сценарий ещё раз.';
   } finally {
-    if (token === revision) el.loading.hidden = true;
+    clearTimeout(loadingTimer);
+    if (token === revision) {
+      el.loading.hidden = true;
+      el.screen.setAttribute('aria-busy', 'false');
+      el.hotspots.inert = false;
+    }
   }
 }
 
 function chooseScenario(next) {
+  closeMenu();
   scenario = next;
   trail = [];
   current = undefined;
@@ -341,14 +388,19 @@ for (const [index, item] of scenarios.entries()) {
   button.addEventListener('click', () => chooseScenario(item));
   el.scenarios.append(button);
 }
-el.back.addEventListener('click', goBack);
+el.back.addEventListener('click', () => goBack({ leaveAtRoot: true }));
 el.restart.addEventListener('click', () => chooseScenario(scenario));
-document.querySelectorAll('[data-expand]').forEach(button => button.addEventListener('click', () => {
-  const expanded = document.body.classList.toggle('immersive');
-  document.querySelector('.show-menu').hidden = !expanded;
-  fit();
-  window.scrollTo({ top: 0, behavior: 'auto' });
-}));
+el['menu-toggle'].addEventListener('click', openMenu);
+el['menu-close'].addEventListener('click', closeMenu);
+el['scenario-menu'].addEventListener('cancel', event => {
+  event.preventDefault();
+  closeMenu();
+});
+el['scenario-menu'].addEventListener('click', event => {
+  if (event.target !== el['scenario-menu']) return;
+  const box = el['scenario-menu'].getBoundingClientRect();
+  if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closeMenu();
+});
 el['show-hotspots'].addEventListener('click', () => {
   showHotspots = !showHotspots;
   el.device.classList.toggle('show-hotspots', showHotspots);
@@ -360,6 +412,9 @@ el.screen.addEventListener('click', event => {
   el.device.classList.add('flash-hotspots');
   flashTimer = setTimeout(() => el.device.classList.remove('flash-hotspots'), 1100);
 });
-addEventListener('keydown', event => { if (event.key === 'Escape') goBack(); });
+addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !el['scenario-menu'].open && trail.length) goBack();
+});
 addEventListener('hashchange', () => { const next = scenarios.find(item => item.key === location.hash.slice(1)); if (next) chooseScenario(next); });
+syncLayout();
 chooseScenario(scenario);

@@ -1,4 +1,4 @@
-import { createWorkoutState, ready, done, updateValue, toggleSet, markAll, addSet, addExercise, workoutSummary, EXTRA_EXERCISES } from './workout-state.js';
+import { createWorkoutState, ready, done, updateValue, toggleSet, markAll, addSet, addExercise, workoutSummary, ALL_EXERCISES, WORKOUT_TEMPLATES, describeSets, workoutRecords } from './workout-state.js';
 import './workout.css';
 
 const element = (tag, className, text) => {
@@ -16,24 +16,27 @@ const button = (text, className, onClick, label) => {
   node.addEventListener('click', onClick);
   return node;
 };
-function tick() {
+function tick(badge = false) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 20 16');
+  svg.setAttribute('viewBox', badge ? '-1 -1 14 10' : '0 0 20 16');
   svg.setAttribute('aria-hidden', 'true');
   const path = document.createElementNS(svg.namespaceURI, 'path');
-  path.setAttribute('d', 'M2 8l5 5L18 2');
+  path.setAttribute('d', badge ? 'M0 4L4.285714 8L12 0' : 'M2 8l5 5L18 2');
   svg.append(path);
   return svg;
 }
 
-export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
+export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStart, onPreview, onName, onChooseExercises, onExerciseInfo, onBind }) {
   let state = createWorkoutState();
+  let sessionOptions = {};
   let root;
   let selection = null;
   let view = 'active';
   let warning = false;
   let catalogChoice = null;
-  let scrollPositions = { active: 0, catalog: 0, summary: 0 };
+  let templatesAvailable = false;
+  let draftTitle = '';
+  let scrollPositions = { active: 0, catalog: 0, summary: 0, preview: 0, naming: 0 };
 
   function unmount() {
     if (root) scrollPositions[view] = root.querySelector('.wk-scroll')?.scrollTop || 0;
@@ -43,11 +46,13 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
     window.removeEventListener('keydown', keydown, true);
   }
 
-  function mount(parent, nextView = 'active') {
+  function mount(parent, nextView = 'active', options = {}) {
     unmount();
     view = nextView;
+    templatesAvailable = Boolean(options.templates);
     if (view === 'active') {
       state.finished = false;
+      state.finishedAt = null;
       if (!state.startedAt) state.startedAt = Date.now();
     }
     root = element('div', 'workout-demo');
@@ -172,7 +177,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
     const title = button('', 'wk-exercise-heading', () => openExercise(exerciseIndex), `${exercise.name}, ${expanded ? 'свернуть' : 'раскрыть'}`);
     title.setAttribute('aria-expanded', String(expanded));
     const badge = element('span', `wk-badge${done(exercise) ? ' is-complete' : ''}`, done(exercise) ? '' : String(exerciseIndex + 1));
-    if (done(exercise)) badge.append(tick());
+    if (done(exercise)) badge.append(tick(true));
     const text = element('span', 'wk-exercise-copy');
     text.append(element('strong', '', exercise.name.toUpperCase()), element('small', '', `${exercise.group.toUpperCase()}, ${done(exercise) ? `ГОТОВО, ${completed} ${plural(completed, ['ПОДХОД', 'ПОДХОДА', 'ПОДХОДОВ'])}` : completed ? `${completed} ИЗ ${exercise.sets.length} ПОДХОДОВ` : expanded ? 'ТЕКУЩЕЕ' : 'НЕ НАЧАТО'}`));
     title.append(badge, text, element('span', 'wk-chevron'));
@@ -226,6 +231,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
     const summary = workoutSummary(state);
     if (!summary.completed || summary.completed < summary.total) { warning = true; render(); return; }
     state.finished = true;
+    state.finishedAt = Date.now();
     onFinish();
   }
 
@@ -238,7 +244,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
     panel.setAttribute('aria-label', summary.completed ? 'Завершить тренировку?' : 'Ни один подход не отмечен');
     panel.append(element('h2', '', summary.completed ? 'ЗАВЕРШИТЬ ТРЕНИРОВКУ?' : 'НИ ОДИН ПОДХОД НЕ ОТМЕЧЕН'));
     panel.append(element('p', '', summary.completed ? `Отмечено ${summary.completed} из ${summary.total} подходов. Неотмеченные не попадут в итог.` : 'Отметь хотя бы один подход, чтобы сохранить тренировку.'));
-    if (summary.completed) panel.append(button('ЗАВЕРШИТЬ', 'wk-primary', () => { warning = false; state.finished = true; onFinish(); }));
+    if (summary.completed) panel.append(button('ЗАВЕРШИТЬ', 'wk-primary', () => { warning = false; state.finished = true; state.finishedAt = Date.now(); onFinish(); }));
     panel.append(button('ПРОДОЛЖИТЬ ТРЕНИРОВКУ', 'wk-secondary', () => { warning = false; render(); }));
     overlay.append(panel);
     return overlay;
@@ -247,40 +253,134 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
   function catalog() {
     const content = element('div', 'wk-scroll wk-catalog');
     content.append(element('p', 'wk-section-label', 'ВЫБЕРИ УПРАЖНЕНИЕ'));
-    for (const exercise of EXTRA_EXERCISES) {
+    for (const exercise of ALL_EXERCISES) {
       const exists = state.exercises.some(item => item.key === exercise.key);
-      const row = button('', `wk-catalog-row${catalogChoice === exercise.key ? ' is-selected' : ''}`, () => { catalogChoice = exercise.key; render(); }, exercise.name);
+      const selected = catalogChoice === exercise.key;
+      const row = button('', `wk-catalog-row${selected ? ' is-selected' : ''}`, () => {
+        catalogChoice = exercise.key;
+        render();
+      }, exercise.name);
+      row.setAttribute('aria-pressed', String(selected));
       const text = element('span', 'wk-exercise-copy');
       text.append(element('strong', '', exercise.name.toUpperCase()), element('small', '', exists ? 'УЖЕ ДОБАВЛЕНО' : exercise.group.toUpperCase()));
-      row.append(text, element('span', 'wk-catalog-mark', catalogChoice === exercise.key ? '✓' : '+'));
+      row.append(text, element('span', 'wk-catalog-mark', selected ? '✓' : '+'));
       row.disabled = exists;
       content.append(row);
     }
     return content;
   }
 
-  function summaryContent() {
-    const summary = workoutSummary(state);
-    const content = element('div', 'wk-scroll wk-summary');
-    content.append(element('h2', '', 'ТРЕНИРОВКА ЗАПИСАНА'));
-    const minutes = Math.floor((Date.now() - state.startedAt) / 60000);
-    content.append(element('p', 'wk-summary-meta', `${minutes ? `${minutes} МИН` : 'МЕНЕЕ МИНУТЫ'} · ${summary.completed} ${plural(summary.completed, ['ПОДХОД', 'ПОДХОДА', 'ПОДХОДОВ'])} · ${summary.exercises} ${plural(summary.exercises, ['УПРАЖНЕНИЕ', 'УПРАЖНЕНИЯ', 'УПРАЖНЕНИЙ'])}`));
-    content.append(element('p', 'wk-section-label', 'ПОДХОДЫ ПО ГРУППАМ'));
-    for (const [group, count] of Object.entries(summary.groups)) {
-      const row = element('div', 'wk-summary-group');
-      row.append(element('span', '', group.toUpperCase()), element('strong', '', String(count)));
-      content.append(row);
+  function reset(options) {
+    unmount();
+    if (options) sessionOptions = options;
+    state = createWorkoutState(sessionOptions);
+    scrollPositions = { active: 0, catalog: 0, summary: 0, preview: 0, naming: 0 };
+    warning = false;
+    draftTitle = '';
+  }
+
+  function prepare(options) {
+    reset({ firstWorkout: state.firstWorkout, goals: state.goals, ...options });
+    draftTitle = options.title || '';
+  }
+
+  function backButton() {
+    const back = button('', 'wk-nav-action wk-back', onBack, 'Назад');
+    back.append(element('span', 'wk-back-icon'));
+    return back;
+  }
+
+  function naming() {
+    const panel = element('form', 'wk-naming');
+    panel.append(element('h2', '', 'НАЧАТЬ ТРЕНИРОВКУ'), element('p', '', 'Как назовём? Потом можно изменить'));
+    const input = element('input', 'wk-name-input');
+    input.type = 'text';
+    input.maxLength = 50;
+    input.autocomplete = 'off';
+    input.placeholder = 'Например, Верх';
+    input.setAttribute('aria-label', 'Название тренировки');
+    input.value = draftTitle;
+    panel.append(input);
+    if (templatesAvailable) {
+      const templates = element('div', 'wk-template-options');
+      templates.append(element('p', '', 'Или возьми шаблон'));
+      const chips = element('div', 'wk-template-chips');
+      for (const template of WORKOUT_TEMPLATES) chips.append(button(template.title.toUpperCase(), 'wk-template-chip', () => {
+        prepare({ templateKey: template.key });
+        onPreview();
+      }));
+      templates.append(chips);
+      panel.append(templates);
     }
-    content.append(element('p', 'wk-section-label', 'ТВОИ ПОДХОДЫ'));
+    const next = button('ПРОДОЛЖИТЬ', 'wk-primary', () => {
+      if (!draftTitle.trim()) return;
+      prepare({ templateKey: null, title: draftTitle.trim() });
+      onChooseExercises();
+    });
+    next.disabled = !draftTitle.trim();
+    input.addEventListener('input', () => { draftTitle = input.value; next.disabled = !draftTitle.trim(); });
+    panel.addEventListener('submit', event => { event.preventDefault(); next.click(); });
+    input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); next.click(); } });
+    panel.append(next, button('ОТМЕНИТЬ', 'wk-naming-cancel', onBack));
+    return panel;
+  }
+
+  function summaryHead() {
+    const summary = workoutSummary(state);
+    const head = element('div', 'wk-summary-head');
+    const title = element('div', 'wk-summary-title');
+    title.append(element('h2', '', state.title.toUpperCase()), element('span', '', 'СЕГОДНЯ, 22 ИЮЛЯ'));
+    const tiles = element('div', 'wk-summary-tiles');
+    const minutes = Math.max(1, Math.round(((state.finishedAt || Date.now()) - state.startedAt) / 60000));
+    for (const [label, value] of [['ВРЕМЯ', `${minutes} мин`], ['УПРАЖНЕНИЯ', summary.exercises], ['ПОДХОДЫ', summary.completed]]) {
+      const tile = element('div', 'wk-summary-tile');
+      tile.append(element('span', '', label), element('strong', '', String(value)));
+      tiles.append(tile);
+    }
+    head.append(title, tiles);
+    const records = workoutRecords(state);
+    if (records.length) {
+      const section = element('section', 'wk-summary-section');
+      section.append(element('h3', 'wk-section-label', 'НОВЫЕ РЕКОРДЫ'));
+      for (const record of records) {
+        const card = element('div', 'wk-summary-record');
+        const copy = element('div', 'wk-exercise-copy');
+        copy.append(element('strong', '', record.name.toUpperCase()), element('small', '', `БЫЛО ${format(record.previous.weight)} × ${record.previous.reps}`));
+        card.append(copy, element('strong', 'wk-record-value', `${format(record.current.weight)} кг × ${record.current.reps}`));
+        section.append(card);
+      }
+      head.append(section);
+    }
+    if (state.goals && !state.firstWorkout) {
+      const section = element('section', 'wk-summary-section');
+      section.append(element('h3', 'wk-section-label', 'ЦЕЛЬ НЕДЕЛИ ПО ПОДХОДАМ'));
+      const chips = element('div', 'wk-goal-chips');
+      for (const [group, count] of Object.entries(summary.groups)) {
+        const previous = { 'Грудь': 6, 'Спина': 3, 'Ноги': 0 }[group];
+        if (previous === undefined) continue;
+        chips.append(element('span', '', `${group.toUpperCase()} ${previous + count}/${group === 'Ноги' ? 10 : 12}`));
+      }
+      section.append(chips);
+      head.append(section);
+    }
+    return head;
+  }
+
+  function summaryContent() {
+    const content = element('div', 'wk-scroll wk-summary-list');
     for (const exercise of state.exercises) {
       const recorded = exercise.sets.filter(set => set.completed);
       if (!recorded.length) continue;
       const card = element('div', 'wk-summary-exercise');
       card.append(element('strong', '', exercise.name.toUpperCase()));
-      for (const [index, set] of exercise.sets.entries()) if (set.completed) card.append(element('p', '', `${index + 1}. ${format(set.weight)} кг × ${set.reps} раз`));
+      card.append(element('p', '', describeSets(exercise.sets).toUpperCase()));
       content.append(card);
     }
-    if (state.templateSaved) content.append(element('p', 'wk-saved', 'Сохранено как шаблон'));
+    if (state.firstWorkout) {
+      const bind = element('div', 'wk-summary-bind');
+      bind.append(element('span', '', 'Первая тренировка записана. Привяжи почту, чтобы история не потерялась.'), button('ПРИВЯЗАТЬ', 'wk-text-button', onBind));
+      content.append(bind);
+    }
     return content;
   }
 
@@ -297,7 +397,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
     root.replaceChildren();
     const nav = element('div', 'wk-topbar');
     if (view === 'active') {
-      nav.append(button('Свернуть', 'wk-nav-action', () => { selection = null; onMinimize(); }), element('strong', 'wk-nav-title', 'ФУЛЛ БАДИ'), button('+ Упражнение', 'wk-nav-action', () => { selection = null; view = 'catalog'; catalogChoice = null; render(); }));
+      nav.append(button('Свернуть', 'wk-nav-action', () => { selection = null; onMinimize(); }), element('strong', 'wk-nav-title', state.title.toUpperCase()), button('+ Упражнение', 'wk-nav-action', () => { selection = null; view = 'catalog'; catalogChoice = null; render(); }));
       const content = element('div', `wk-scroll${selection ? ' with-keyboard' : ''}`);
       state.exercises.forEach((exercise, index) => content.append(exerciseCard(exercise, index)));
       root.append(nav, content);
@@ -312,18 +412,37 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
         root.append(confirmation());
         root.querySelector('.wk-confirm').focus({ preventScroll: true });
       }
+    } else if (view === 'naming') {
+      root.append(naming());
+    } else if (view === 'preview') {
+      nav.append(backButton(), element('strong', 'wk-nav-title', state.title.toUpperCase()), element('span'));
+      const content = element('div', 'wk-scroll');
+      state.exercises.forEach((exercise, index) => {
+        const card = element('article', 'wk-exercise');
+        const title = button('', 'wk-exercise-heading', onExerciseInfo, `Описание: ${exercise.name}`);
+        const copy = element('span', 'wk-exercise-copy');
+        copy.append(element('strong', '', exercise.name.toUpperCase()), element('small', '', `${exercise.group.toUpperCase()}, НЕ НАЧАТО`));
+        title.append(element('span', 'wk-badge', String(index + 1)), copy, element('span', 'wk-chevron'));
+        card.append(title);
+        content.append(card);
+      });
+      const footer = element('div', 'wk-footer wk-preview-footer');
+      footer.append(button('НАЧАТЬ ТРЕНИРОВКУ', 'wk-primary', onStart), button('ДРУГАЯ ТРЕНИРОВКА', 'wk-secondary', onName));
+      root.append(nav, content, footer);
     } else if (view === 'catalog') {
       nav.append(button('Назад', 'wk-nav-action', () => { view = 'active'; render(); }), element('strong', 'wk-nav-title', 'УПРАЖНЕНИЯ'), element('span'));
       const footer = element('div', 'wk-footer');
-      const add = button('ДОБАВИТЬ В ТРЕНИРОВКУ', 'wk-primary', () => { if (addExercise(state, catalogChoice)) { view = 'active'; openField(firstEmpty(state.expanded)); } });
+      const add = button('ДОБАВИТЬ В ТРЕНИРОВКУ', 'wk-primary', () => {
+        if (addExercise(state, catalogChoice)) { view = 'active'; openField(firstEmpty(state.expanded)); }
+      });
       add.disabled = !catalogChoice;
       footer.append(add);
       root.append(nav, catalog(), footer);
     } else {
-      nav.append(element('span'), element('strong', 'wk-nav-title', 'ФУЛЛ БАДИ'), button(state.templateSaved ? '− Шаблон' : '+ Шаблон', 'wk-nav-action', () => { state.templateSaved = !state.templateSaved; render(); }));
+      nav.append(backButton(), element('strong', 'wk-nav-title', 'ИТОГ'), button(state.templateSaved ? '− Шаблон' : '+ Шаблон', 'wk-nav-action', () => { state.templateSaved = !state.templateSaved; render(); }));
       const footer = element('div', 'wk-footer');
       footer.append(button('НА ГЛАВНУЮ', 'wk-primary', onHome));
-      root.append(nav, summaryContent(), footer);
+      root.append(nav, summaryHead(), element('h3', 'wk-section-label wk-summary-composition-label', 'СОСТАВ'), summaryContent(), footer);
     }
     const scroller = root.querySelector('.wk-scroll');
     if (scroller) scroller.scrollTop = scroll;
@@ -333,7 +452,18 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome }) {
   return {
     mount, unmount,
     requestFinish: finish,
-    reset() { unmount(); state = createWorkoutState(); scrollPositions = { active: 0, catalog: 0, summary: 0 }; warning = false; },
+    acceptPickerSelection() {
+      for (const key of ['bench', 'pull', 'squat']) addExercise(state, key);
+      state.expanded = null;
+    },
+    reset,
+    get firstWorkout() { return state.firstWorkout; },
+    get title() { return state.title; },
+    get recentSubtitle() {
+      const count = workoutSummary(state).completed;
+      const minutes = Math.max(1, Math.round(((state.finishedAt || Date.now()) - state.startedAt) / 60000));
+      return `22 ИЮЛЯ, ${minutes} МИН, ${count} ${plural(count, ['ПОДХОД', 'ПОДХОДА', 'ПОДХОДОВ'])}`;
+    },
     get inProgress() { return state.startedAt !== null && !state.finished; },
     get progressText() {
       const summary = workoutSummary(state);

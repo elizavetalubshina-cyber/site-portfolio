@@ -14,6 +14,13 @@ launch flows. Bro has direct entries for invitations, progress, live status and
 the kick. Double tap and long press on Bro workout cards run locally; reactions
 use the original Figma icons. Restart clears the current scenario's state.
 
+Workout has four persistent sub-scenarios: planned (`#workout`), first workout
+from the empty home (`#workout/first`), creation without a plan or templates
+(`#workout/free`), and existing templates (`#workout/templates`). Naming accepts
+text, all three template chips open their own previews, and creation from scratch
+uses the original Figma exercise-picker states and their three selected exercises.
+Restart preserves the selected sub-scenario while clearing entered values.
+
 The page uses the same night-sky renderer and background as the portfolio.
 Action controls use the portfolio's glass pill buttons and purple accent.
 Scenario and variant choices use the same glass pills, with hollow/filled circle
@@ -43,6 +50,12 @@ sets without marking them done or replacing manual overrides. Only completing
 every set in an exercise unfolds the next incomplete exercise. Adding a set,
 marking all filled sets, adding an example exercise, minimizing/resuming, and
 finishing with a summary of the actual checked sets also work locally.
+The completed-exercise badge follows Figma's filled `#2a2f24` circle and original
+12×8 check path. The summary retains the source layout: “Итог”, title/date, three
+metric tiles, conditional record and weekly-goal sections, and filled composition
+cards using the app's aggregate set descriptions. The first-workout variant has
+the source email-binding card. Example history/goal baselines come from the Figma
+summary; record cards require actual checked values above those baselines.
 
 Names, search, dates, account and sharing flows remain prepared examples. The
 demo does not send messages, authenticate, install an app, write to the real

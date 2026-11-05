@@ -20,14 +20,14 @@
 .wk-topbar { display:grid;grid-template-columns:104px minmax(0,1fr) 104px;align-items:center;height:44px;min-height:44px;margin:0 15px; }
 .wk-nav-action { border:0;background:transparent;color:var(--wk-accent);font-size:17px;line-height:22px;height:44px;padding:0;text-align:left;white-space:nowrap; }
 .wk-nav-action:last-child { text-align:right; }
-.wk-nav-title { text-align:center;font-size:17px;line-height:22px;letter-spacing:.02em;font-weight:600;white-space:nowrap; }
+.wk-nav-title { text-align:center;font-size:17px;line-height:22px;letter-spacing:.02em;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .wk-scroll { flex:1;min-height:0;margin-top:16px;padding:0 15px 16px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none; }
 .wk-scroll::-webkit-scrollbar { display:none; }
 .wk-exercise { border:1px solid var(--wk-border);border-radius:12px;margin:0 0 6px;overflow:hidden; }
 .wk-exercise-heading { display:flex;align-items:center;gap:16px;width:100%;height:64px;padding:11px 15px;border:0;background:transparent;color:var(--wk-text);text-align:left; }
 .wk-badge { flex:0 0 32px;width:32px;height:32px;border:1px solid var(--wk-border);border-radius:50%;display:grid;place-items:center;color:var(--wk-muted);font-size:13px;line-height:18px; }
-.wk-badge.is-complete { border-color:var(--wk-accent);color:var(--wk-accent); }
-.wk-badge svg { width:17px;height:14px;fill:none;stroke:currentColor;stroke-width:2; }
+.wk-badge.is-complete { border:0;background:#2a2f24;color:var(--wk-accent); }
+.wk-badge svg { width:14px;height:10px;fill:none;stroke:currentColor;stroke-width:2; }
 .wk-exercise-copy { flex:1;min-width:0;display:flex;flex-direction:column;gap:4px; }
 .wk-exercise-copy strong { font-size:15px;line-height:20px;font-weight:600;letter-spacing:.02em; }
 .wk-exercise-copy small { font-size:13px;line-height:18px;font-weight:400;letter-spacing:.06em;color:var(--wk-muted); }
@@ -71,13 +71,46 @@
 .wk-catalog-row.is-selected { border-color:var(--wk-accent); }
 .wk-catalog-row:disabled { opacity:.45; }
 .wk-catalog-mark { color:var(--wk-accent);font-size:22px; }
-.wk-summary h2 { font-family:GymHandjet,Arial,sans-serif;font-size:26px;line-height:28px;letter-spacing:.1em;font-weight:500;margin:0 0 12px; }
-.wk-summary-meta { margin:0 0 24px;font-size:13px;line-height:18px;letter-spacing:.06em;color:var(--wk-muted); }
-.wk-summary-group { display:flex;justify-content:space-between;gap:16px;padding:12px 16px;background:#1f231b;border-radius:12px;font-size:15px;line-height:20px;margin-bottom:6px; }
-.wk-summary .wk-section-label:not(:first-child) { margin-top:24px; }
-.wk-summary-exercise { border:1px solid var(--wk-border);padding:16px;border-radius:12px;margin-bottom:6px; }
-.wk-summary-exercise strong { font-size:15px;line-height:20px;font-weight:600;letter-spacing:.02em; }
-.wk-summary-exercise p { margin:6px 0 0;font-family:GymMono,monospace;font-size:13px;line-height:20px; }
-.wk-saved { color:var(--wk-accent);font-size:15px; }
+.wk-back { display:flex;align-items:center; }
+.wk-back-icon { display:block;width:13px;height:13px;border-left:2px solid var(--wk-accent);border-bottom:2px solid var(--wk-accent);transform:rotate(45deg);margin-left:4px; }
+.wk-preview-footer { flex-basis:142px;display:flex;flex-direction:column;gap:16px; }
+.wk-summary-head { flex-shrink:0;max-height:392px;overflow-y:auto;scrollbar-width:none;margin-top:16px;padding:0 15px;display:flex;flex-direction:column;gap:20px; }
+.wk-summary-head>* { flex-shrink:0; }
+.wk-summary-title { display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-height:26px; }
+.wk-summary-title h2 { min-width:0;font-size:20px;line-height:26px;font-weight:700;letter-spacing:.02em;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.wk-summary-title>span { flex-shrink:0;font-size:13px;line-height:18px;color:var(--wk-muted);letter-spacing:.06em; }
+.wk-summary-tiles { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px; }
+.wk-summary-tile { display:flex;flex-direction:column;gap:4px;padding:12px 16px;background:#1f231b;border-radius:12px; }
+.wk-summary-tile>span { font-size:13px;line-height:18px;letter-spacing:.06em;color:var(--wk-dim); }
+.wk-summary-tile>strong,.wk-record-value { font-family:GymMono,monospace;font-size:20px;line-height:24px;font-weight:700;white-space:nowrap; }
+.wk-summary-section { display:flex;flex-direction:column;gap:6px; }
+.wk-summary-head .wk-section-label { margin:0; }
+.wk-summary-composition-label { flex:0 0 18px;margin:20px 15px 0; }
+.wk-summary-record { display:flex;align-items:center;gap:12px;padding:12px 16px;background:#2a2f24;border:1px solid var(--wk-accent);border-radius:12px; }
+.wk-goal-chips { display:flex;flex-wrap:wrap;gap:8px; }
+.wk-goal-chips>span { display:flex;align-items:center;min-height:44px;padding:0 16px;background:#1f231b;border-radius:999px;font-size:13px;line-height:18px;letter-spacing:.06em; }
+.wk-summary-list { margin-top:6px; }
+.wk-summary-exercise { padding:12px 16px;background:#1f231b;border-radius:12px;margin-bottom:4px; }
+.wk-summary-exercise strong { display:block;font-size:15px;line-height:20px;font-weight:600;letter-spacing:.02em; }
+.wk-summary-exercise p { margin:4px 0 0;font-size:13px;line-height:18px;letter-spacing:.06em;color:var(--wk-muted); }
+.wk-summary-bind { display:flex;align-items:center;gap:12px;margin-top:20px;padding:12px;background:#1f231b;border:1px solid var(--wk-border);border-radius:12px; }
+.wk-summary-bind>span { flex:1;font-size:13px;line-height:18px;letter-spacing:.06em; }
+.wk-summary-bind button { flex-shrink:0; }
+.wk-naming { margin:0 15px;padding:19px;border:1px solid var(--wk-border);border-radius:16px; }
+.wk-naming h2 { margin:0 0 12px;font-size:20px;line-height:26px;letter-spacing:.02em; }
+.wk-naming p { margin:0 0 12px;font-size:13px;line-height:18px;letter-spacing:.06em;color:var(--wk-muted); }
+.wk-name-input { width:100%;height:56px;padding:12px;border:1px solid var(--wk-border);border-radius:12px;background:transparent;color:var(--wk-text);font:400 17px/24px GymRoboto,'Arial Narrow',sans-serif; }
+.wk-name-input::placeholder { color:var(--wk-dim); }
+.wk-name-input:focus { border:2px solid var(--wk-accent);outline:none;padding:11px; }
+.wk-template-options { margin-top:20px; }
+.wk-template-options p { margin-bottom:6px; }
+.wk-template-chips { display:flex;gap:8px; }
+.wk-template-chip { height:44px;padding:0 20px;border:1px solid var(--wk-border);border-radius:999px;background:transparent;color:var(--wk-text);font-size:13px;line-height:18px;letter-spacing:.06em; }
+.wk-naming>.wk-primary { margin-top:20px; }
+.wk-naming-cancel { margin-top:6px;width:100%;height:44px;border:0;background:transparent;color:var(--wk-accent);font-size:15px;line-height:20px;font-weight:600;letter-spacing:.02em; }
+.workout-picker-title { position:absolute;left:120px;top:61px;width:153px;height:44px;display:flex;align-items:center;justify-content:center;background:#0b0c0a;color:#eceee3;font:600 17px/22px GymRoboto,'Arial Narrow',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none; }
+.workout-progress-title { position:absolute;left:32px;top:315px;width:329px;height:28px;background:#1f231b;color:#eceee3;font:700 20px/26px GymRoboto,'Arial Narrow',sans-serif;letter-spacing:.02em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;pointer-events:none; }
+.workout-recent-label { position:absolute;height:20px;background:#1f231b;color:#eceee3;font:600 15px/20px GymRoboto,'Arial Narrow',sans-serif;letter-spacing:.02em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;pointer-events:none; }
+.workout-recent-label.is-subtitle { height:18px;color:#9aa089;font-weight:400;font-size:13px;line-height:18px;letter-spacing:.06em; }
 .workout-progress { position:absolute;left:32px;top:347px;width:329px;height:32px;display:flex;align-items:center;background:#1f231b;color:#9aa089;font-family:GymRoboto,'Arial Narrow',sans-serif;font-size:17px;line-height:24px;pointer-events:none; }
 .show-hotspots .workout-demo button:not(:disabled),.flash-hotspots .workout-demo button:not(:disabled) { outline:1.5px dashed #d4ef3d95;outline-offset:-2px; }

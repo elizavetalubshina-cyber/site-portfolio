@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createWorkoutState, updateValue, toggleSet, addSet, addExercise, markAll, workoutSummary } from './workout-state.js';
+import { createWorkoutState, updateValue, toggleSet, addSet, addExercise, markAll, workoutSummary, describeSets, workoutRecords } from './workout-state.js';
 
 test('entering values suggests later sets without recording any set', () => {
   const state = createWorkoutState();
@@ -66,4 +66,37 @@ test('new exercise and new sessions have independent unchecked rows', () => {
   updateValue(state, 3, 0, 'weight', 12);
   assert.equal(createWorkoutState().exercises.length, 3);
   assert.equal(createWorkoutState().exercises[0].sets[0].weight, null);
+});
+
+test('a first custom workout starts empty; template selection has its own exercises', () => {
+  const first = createWorkoutState({ templateKey: null, title: 'Первая', firstWorkout: true, goals: false });
+  assert.equal(first.title, 'Первая');
+  assert.equal(first.exercises.length, 0);
+  assert.equal(addExercise(first, 'bench'), true);
+  assert.equal(addExercise(first, 'bench'), false);
+  assert.deepEqual(createWorkoutState({ templateKey: 'lower' }).exercises.map(item => item.group), ['Ноги', 'Ноги']);
+  assert.ok(createWorkoutState({ templateKey: 'upper' }).exercises.every(item => item.group !== 'Ноги'));
+  assert.equal(createWorkoutState().exercises[0].sets[0].weight, null);
+});
+
+test('composition summaries retain the app format and omit unrecorded sets', () => {
+  const state = createWorkoutState();
+  updateValue(state, 0, 0, 'weight', 20);
+  updateValue(state, 0, 0, 'reps', 10);
+  toggleSet(state, 0, 0);
+  assert.equal(describeSets(state.exercises[0].sets), '20 кг × 10, 1 подход');
+  updateValue(state, 0, 1, 'weight', 22.5);
+  toggleSet(state, 0, 1);
+  assert.equal(describeSets(state.exercises[0].sets), '20–22,5 кг, 2 подхода');
+});
+
+test('record cards appear only when a checked set exceeds the demo history', () => {
+  const state = createWorkoutState();
+  updateValue(state, 0, 0, 'weight', 60);
+  updateValue(state, 0, 0, 'reps', 8);
+  assert.equal(workoutRecords(state).length, 0);
+  toggleSet(state, 0, 0);
+  assert.equal(workoutRecords(state)[0].previous.weight, 57.5);
+  state.firstWorkout = true;
+  assert.equal(workoutRecords(state).length, 0);
 });

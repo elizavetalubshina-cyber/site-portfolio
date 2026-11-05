@@ -17,9 +17,16 @@ const broVariants = [
   ['Пригласить', '80:13982'], ['Принять', '80:14136'], ['Прогресс', '80:14179'],
   ['Сейчас в зале', '80:14503'], ['Пинок', '80:14956'],
 ];
+const workoutVariants = [
+  { key: 'plan', label: 'По плану', start: '80:12474', hint: 'Начни тренировку по плану, запиши подходы и посмотри итог.', templates: true },
+  { key: 'first', label: 'Первая тренировка', start: '80:12149', hint: 'Истории и шаблонов пока нет. Нажми «Начать», назови первую тренировку и выбери упражнения.', firstWorkout: true },
+  { key: 'free', label: 'Без плана', start: '143:15564', hint: 'Создай тренировку с нуля: введи название, выбери упражнения и запиши подходы. Готовых шаблонов ещё нет.', firstWorkout: true },
+  { key: 'templates', label: 'Из шаблона', start: '80:15513', hint: 'Выбери «Фулл бади», «Верх» или «Низ». Можно также создать тренировку с новым названием.', templates: true },
+];
 const el = Object.fromEntries(['screen', 'screen-image', 'hotspots', 'device', 'viewport', 'hint', 'variants', 'scenarios', 'back', 'restart', 'show-hotspots', 'status', 'loading', 'preview', 'player-tools', 'guide', 'guide-slot', 'scenario-menu', 'menu-content', 'menu-toggle', 'menu-close', 'menu-title'].map(id => [id, document.getElementById(id)]));
 const mobileLayout = matchMedia('(max-width:760px)');
-let scenario = scenarios.find(item => item.key === location.hash.slice(1)) || scenarios[0];
+let scenario = scenarios.find(item => item.key === location.hash.slice(1).split('/')[0]) || scenarios[0];
+let workoutVariant = workoutVariants.find(item => item.key === location.hash.slice(1).split('/')[1]) || workoutVariants[0];
 let current;
 let trail = [];
 let timers = [];
@@ -36,8 +43,15 @@ const KICK_AVAILABLE = '80:14956';
 const KICK_SENT = '134:10599';
 const workoutDemo = createWorkoutDemo({
   onMinimize: () => navigate('80:12868'),
-  onFinish: () => navigate(scenario.key === 'first' ? '80:20785' : '80:20888'),
-  onHome: () => navigate(scenario.key === 'first' ? '80:12357' : '80:12474'),
+  onFinish: () => navigate(workoutDemo.firstWorkout ? '80:20785' : '80:20888'),
+  onHome: () => navigate(workoutDemo.firstWorkout ? '80:12357' : '80:12474'),
+  onBack: () => goBack(),
+  onStart: () => navigate('80:16684'),
+  onPreview: () => navigate('80:16769'),
+  onName: () => navigate(workoutDemo.firstWorkout ? '143:15564' : '80:15513'),
+  onChooseExercises: () => navigate('80:15752'),
+  onExerciseInfo: () => navigate('80:11987'),
+  onBind: () => navigate('80:21147'),
 });
 const picture = id => {
   const screenId = id === KICK_SENT ? KICK_AVAILABLE : id;
@@ -138,7 +152,8 @@ function goBack({ leaveAtRoot = false } = {}) {
   if (el['scenario-menu'].open) return closeMenu();
   const previous = trail.pop();
   if (previous) return navigate(previous.id, { record: false, scroll: previous.scroll });
-  if (!leaveAtRoot && current?.id !== '80:12474') return navigate('80:12474', { record: false });
+  const home = workoutDemo.firstWorkout ? '80:12149' : '80:12474';
+  if (!leaveAtRoot && current?.id !== home) return navigate(home, { record: false });
   location.assign('/cases/gym-bro.html');
 }
 
@@ -156,6 +171,8 @@ function resolveDestination(destination) {
 function act(action, { record = true } = {}) {
   if (action.type === 'BACK') return goBack();
   if (action.type !== 'NODE') return;
+  if (current?.id === '80:16555' && action.to === '80:16684') workoutDemo.acceptPickerSelection();
+  if (current?.name.startsWith('Home /') && action.to === '80:15513' && workoutDemo.firstWorkout) return navigate('143:15564', { record });
   if (current?.id === '80:12868' && action.to === '80:20580' && workoutDemo.inProgress) {
     return navigate('80:16684', { record }).then(() => workoutDemo.requestFinish());
   }
@@ -277,13 +294,25 @@ function hintFor(screen) {
   if (screen.id === '80:16555') return 'Добавь выбранные упражнения. Удерживай строку жима лёжа, чтобы посмотреть описание.';
   if (screen.name.startsWith('Auth /')) return 'Это пример входа. Почта и код подставляются в макете, отправки писем нет.';
   if (screen.id === '88:9901') return 'Посмотри итог прошлой тренировки, сохрани шаблон или повтори её.';
-  if (screen.height > 852) return 'Экран можно прокручивать внутри телефона.';
   if (screen.name.startsWith('WorkoutSummary /')) return 'Тренировка записана. Можно сохранить шаблон или вернуться на главную.';
-  return scenario.hint;
+  if (screen.height > 852) return 'Экран можно прокручивать внутри телефона.';
+  return scenario.key === 'workout' ? workoutVariant.hint : scenario.hint;
 }
 
 function renderVariants() {
   el.variants.replaceChildren();
+  if (scenario.key === 'workout') {
+    for (const variant of workoutVariants) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'variant';
+      button.append(choiceMarker(), variant.label);
+      button.setAttribute('aria-pressed', String(variant.key === workoutVariant.key));
+      button.addEventListener('click', () => chooseScenario(scenarios[0], variant));
+      el.variants.append(button);
+    }
+    return;
+  }
   if (scenario.key !== 'bro') return;
   for (const [label, id] of broVariants) {
     const button = document.createElement('button');
@@ -306,7 +335,9 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
   if (!next) return;
   const activeWorkout = next.name.startsWith('ActiveWorkout /');
   const workoutSummary = workoutDemo.finished && ['80:20785', '80:20888'].includes(id);
-  const workoutLayer = activeWorkout || workoutSummary;
+  const workoutNaming = next.name.startsWith('Sheet / NewWorkout /');
+  const workoutPreview = id === '80:16769';
+  const workoutLayer = activeWorkout || workoutSummary || workoutNaming || workoutPreview;
   if (activeWorkout && workoutDemo.finished && record) workoutDemo.reset();
   clearTimers();
   const token = ++revision;
@@ -331,7 +362,7 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
     if (token !== revision) return;
     workoutDemo.unmount();
     el.hotspots.replaceChildren();
-    el.screen.querySelectorAll('.reaction-badge, .kick-feedback, .workout-progress').forEach(item => item.remove());
+    el.screen.querySelectorAll('.reaction-badge, .kick-feedback, .workout-progress, .workout-picker-title, .workout-progress-title, .workout-recent-label').forEach(item => item.remove());
     el['screen-image'].src = image.src;
     const renderedHeight = workoutLayer ? 852 : next.height;
     el['screen-image'].height = renderedHeight;
@@ -346,13 +377,35 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
       timed.forEach(event => timers.push(setTimeout(() => act(event.action, { record: false }), event.delay * 1000)));
       if (hotspot.events.some(event => event.trigger !== 'AFTER_TIMEOUT')) el.hotspots.append(makeHotspot(hotspot, index));
     });
-    if (workoutLayer) workoutDemo.mount(el.screen, workoutSummary ? 'summary' : 'active');
+    if (workoutLayer) workoutDemo.mount(el.screen, workoutSummary ? 'summary' : workoutNaming ? 'naming' : workoutPreview ? 'preview' : 'active', { templates: id !== '143:15564' && !workoutDemo.firstWorkout });
+    if (next.name.startsWith('Sheet / ExercisePicker /')) {
+      const title = document.createElement('div');
+      title.className = 'workout-picker-title';
+      title.textContent = workoutDemo.title.toUpperCase();
+      el.screen.append(title);
+    }
     if (id === '80:12868' && workoutDemo.inProgress) {
       const progress = document.createElement('div');
       progress.className = 'workout-progress';
       progress.textContent = workoutDemo.progressText;
       el.screen.append(progress);
-      el.hotspots.querySelector('[data-hotspot="143:18368"]')?.setAttribute('aria-label', `Идёт сейчас Фулл бади. ${workoutDemo.progressText}. Продолжить тренировку`);
+      const title = document.createElement('div');
+      title.className = 'workout-progress-title';
+      title.textContent = workoutDemo.title.toUpperCase();
+      el.screen.append(title);
+      el.hotspots.querySelector('[data-hotspot="143:18368"]')?.setAttribute('aria-label', `Идёт сейчас ${workoutDemo.title}. ${workoutDemo.progressText}. Продолжить тренировку`);
+    }
+    const recent = next.name.startsWith('Home /') && workoutDemo.finished && next.hotspots.find(item => item.name === 'recent');
+    if (recent) {
+      for (const [subtitle, text] of [[false, workoutDemo.title.toUpperCase()], [true, workoutDemo.recentSubtitle]]) {
+        const label = document.createElement('div');
+        label.className = `workout-recent-label${subtitle ? ' is-subtitle' : ''}`;
+        label.style.left = `${recent.x + 16}px`;
+        label.style.top = `${recent.y + (subtitle ? 36 : 12)}px`;
+        label.style.width = `${recent.w - 48}px`;
+        label.textContent = text;
+        el.screen.append(label);
+      }
     }
     if (id === KICK_SENT) renderKickFeedback(animateKick);
     if (id === KICK_AVAILABLE) prepareKickAssets();
@@ -391,9 +444,11 @@ async function navigate(id, { record = true, scroll = 0, animateKick = false } =
   }
 }
 
-function chooseScenario(next) {
+function chooseScenario(next, variant = workoutVariant) {
   closeMenu();
-  workoutDemo.reset();
+  workoutVariant = variant;
+  const firstWorkout = next.key === 'first' || next.key === 'workout' && Boolean(variant.firstWorkout);
+  workoutDemo.reset({ firstWorkout, goals: !firstWorkout });
   scenario = next;
   trail = [];
   current = undefined;
@@ -402,9 +457,9 @@ function chooseScenario(next) {
   lastBroScreen = '80:14179';
   kickSent = false;
   reactionCard = 0;
-  history.replaceState(null, '', `#${next.key}`);
+  history.replaceState(null, '', `#${next.key}${next.key === 'workout' && variant.key !== 'plan' ? `/${variant.key}` : ''}`);
   el.scenarios.querySelectorAll('button').forEach(button => button.setAttribute('aria-current', String(button.dataset.scenario === next.key)));
-  navigate(next.start, { record: false });
+  navigate(next.key === 'workout' ? variant.start : next.start, { record: false });
 }
 
 function choiceMarker() {
@@ -454,6 +509,10 @@ addEventListener('keydown', event => {
   if (event.key === 'Tab') document.documentElement.dataset.inputMode = 'keyboard';
   if (event.key === 'Escape' && !el['scenario-menu'].open && trail.length) goBack();
 });
-addEventListener('hashchange', () => { const next = scenarios.find(item => item.key === location.hash.slice(1)); if (next) chooseScenario(next); });
+addEventListener('hashchange', () => {
+  const [key, variantKey] = location.hash.slice(1).split('/');
+  const next = scenarios.find(item => item.key === key);
+  if (next) chooseScenario(next, workoutVariants.find(item => item.key === variantKey) || workoutVariants[0]);
+});
 syncLayout();
 chooseScenario(scenario);

@@ -9,14 +9,23 @@ export const EXTRA_EXERCISES = [
   { key: 'row', name: 'Тяга штанги', group: 'Спина' },
   { key: 'press', name: 'Жим ногами', group: 'Ноги' },
 ];
+export const ALL_EXERCISES = [...INITIAL_EXERCISES, ...EXTRA_EXERCISES];
+export const WORKOUT_TEMPLATES = [
+  { key: 'full', title: 'Фулл бади', exercises: ['bench', 'pull', 'squat'] },
+  { key: 'upper', title: 'Верх', exercises: ['bench', 'pull', 'dumbbell', 'row'] },
+  { key: 'lower', title: 'Низ', exercises: ['squat', 'press'] },
+];
 
 const newSet = () => ({ weight: null, reps: null, completed: false });
 const newExercise = item => ({ ...item, sets: Array.from({ length: 3 }, newSet) });
 export const ready = set => Number.isFinite(set.weight) && set.weight >= 0 && Number.isInteger(set.reps) && set.reps > 0;
 export const done = exercise => exercise.sets.length > 0 && exercise.sets.every(set => set.completed);
 
-export function createWorkoutState() {
-  return { exercises: INITIAL_EXERCISES.map(newExercise), expanded: null, startedAt: null, finished: false, templateSaved: false };
+export function createWorkoutState({ templateKey = 'full', title, firstWorkout = false, goals = true } = {}) {
+  const template = WORKOUT_TEMPLATES.find(item => item.key === templateKey);
+  return { title: title || template?.title || 'Тренировка', firstWorkout, goals,
+    exercises: (template?.exercises || []).map(key => newExercise(ALL_EXERCISES.find(item => item.key === key))),
+    expanded: null, startedAt: null, finishedAt: null, finished: false, templateSaved: false };
 }
 
 export function updateValue(state, exerciseIndex, setIndex, kind, value) {
@@ -65,11 +74,34 @@ export function addSet(state, exerciseIndex) {
 }
 
 export function addExercise(state, key) {
-  const item = EXTRA_EXERCISES.find(item => item.key === key);
+  const item = ALL_EXERCISES.find(item => item.key === key);
   if (!item || state.exercises.some(exercise => exercise.key === key)) return false;
   state.exercises.push(newExercise(item));
   state.expanded = state.exercises.length - 1;
   return true;
+}
+
+export function describeSets(sets) {
+  const recorded = sets.filter(set => set.completed);
+  const count = recorded.length;
+  const noun = count % 100 >= 11 && count % 100 <= 14 ? 'подходов' : count % 10 === 1 ? 'подход' : count % 10 >= 2 && count % 10 <= 4 ? 'подхода' : 'подходов';
+  const format = value => String(value).replace('.', ',');
+  if (!count) return 'Нет отмеченных подходов';
+  const weights = recorded.map(set => set.weight);
+  const low = Math.min(...weights), high = Math.max(...weights);
+  if (low === high && recorded.every(set => set.reps === recorded[0].reps)) return `${format(low)} кг × ${recorded[0].reps}, ${count} ${noun}`;
+  return `${format(low)}${low === high ? '' : `–${format(high)}`} кг, ${count} ${noun}`;
+}
+
+export function workoutRecords(state) {
+  if (state.firstWorkout) return [];
+  const previous = { bench: { weight: 57.5, reps: 8 }, pull: { weight: 40, reps: 12 }, squat: { weight: 60, reps: 8 } };
+  const better = (a, b) => a.weight > b.weight || a.weight === b.weight && a.reps > b.reps;
+  return state.exercises.flatMap(exercise => {
+    const before = previous[exercise.key];
+    const best = exercise.sets.filter(set => set.completed).reduce((top, set) => !top || better(set, top) ? set : top, null);
+    return before && best && better(best, before) ? [{ name: exercise.name, previous: before, current: best }] : [];
+  });
 }
 
 export function workoutSummary(state) {

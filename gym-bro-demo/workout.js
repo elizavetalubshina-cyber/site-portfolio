@@ -363,7 +363,6 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
       section.append(chips);
       head.append(section);
     }
-    head.append(element('h3', 'wk-section-label', 'СОСТАВ'));
     return head;
   }
 
@@ -443,7 +442,7 @@ export function createWorkoutDemo({ onMinimize, onFinish, onHome, onBack, onStar
       nav.append(backButton(), element('strong', 'wk-nav-title', 'ИТОГ'), button(state.templateSaved ? '− Шаблон' : '+ Шаблон', 'wk-nav-action', () => { state.templateSaved = !state.templateSaved; render(); }));
       const footer = element('div', 'wk-footer');
       footer.append(button('НА ГЛАВНУЮ', 'wk-primary', onHome));
-      root.append(nav, summaryHead(), summaryContent(), footer);
+      root.append(nav, summaryHead(), element('h3', 'wk-section-label wk-summary-composition-label', 'СОСТАВ'), summaryContent(), footer);
     }
     const scroller = root.querySelector('.wk-scroll');
     if (scroller) scroller.scrollTop = scroll;

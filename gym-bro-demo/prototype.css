@@ -49,19 +49,19 @@ h1 { font-size: 48px; line-height: 1.1; letter-spacing: -.065em; margin: 0 0 16p
   transition: background-color .15s, border-color .15s, color .15s;
 }
 .site-button { padding: 8px 12px; gap: 5px; }
-.scenario, .variant { display: inline-flex; align-items: center; justify-content: flex-start; gap: 10px; min-height: 44px; padding: 8px; text-align: left; border: 0; border-radius: 6px; color: var(--secondary); background: transparent; font-size: 12px; font-weight: 500; line-height: 1.4; white-space: nowrap; transition: color .15s; }
+.scenario, .variant { display: inline-flex; align-items: center; justify-content: flex-start; gap: 10px; min-height: 44px; padding: 10px 12px; text-align: left; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; color: #f1f0f6; background: rgba(255,255,255,.08); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); font-size: 12px; font-weight: 500; line-height: 1.4; white-space: nowrap; transition: color .15s,background-color .15s,border-color .15s; }
 .site-button[aria-pressed=true] { color: var(--accent); border-color: var(--accent); background: rgba(172,33,162,.12); }
-.scenario[aria-current=true], .variant[aria-pressed=true] { color: var(--accent); }
+.scenario[aria-current=true], .variant[aria-pressed=true] { color: var(--accent); border-color:var(--accent);background:rgba(172,33,162,.12); }
 .choice-marker { flex: 0 0 16px; width: 16px; height: 16px; display: grid; place-items: center; border: 1px solid var(--muted); border-radius: 50%; }
 .choice-marker::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: transparent; }
-.scenario[aria-current=true] .choice-marker, .variant[aria-pressed=true] .choice-marker { border-color: var(--accent); }
-.scenario[aria-current=true] .choice-marker::after, .variant[aria-pressed=true] .choice-marker::after { background: var(--accent); }
+.scenario[aria-current=true] .choice-marker, .variant[aria-pressed=true] .choice-marker, .site-button[aria-pressed=true] .choice-marker { border-color: var(--accent); }
+.scenario[aria-current=true] .choice-marker::after, .variant[aria-pressed=true] .choice-marker::after, .site-button[aria-pressed=true] .choice-marker::after { background: var(--accent); }
 .site-button:active { color: var(--accent); border-color: var(--accent); background: rgba(255,255,255,.04); }
 .scenario:active, .variant:active { color: var(--accent); }
 @media (hover:hover) and (pointer:fine) {
   .back-link:hover { color: var(--accent); }
   .site-button:hover { color: var(--accent); border-color: var(--accent); }
-  .scenario:hover, .variant:hover { color: var(--accent); }
+  .scenario:hover, .variant:hover { color: var(--accent);border-color:var(--accent); }
 }
 .scenario-detail { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
 .hint { font-size: 13px; line-height: 1.7; margin: 0; color: var(--secondary); }
@@ -121,6 +121,7 @@ h1 { font-size: 48px; line-height: 1.1; letter-spacing: -.065em; margin: 0 0 16p
   .scenario-menu .demo-note { font-size: 11px; line-height: 1.7; }
 }
 @media (max-width:360px) {
+  .scenario { padding-left:8px;padding-right:8px;gap:8px;font-size:11px; }
   .player-tools button { padding-left: 8px; padding-right: 8px; font-size: 10px; }
   .scenario-menu { padding: 16px; }
 }

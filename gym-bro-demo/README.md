@@ -16,8 +16,9 @@ use the original Figma icons. Restart clears the current scenario's state.
 
 The page uses the same night-sky renderer and background as the portfolio.
 Action controls use the portfolio's glass pill buttons and purple accent.
-Scenario and variant choices use plain rows with circle markers, without glass
-fills or selection glow. The app inside the phone keeps its own green design.
+Scenario and variant choices use the same glass pills, with hollow/filled circle
+markers for their actual selected state. The highlight toggle uses this marker
+as well. The app inside the phone keeps its own green design.
 The main home image omits the sample Bro fire reaction on the latest workout;
 its separate filename avoids reusing the previous image from a browser cache.
 
@@ -34,17 +35,28 @@ disabled sent button. There is no cancellation toast or undo transition.
 Returning to the kick within the scenario preserves its sent state; only
 restarting the demo resets it. Reduced motion shows the confirmation directly.
 
-This is a click-through prototype: names, weights, search, dates, account and
-sharing flows are prepared examples. It does not send messages, authenticate,
-install an app, create workouts or change anyone's data. Static controls without
-source links stay visual. The highlight control identifies available actions.
+The active workout is a local interactive view in `workout.js` rather than a
+sequence of screen images. Each exercise can be expanded, each weight and rep
+count can be entered with the in-phone keypad or a hardware keyboard, and every
+set has an independent completion control. Suggested values fill later unchecked
+sets without marking them done or replacing manual overrides. Only completing
+every set in an exercise unfolds the next incomplete exercise. Adding a set,
+marking all filled sets, adding an example exercise, minimizing/resuming, and
+finishing with a summary of the actual checked sets also work locally.
 
-The player adds a keyboard Done transition, local gesture reactions and a
-remaining-set transition; corrects the swapped template/delete sample links;
-and chooses the returning-user summary outside the first-launch scenario.
+Names, search, dates, account and sharing flows remain prepared examples. The
+demo does not send messages, authenticate, install an app, write to the real
+application or persist workouts after reload. Static controls without source
+links stay visual. The highlight control identifies available actions.
+
+The player adds local gesture reactions, corrects the swapped template/delete
+sample links, and chooses the returning-user summary outside the first-launch
+scenario. Active-workout source hotspots are replaced by the interactive view.
 These adaptations are confined to the web player, not the Figma source.
 
-Validation: `npm run build` includes the existing site page-weight checks. Browser
+Validation: `npm run test:prototype` covers suggested values, independent set
+completion, manual overrides, adding sets/exercises, reset isolation and summary
+counts. `npm run build` includes the existing site page-weight checks. Browser
 checks cover the workout through summary, Bro acceptance, double-tap and held
 reactions, kick animation and sent-state persistence, scenario reset, long-page scrolling, mobile layout and the
 link from the case. Browser-size checks do not establish real-device behavior.

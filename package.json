@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test:prototype": "node --test gym-bro-demo/workout-state.test.js",
     "images": "node scripts/optimize-images.mjs",
     "predev": "npm run images && npm run screens",
     "prebuild": "npm run images && npm run screens",

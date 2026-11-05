@@ -947,3 +947,6 @@ img[data-zoom] { cursor: zoom-in; }
   cursor: pointer;
 }
 html.zoom-lock { overflow: hidden; }
+/* The demo is a separate page; this entry point stays beside the case intro. */
+.prototype-link { margin: 24px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.prototype-link p { margin: 0; font-size: 13px; color: var(--text-muted, #6b6864); }

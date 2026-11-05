@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Прототип Gym Bro | Елизавета Любшина</title>
+  <meta name="description" content="Попробуй Gym Bro: запись тренировки, план, история и напарник. Интерактивный прототип с примером данных." />
+  <meta name="robots" content="noindex" />
+  <link rel="canonical" href="https://dizlik.ru/gym-bro-demo/" />
+  <meta property="og:title" content="Попробовать Gym Bro" />
+  <meta property="og:description" content="Запиши тренировку, поддержи бро или отправь пинок. Интерактивный прототип с примером данных." />
+  <meta property="og:image" content="https://dizlik.ru/og/gym-bro.jpg" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./prototype.css" />
+  <script type="module" src="./prototype.js"></script>
+</head>
+<body>
+  <header class="page-header">
+    <a class="back-link" href="/cases/gym-bro.html">← К кейсу</a>
+    <span class="demo-label">Интерактивный прототип</span>
+  </header>
+  <main class="demo-layout">
+    <aside class="guide" aria-label="Сценарии прототипа">
+      <div class="intro">
+        <p class="eyebrow">ТРЕНИРОВКИ С НАПАРНИКОМ</p>
+        <h1>Gym Bro<span aria-hidden="true">.</span></h1>
+        <button class="mobile-expand" type="button" data-expand>Только прототип ↗</button>
+        <p class="intro-copy">Запиши тренировку,<br />поддержи своего бро.</p>
+      </div>
+      <nav class="scenarios" aria-label="Выбрать сценарий" id="scenarios"></nav>
+      <div class="scenario-detail">
+        <p class="hint" id="hint">Нажми «Начать по плану», чтобы попробовать тренировку.</p>
+        <div class="variants" id="variants" aria-label="Варианты сценария"></div>
+      </div>
+      <p class="demo-note">Это прототип с примером данных.<br />Действия разыгрываются внутри демо.</p>
+    </aside>
+    <section class="preview" aria-label="Прототип Gym Bro">
+      <div class="device" id="device">
+        <div class="screen-viewport" id="viewport">
+          <div class="screen" id="screen" tabindex="-1" aria-label="Экран прототипа">
+            <img id="screen-image" class="screen-image" src="/gym-bro-demo/screens/80-12474.webp" width="393" height="852" alt="Главная Gym Bro" draggable="false" fetchpriority="high" />
+            <div id="hotspots" class="hotspots"></div>
+          </div>
+        </div>
+        <div class="loading" id="loading" role="status" hidden>Загрузка…</div>
+      </div>
+      <div class="player-tools" aria-label="Управление прототипом">
+        <button type="button" id="back" disabled>← Назад</button>
+        <button type="button" id="restart">Начать заново</button>
+        <button type="button" id="show-hotspots" aria-pressed="false" aria-label="Подсветить доступные кнопки" title="Подсветить доступные кнопки">◉ <span>Кнопки</span></button>
+        <button type="button" class="show-menu" data-expand hidden>Показать меню</button>
+      </div>
+      <p class="screen-status" id="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <noscript>Для интерактивного прототипа нужен JavaScript. <a href="/cases/gym-bro.html">Вернуться к кейсу Gym Bro</a>.</noscript>
+</body>
+</html>

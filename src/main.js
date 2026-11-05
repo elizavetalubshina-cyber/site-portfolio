@@ -1,3 +1,5 @@
+import { mountSky } from './sky.js';
+
 // Case links opened from script carry the same origin mark as clicked
 // links (see markCaseUrl at the end of this file).
 const withFrom = (href) => markCaseUrl(href);
@@ -1102,30 +1104,7 @@ startSpace();
 // stars behind the text, drawn once (and again on resize), nothing moving
 // while the case is being read.
 if (!particleCanvas) {
-  const sky = document.createElement('canvas');
-  sky.className = 'sky';
-  sky.setAttribute('aria-hidden', 'true');
-  document.body.prepend(sky);
-  const stars = Array.from({ length: 420 }, () => ({
-    x: Math.random(), y: Math.random(), s: Math.random() < 0.85 ? 1 : 1.8, a: 0.2 + Math.random() * 0.5,
-  }));
-  const paintSky = () => {
-    // clientWidth, not innerWidth: on a phone innerWidth can report more than
-    // the screen, and a canvas that wide lets the page slide sideways.
-    const w = document.documentElement.clientWidth, h = window.innerHeight;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    sky.width = w * dpr;
-    sky.height = h * dpr;
-    const c = sky.getContext('2d');
-    c.setTransform(dpr, 0, 0, dpr, 0, 0);
-    c.fillStyle = '#ece9ff';
-    stars.forEach((st) => {
-      c.globalAlpha = st.a;
-      c.fillRect(st.x * w, st.y * h, st.s, st.s);
-    });
-  };
-  paintSky();
-  window.addEventListener('resize', paintSky);
+  mountSky();
 }
 
 // Where a case was opened from travels in its URL as ?back=<address>: the

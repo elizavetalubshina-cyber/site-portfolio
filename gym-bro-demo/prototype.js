@@ -1,4 +1,7 @@
 import data from './screens.json';
+import { mountSky } from '../src/sky.js';
+
+mountSky();
 
 const screens = new Map(data.screens.map(screen => [screen.id, screen]));
 const scenarios = [
@@ -25,7 +28,52 @@ let broConnected = false;
 let showHotspots = false;
 let flashTimer;
 let lastBroScreen = '80:14179';
-const picture = id => `/gym-bro-demo/screens/${id.replace(':', '-')}.webp`;
+let kickSent = false;
+let kickAssetsReady;
+const KICK_AVAILABLE = '80:14956';
+const KICK_SENT = '134:10599';
+const picture = id => `/gym-bro-demo/screens/${(id === KICK_SENT ? KICK_AVAILABLE : id).replace(':', '-')}.webp`;
+
+function prepareKickAssets() {
+  kickAssetsReady ||= Promise.all(['paw', 'avatar', 'sent-button'].map(name => {
+    const image = new Image();
+    image.src = `/gym-bro-demo/kick/${name}.webp`;
+    return image.decode();
+  })).catch(() => { kickAssetsReady = undefined; });
+  return kickAssetsReady;
+}
+
+function renderKickFeedback(animate) {
+  const feedback = document.createElement('div');
+  feedback.className = 'kick-feedback';
+  const buttonMask = document.createElement('div');
+  buttonMask.className = 'kick-sent-mask';
+  const sent = document.createElement('img');
+  sent.className = 'kick-sent-label';
+  sent.src = '/gym-bro-demo/kick/sent-button.webp';
+  sent.alt = 'Пинок отправлен';
+  feedback.append(buttonMask, sent);
+
+  if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const mask = document.createElement('div');
+    mask.className = 'kick-avatar-mask';
+    const avatar = document.createElement('img');
+    avatar.className = 'kick-avatar';
+    avatar.src = '/gym-bro-demo/kick/avatar.webp';
+    avatar.alt = '';
+    const paw = document.createElement('img');
+    paw.className = 'kick-paw';
+    paw.src = '/gym-bro-demo/kick/paw.webp';
+    paw.alt = '';
+    feedback.append(mask, avatar, paw);
+    paw.addEventListener('animationend', () => {
+      mask.remove();
+      avatar.remove();
+      paw.remove();
+    }, { once: true });
+  }
+  el.screen.append(feedback);
+}
 
 function fit() {
   const mobile = matchMedia('(max-width:760px)').matches;
@@ -64,6 +112,12 @@ function resolveDestination(destination) {
 function act(action) {
   if (action.type === 'BACK') return goBack();
   if (action.type !== 'NODE') return;
+  if (current?.id === KICK_AVAILABLE && action.to === KICK_SENT) {
+    if (kickSent) return;
+    kickSent = true;
+    // Sending is a state change. Going back must not undo or replay it.
+    return navigate(KICK_SENT, { record: false, animateKick: true });
+  }
   if (current?.id === '80:14136' && action.to === '80:14179') broConnected = true;
   if (current?.id === '127:15156' && action.to === '80:13982') {
     broConnected = false;
@@ -169,7 +223,7 @@ function makeHotspot(hotspot, index) {
 function hintFor(screen) {
   if (screen.id === '80:14093') return 'Приглашение в демо отправлено. Через «Принять» можно посмотреть следующий шаг.';
   if (screen.id === '80:13982') return 'Пригласи своего бро. Выбор способа отправки тоже разыгрывается внутри прототипа.';
-  if (screen.id === '134:10599') return 'Пинок отправлен. Можно отменить его или вернуться к прогрессу бро.';
+  if (screen.id === KICK_SENT) return 'Пинок отправлен. Можно посмотреть прогресс бро или продолжить свою тренировку.';
   if (screen.id === '127:15243') return 'Выбери реакцию. Двойной тап по тренировке сразу ставит сердце.';
   if (screen.name.startsWith('Bro /') && !/Empty|Invite/.test(screen.name)) return 'Двойной тап по тренировке ставит сердце, удержание открывает реакции. По аватару доступны настройки бро.';
   if (screen.id === '80:17619') return 'Ввод разыгрывается на примере: нажми «Готово» на клавиатуре, чтобы записать подход.';
@@ -189,7 +243,7 @@ function renderVariants() {
     button.type = 'button';
     button.className = 'variant';
     button.textContent = label;
-    button.setAttribute('aria-pressed', String(id === current.id));
+    button.setAttribute('aria-pressed', String(id === current.id || id === KICK_AVAILABLE && current.id === KICK_SENT));
     button.addEventListener('click', () => {
       broConnected = !['80:13982', '80:14136'].includes(id);
       navigate(id);
@@ -198,7 +252,8 @@ function renderVariants() {
   }
 }
 
-async function navigate(id, { record = true, scroll = 0 } = {}) {
+async function navigate(id, { record = true, scroll = 0, animateKick = false } = {}) {
+  if (id === KICK_AVAILABLE && kickSent) id = KICK_SENT;
   const next = screens.get(id);
   if (!next) return;
   clearTimers();
@@ -208,12 +263,13 @@ async function navigate(id, { record = true, scroll = 0 } = {}) {
   el.screen.dataset.screen = id;
   el.screen.dataset.screenName = next.name;
   el.hotspots.replaceChildren();
-  el.screen.querySelectorAll('.reaction-badge').forEach(item => item.remove());
+  el.screen.querySelectorAll('.reaction-badge, .kick-feedback').forEach(item => item.remove());
   el.loading.hidden = false;
   try {
     const image = new Image();
     image.src = picture(id);
     await image.decode();
+    if (id === KICK_SENT) await prepareKickAssets();
     if (token !== revision) return;
     el['screen-image'].src = image.src;
     el['screen-image'].height = next.height;
@@ -228,6 +284,8 @@ async function navigate(id, { record = true, scroll = 0 } = {}) {
       timed.forEach(event => timers.push(setTimeout(() => act(event.action), event.delay * 1000)));
       if (hotspot.events.some(event => event.trigger !== 'AFTER_TIMEOUT')) el.hotspots.append(makeHotspot(hotspot, index));
     });
+    if (id === KICK_SENT) renderKickFeedback(animateKick);
+    if (id === KICK_AVAILABLE) prepareKickAssets();
     if (next.name.startsWith('Bro /') && !/Empty|Invite|ReactionPicker|History/.test(next.name)) {
       lastBroScreen = next.id === '80:15351' ? '80:14179' : next.id;
       next.hotspots.filter(item => item.name === 'workout').forEach((card, index) => {
@@ -263,6 +321,7 @@ function chooseScenario(next) {
   reactions = {};
   broConnected = false;
   lastBroScreen = '80:14179';
+  kickSent = false;
   reactionCard = 0;
   history.replaceState(null, '', `#${next.key}`);
   el.scenarios.querySelectorAll('button').forEach(button => button.setAttribute('aria-current', String(button.dataset.scenario === next.key)));

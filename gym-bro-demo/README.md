@@ -3,7 +3,7 @@
 The page at `/gym-bro-demo/` replays the Gym Log Figma design without a Figma
 iframe, account, application database, service worker or external API. Screen
 images and links were exported from the connected Desktop Bridge on 2026-11-05.
-The Figma document itself was read without modification.
+The source design is preserved. Temporary export copies are removed after use.
 
 `screens.json` retains the source node IDs, geometry and supported transitions.
 Images live in `public/gym-bro-demo/` and load on demand. Do not preload the whole
@@ -15,8 +15,11 @@ the kick. Double tap and long press on Bro workout cards run locally; reactions
 use the original Figma icons. Restart clears the current scenario's state.
 
 The page uses the same night-sky renderer and background as the portfolio.
-Its controls use the portfolio's glass pill buttons and purple accent. The app
-inside the phone keeps its own green design.
+Action controls use the portfolio's glass pill buttons and purple accent.
+Scenario and variant choices use plain rows with circle markers, without glass
+fills or selection glow. The app inside the phone keeps its own green design.
+The main home image omits the sample Bro fire reaction on the latest workout;
+its separate filename avoids reusing the previous image from a browser cache.
 
 On mobile, the phone and controls fill a stable small viewport from the first
 render. The scenario selector opens in a native dialog above the phone; opening,
@@ -52,3 +55,7 @@ the phone bounds unchanged, internal scroll survives the dialog, root and step
 back actions work, and resizing an open mobile menu restores the desktop guide.
 Desktop checks compare title, subtitle, scenario grid and phone bounds across all
 six scenario selections; their positions and sizes remain unchanged.
+
+Opening the menu focuses its static title rather than a scenario button.
+Pointer input does not draw a focus ring on external controls; Tab navigation
+retains an inset indicator that stays within the row/button bounds.

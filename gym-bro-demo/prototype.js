@@ -16,7 +16,7 @@ const broVariants = [
   ['Пригласить', '80:13982'], ['Принять', '80:14136'], ['Прогресс', '80:14179'],
   ['Сейчас в зале', '80:14503'], ['Пинок', '80:14956'],
 ];
-const el = Object.fromEntries(['screen', 'screen-image', 'hotspots', 'device', 'viewport', 'hint', 'variants', 'scenarios', 'back', 'restart', 'show-hotspots', 'status', 'loading', 'preview', 'player-tools', 'guide', 'guide-slot', 'scenario-menu', 'menu-content', 'menu-toggle', 'menu-close'].map(id => [id, document.getElementById(id)]));
+const el = Object.fromEntries(['screen', 'screen-image', 'hotspots', 'device', 'viewport', 'hint', 'variants', 'scenarios', 'back', 'restart', 'show-hotspots', 'status', 'loading', 'preview', 'player-tools', 'guide', 'guide-slot', 'scenario-menu', 'menu-content', 'menu-toggle', 'menu-close', 'menu-title'].map(id => [id, document.getElementById(id)]));
 const mobileLayout = matchMedia('(max-width:760px)');
 let scenario = scenarios.find(item => item.key === location.hash.slice(1)) || scenarios[0];
 let current;
@@ -33,7 +33,11 @@ let kickSent = false;
 let kickAssetsReady;
 const KICK_AVAILABLE = '80:14956';
 const KICK_SENT = '134:10599';
-const picture = id => `/gym-bro-demo/screens/${(id === KICK_SENT ? KICK_AVAILABLE : id).replace(':', '-')}.webp`;
+const picture = id => {
+  const screenId = id === KICK_SENT ? KICK_AVAILABLE : id;
+  const filename = screenId === '80:12474' ? '80-12474-clean' : screenId.replace(':', '-');
+  return `/gym-bro-demo/screens/${filename}.webp`;
+};
 
 function prepareKickAssets() {
   kickAssetsReady ||= Promise.all(['paw', 'avatar', 'sent-button'].map(name => {
@@ -88,7 +92,7 @@ function openMenu() {
   if (!mobileLayout.matches || el['scenario-menu'].open) return;
   el['scenario-menu'].showModal();
   el['menu-toggle'].setAttribute('aria-expanded', 'true');
-  el.scenarios.querySelector('[aria-current="true"]')?.focus({ preventScroll: true });
+  el['menu-title'].focus({ preventScroll: true });
 }
 
 function closeMenu() {
@@ -276,7 +280,7 @@ function renderVariants() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'variant';
-    button.textContent = label;
+    button.append(choiceMarker(), label);
     button.setAttribute('aria-pressed', String(id === current.id || id === KICK_AVAILABLE && current.id === KICK_SENT));
     button.addEventListener('click', () => {
       broConnected = !['80:13982', '80:14136'].includes(id);
@@ -375,16 +379,19 @@ function chooseScenario(next) {
   navigate(next.start, { record: false });
 }
 
-for (const [index, item] of scenarios.entries()) {
+function choiceMarker() {
+  const marker = document.createElement('span');
+  marker.className = 'choice-marker';
+  marker.setAttribute('aria-hidden', 'true');
+  return marker;
+}
+
+for (const item of scenarios) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'scenario';
   button.dataset.scenario = item.key;
-  const number = document.createElement('span');
-  number.className = 'scenario-num';
-  number.textContent = `0${index + 1}`;
-  number.setAttribute('aria-hidden', 'true');
-  button.append(number, item.label);
+  button.append(choiceMarker(), item.label);
   button.addEventListener('click', () => chooseScenario(item));
   el.scenarios.append(button);
 }
@@ -412,7 +419,11 @@ el.screen.addEventListener('click', event => {
   el.device.classList.add('flash-hotspots');
   flashTimer = setTimeout(() => el.device.classList.remove('flash-hotspots'), 1100);
 });
+addEventListener('pointerdown', () => {
+  document.documentElement.dataset.inputMode = 'pointer';
+}, { capture: true });
 addEventListener('keydown', event => {
+  if (event.key === 'Tab') document.documentElement.dataset.inputMode = 'keyboard';
   if (event.key === 'Escape' && !el['scenario-menu'].open && trail.length) goBack();
 });
 addEventListener('hashchange', () => { const next = scenarios.find(item => item.key === location.hash.slice(1)); if (next) chooseScenario(next); });

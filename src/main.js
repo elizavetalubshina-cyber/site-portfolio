@@ -1,4 +1,5 @@
 import { mountSky } from './sky.js';
+import './resume.js';
 
 // Case links opened from script carry the same origin mark as clicked
 // links (see markCaseUrl at the end of this file).

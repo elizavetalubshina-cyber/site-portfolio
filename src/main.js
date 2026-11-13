@@ -1,5 +1,5 @@
 import { mountSky } from './sky.js';
-import './resume.js';
+import { isResumeOpen } from './resume.js';
 
 // Case links opened from script carry the same origin mark as clicked
 // links (see markCaseUrl at the end of this file).
@@ -628,6 +628,10 @@ function startSpace() {
     const dur = ring ? Math.min(1500, Math.max(900, 700 + Math.abs(to - from) * 0.5)) : 1600;
     const t0 = performance.now();
     const tick = (t) => {
+      if (isResumeOpen()) {
+        target = -1;
+        return;
+      }
       const u = Math.min(1, (t - t0) / dur);
       const q = 1 - Math.pow(1 - u, 4);
       window.scrollTo({ top: from + (to - from) * q, behavior: 'instant' });
@@ -648,7 +652,9 @@ function startSpace() {
     if (dir < 0 && stops[here] < y - 2) i = here;
     moveTo(i);
   };
-  const blocked = (target) => sheetOpen
+  // A modal owns its scroll input while it is open.
+  const blocked = (target) => isResumeOpen()
+    || sheetOpen
     || document.documentElement.classList.contains('sheet-lock')
     || (target && target.closest && target.closest('.nav.is-open, .case-sheet'));
   if (flight) {
@@ -689,7 +695,7 @@ function startSpace() {
       touched = false;
     }, { passive: true });
     window.addEventListener('touchmove', (ev) => {
-      if (touchY === null) return;
+      if (touchY === null || blocked(ev.target)) return;
       ev.preventDefault();
       const dy = touchY - ev.touches[0].clientY;
       if (!touched && Math.abs(dy) > 24) {

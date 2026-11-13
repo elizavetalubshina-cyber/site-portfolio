@@ -1,9 +1,13 @@
 const resumeLinks = document.querySelectorAll('[data-resume]');
 const resumeHash = '#resume';
 const pdfName = 'Елизавета Любшина CV.pdf';
+let dialog;
+
+export function isResumeOpen() {
+  return dialog?.open === true;
+}
 
 if (resumeLinks.length && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.showModal) {
-  let dialog;
   let returnFocus;
   let previousHash = '';
 
@@ -18,10 +22,10 @@ if (resumeLinks.length && typeof HTMLDialogElement !== 'undefined' && HTMLDialog
       <h2 id="resume-title">Резюме</h2>
       <a class="btn" href="/${encodeURIComponent(pdfName)}" download="${pdfName}">Скачать PDF</a>
       <form method="dialog">
-        <button class="resume-dialog__close" aria-label="Закрыть резюме" autofocus>×</button>
+        <button class="resume-dialog__close" aria-label="Закрыть резюме">×</button>
       </form>
     </header>
-    <article class="resume-dialog__body">
+    <article class="resume-dialog__body" aria-label="Текст резюме" tabindex="0" autofocus>
       <h3>Продуктовый дизайнер UI/UX</h3>
       <p class="resume-dialog__name">Елизавета Любшина</p>
       <ul class="resume-dialog__contacts">

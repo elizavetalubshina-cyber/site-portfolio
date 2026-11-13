@@ -2143,8 +2143,10 @@ html.sheet-lock, html.sheet-lock body { overflow: hidden; }
 
 /* ---------- Resume ---------- */
 
-html:has(.resume-dialog[open]) {
+html:has(.resume-dialog[open]),
+html:has(.resume-dialog[open]) body {
   overflow: hidden;
+  overscroll-behavior-y: none;
 }
 
 .resume-dialog {

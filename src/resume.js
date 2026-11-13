@@ -1,24 +1,22 @@
 const resumeLinks = document.querySelectorAll('[data-resume]');
+const resumeHash = '#resume';
+const pdfName = 'Елизавета Любшина CV.pdf';
 
 if (resumeLinks.length && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.showModal) {
   let dialog;
   let returnFocus;
+  let previousHash = '';
 
-  for (const link of resumeLinks) {
-    link.setAttribute('aria-haspopup', 'dialog');
-    link.addEventListener('click', (event) => {
-      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      event.preventDefault();
-
-      if (!dialog) {
-        dialog = document.createElement('dialog');
-        dialog.className = 'resume-dialog';
-        dialog.setAttribute('aria-labelledby', 'resume-title');
-        dialog.innerHTML = `
+  function openResume(trigger) {
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.className = 'resume-dialog';
+      dialog.setAttribute('aria-labelledby', 'resume-title');
+      dialog.innerHTML = `
   <div class="resume-dialog__panel">
     <header class="resume-dialog__bar">
       <h2 id="resume-title">Резюме</h2>
-      <a class="btn" href="/resume.pdf" download="Елизавета Любшина CV.pdf">Скачать PDF</a>
+      <a class="btn" href="/${encodeURIComponent(pdfName)}" download="${pdfName}">Скачать PDF</a>
       <form method="dialog">
         <button class="resume-dialog__close" aria-label="Закрыть резюме" autofocus>×</button>
       </form>
@@ -83,17 +81,49 @@ if (resumeLinks.length && typeof HTMLDialogElement !== 'undefined' && HTMLDialog
       </section>
     </article>
   </div>
-        `;
-        dialog.addEventListener('click', (event) => {
-          if (event.target === dialog) dialog.close();
-        });
-        dialog.addEventListener('close', () => returnFocus?.focus({ preventScroll: true }));
-        document.body.append(dialog);
-      }
+      `;
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        if (location.hash === resumeHash) {
+          history.replaceState(history.state, '', location.pathname + location.search + previousHash);
+        }
+        previousHash = '';
+        returnFocus?.focus({ preventScroll: true });
+      });
+      document.body.append(dialog);
+    }
 
-      returnFocus = link.closest('.nav__menu') ? document.querySelector('.nav__toggle') : link;
-      dialog.showModal();
-      dialog.querySelector('.resume-dialog__body').scrollTop = 0;
+    if (dialog.open) return;
+    const navToggle = document.querySelector('.nav__toggle');
+    const desktopLink = document.querySelector('.nav__links [data-resume]');
+    returnFocus = trigger
+      ? (trigger.closest('.nav__menu') ? navToggle : trigger)
+      : (desktopLink?.getClientRects().length ? desktopLink : navToggle);
+    dialog.showModal();
+    dialog.querySelector('.resume-dialog__body').scrollTop = 0;
+  }
+
+  for (const link of resumeLinks) {
+    link.setAttribute('aria-haspopup', 'dialog');
+    link.addEventListener('click', (event) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+
+      if (location.hash !== resumeHash) {
+        previousHash = location.hash;
+        history.replaceState(history.state, '', resumeHash);
+      }
+      openResume(link);
     });
   }
+
+  function syncResumeHash() {
+    if (location.hash === resumeHash) openResume();
+    else if (dialog?.open) dialog.close();
+  }
+
+  window.addEventListener('hashchange', syncResumeHash);
+  syncResumeHash();
 }
